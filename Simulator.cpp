@@ -321,6 +321,10 @@ bool Simulator::timeIncrement()
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #ifndef EXCLUDE_VEHICLES
   vector<Vehicle*>* vehicles = ObjManager::vehicles();
+#ifdef BARRIER
+  _roadMap->checkVisible(vehicles);
+#endif //BARRIER
+
 #ifndef _OPENMP
   TimeManager::startClock("RECOGNIZE");
   for_each(vehicles->begin(), vehicles->end(),

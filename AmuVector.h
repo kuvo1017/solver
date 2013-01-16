@@ -99,6 +99,9 @@ public:
      */
     double calcAngle(const AmuVector& crV) const;
 
+    /// 他のベクトルとの外積を返す
+    double calcCrossProduct(const AmuVector& crV) const;
+
     /// ベクトルの長さを返す
     double size() const;
 

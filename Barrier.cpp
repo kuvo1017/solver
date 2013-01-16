@@ -3,13 +3,19 @@
 #include "Intersection.h"
 #include "Section.h"
 #include "AmuPoint.h"
+#include "Lane.h"
+#include "RoadOccupant.h"
+#include "Vehicle.h"
+#include "ErrorController.h"
 
 using namespace std;
 // ====================================
 Barrier::Barrier(Intersection* i0,
     Section* s1,
-    Section* s2)
+    Section* s2,
+    std::string id)
 {
+  _id = id;
   //cout << "enter into Barrier.cpp!!!!!"<<endl;
   cout << "Intersection id: " <<i0->id()<<endl;
   cout << "Section1 id: " <<s1->id()<<endl; 
@@ -30,19 +36,19 @@ Barrier::Barrier(Intersection* i0,
   for(int i=0;i<iAmuPoints.size();i++)
   {
     AmuPoint iAmuPoint = iAmuPoints[i];
-//     cout << "=======" << i << "番目の頂点========"<<endl;
-//     cout << "ipx:" << iAmuPoint.x()  << " ipy:" << iAmuPoint.y() <<endl;
+    //     cout << "=======" << i << "番目の頂点========"<<endl;
+    //     cout << "ipx:" << iAmuPoint.x()  << " ipy:" << iAmuPoint.y() <<endl;
     for(int j=0;j<sAmuPoints1.size();j++){
       AmuPoint sAmuPoint1 = sAmuPoints1[j];
-      
-//       cout << "ipx:" << iAmuPoint.x() << " sp1x:" <<sAmuPoint1.x()<<endl;
-//       cout << "ipy:" << iAmuPoint.y() << " sp1y:" <<sAmuPoint1.y()<<endl;
+
+      //       cout << "ipx:" << iAmuPoint.x() << " sp1x:" <<sAmuPoint1.x()<<endl;
+      //       cout << "ipy:" << iAmuPoint.y() << " sp1y:" <<sAmuPoint1.y()<<endl;
       if(iAmuPoint.x()==sAmuPoint1.x()
 	  && ( iAmuPoint.y()==sAmuPoint1.y()))
       {
 	if(once1)
 	{
-//	  cout << "spx1:" << sAmuPoint1.x()  << " spy1:" << sAmuPoint1.y() <<endl; 
+	  //	  cout << "spx1:" << sAmuPoint1.x()  << " spy1:" << sAmuPoint1.y() <<endl; 
 	  rawVertices[0] = new AmuPoint(iAmuPoint.x(),iAmuPoint.y(),0);
 	  once1 = false;
 	}
@@ -54,21 +60,21 @@ Barrier::Barrier(Intersection* i0,
     }
     for(int j=0;j<sAmuPoints2.size();j++){
       AmuPoint sAmuPoint2 = sAmuPoints2[j];
-//       cout << "ipx:" << iAmuPoint.x() << " sp2x:" <<sAmuPoint2.x()<<endl;
-//       cout << "ipy:" << iAmuPoint.y() << " sp2y:" <<sAmuPoint2.y()<<endl;
+      //       cout << "ipx:" << iAmuPoint.x() << " sp2x:" <<sAmuPoint2.x()<<endl;
+      //       cout << "ipy:" << iAmuPoint.y() << " sp2y:" <<sAmuPoint2.y()<<endl;
       if(iAmuPoint.x()==sAmuPoint2.x()
 	  && ( iAmuPoint.y()==sAmuPoint2.y()))
       {
 	if(once2)
 	{
-//       cout << "spx2:" << sAmuPoint2.x()  << " spy2:" << sAmuPoint2.y() <<endl; 
- 	  rawVertices[1] = new AmuPoint(iAmuPoint.x(),iAmuPoint.y(),0);
+	  //       cout << "spx2:" << sAmuPoint2.x()  << " spy2:" << sAmuPoint2.y() <<endl; 
+	  rawVertices[1] = new AmuPoint(iAmuPoint.x(),iAmuPoint.y(),0);
 	  once2 = false;
 	}
       }
     } 
   }
- // cout << "共通しないAmuPoint探し" << endl;  
+  // cout << "共通しないAmuPoint探し" << endl;  
 
   for(int i=0;i<sAmuPoints1.size();i++)
   {
@@ -76,7 +82,7 @@ Barrier::Barrier(Intersection* i0,
     if(sap->x()==rawVertices[0]->x()
 	&& ( sap->y()==rawVertices[0]->y())) 
     {
-//      cout << "sapx1:" << sap->x() << " sapy1" << sap->y()<<endl;
+      //      cout << "sapx1:" << sap->x() << " sapy1" << sap->y()<<endl;
       if(i < sAmuPoints1.size()-1)
 	rawVertices[3]=&sAmuPoints1[i+1];
       else
@@ -89,7 +95,7 @@ Barrier::Barrier(Intersection* i0,
     if(sap->x()==rawVertices[1]->x()
 	&& ( sap->y()==rawVertices[1]->y())) 
     {
-//       cout << "sapx2:" << sap->x() << " sapy2" << sap->y()<<endl; 
+      //       cout << "sapx2:" << sap->x() << " sapy2" << sap->y()<<endl; 
       if(i>0)
 	rawVertices[2]=&sAmuPoints2[i-1];
       else
@@ -99,9 +105,9 @@ Barrier::Barrier(Intersection* i0,
 
   std::cout << "rawVertices"<<endl;
   for(int i=0;i<4;i++){
-      std::cout <<"("<< rawVertices[i]->x() <<","<<rawVertices[i]->y()<<")" <<std::endl;
+    std::cout <<"("<< rawVertices[i]->x() <<","<<rawVertices[i]->y()<<")" <<std::endl;
   }
- 
+
   // 四角形の中心点を計算する
   AmuPoint* center = new AmuPoint;
   // 対角線の傾き
@@ -136,20 +142,100 @@ Barrier::Barrier(Intersection* i0,
     if(_vertices[i]!=NULL)
       std::cout <<"("<< _vertices[i]->x() <<","<<_vertices[i]->y()<<")" <<std::endl;
   }
-} 
-//====================================================================== 
-double Barrier::x(int i)
-{
-  return _vertices[i]->x();
-}
-///====================================================================== 
-double Barrier::y(int i)
-{
-  return _vertices[i]->y();
-}
-///====================================================================== 
-double Barrier::z(int i)
-{
-  return _vertices[i]->z();
-}        
+  _diagnoal[0] = new AmuVector(*_vertices[0] ,*_vertices[2]);
+  _diagnoal[1] = new AmuVector(*_vertices[1],*_vertices[3]);
 
+} 
+//======================================================================
+std::string Barrier::id()
+{
+  return _id;
+}
+//======================================================================
+void Barrier::checkVehiclesVisible()
+{
+  const RMAPLAN* lanes1 = _section[0]->lanes();
+  const RMAPLAN* lanes2 = _section[1]->lanes(); 
+  CITRMAPLAN itl1;
+  for (itl1=lanes1->begin(); itl1!=lanes1->end(); itl1++)
+  {
+    if(_section[0]->nextBundle(itl1->second)->id() == _intersection->id()) 
+    {
+     CITRMAPLAN itl2;
+     for (itl2=lanes2->begin(); itl2!=lanes2->end(); itl2++)
+     {
+       if(_section[1]->nextBundle(itl2->second)->id() == _intersection->id()) 
+       {
+         std::vector<RoadOccupant*>* agents1 = itl1->second->agents();
+	 std::vector<RoadOccupant*>* agents2 = itl2->second->agents();
+	 for(int i=0;i<agents1->size();i++)
+	 {
+           Vehicle* vehicle1 =  reinterpret_cast<Vehicle*>(agents1->at(i)); 
+	   for(int j=0;j<agents2->size();j++)
+	   {
+             Vehicle* vehicle2 =  reinterpret_cast<Vehicle*>(agents2->at(j)); 
+	     if(_isVisible(vehicle1,vehicle2))
+	     {
+	       vehicle1->errorController()->setInvisibleVehicle(vehicle2);
+	       vehicle2->errorController()->setInvisibleVehicle(vehicle1); 
+	     }
+	   }
+	 }
+       }
+     }
+    }
+  }
+}
+
+//======================================================================
+bool Barrier::_isVisible(Vehicle* v1,Vehicle* v2)
+{
+  Vehicle* vehicles[] = {v1,v2};
+  AmuVector vehicleVectors[] = {v1->directionVector(),v2->directionVector()};
+  AmuPoint* points[2];
+  for(int i=0;i<2;i++)
+  {
+    AmuVector* vehicleVector = &vehicleVectors[i];
+    Vehicle* vehicle = vehicles[i];
+   vehicleVector->normalize();
+    points[i] = new AmuPoint(vehicle->x()+vehicleVector->x()*vehicle->bodyLength()/2,
+	vehicle->y()+vehicleVector->y()*vehicle->bodyLength()/2,0); 
+    for(int i=0;i<2;i++)
+    {
+      // 外積計算のための三つのベクトル
+      AmuVector* calcVectors[] = {new AmuVector(*_vertices[i],*_vertices[i+2]),
+	new AmuVector(*_vertices[i],*points[0]), 
+	new AmuVector(*_vertices[i],*points[1])};
+      //２つの外積の積が正であれば交差せず
+      //負であれば交差する
+      if(calcVectors[0]->calcCrossProduct(*calcVectors[1])*calcVectors[0]->calcCrossProduct(*calcVectors[2]) > 0)
+      {
+	return true;
+      }else
+      {
+	return false;
+      }
+    }
+  }
+}
+//====================================================================== 
+AmuPoint* Barrier::vertices(int i)
+{
+  return _vertices[i];
+}
+
+//====================================================================== 
+AmuVector* Barrier::diagnoal(int i)
+{
+  return _diagnoal[i];
+}
+//====================================================================== 
+Intersection* Barrier::intersection()
+{
+  return _intersection;
+}  
+//====================================================================== 
+Section* Barrier::section(int i)
+{
+  return _section[i];
+}  

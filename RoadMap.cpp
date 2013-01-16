@@ -15,6 +15,7 @@
 #include "Vehicle.h"
 #include "ErrorController.h"
 #include "ObjManager.h"
+#include "Barrier.h"
 
 using namespace std;
 
@@ -130,16 +131,43 @@ bool RoadMap::checkIntersectionLane()
   cout << endl;
   return result;
 }
-
+//====================================================================== 
 void RoadMap::setBarriers(){
-  
   ITRMAPI iti = _intersections.begin();
   while(iti!=_intersections.end())
   {
     Intersection* is = dynamic_cast<Intersection*>((*iti).second);
     is->setBarrier();
-   
+    std::vector<Barrier*> barriers = is->barriers();
+    for(int i=0;i<barriers.size();i++)
+    {
+      Barrier* barrier = barriers[i];
+      string id = barrier->id();
+      //cout << "barrier id is "<< id <<endl;
+      ITRMAPB itb = _barriers.find(id);
+      if (itb == _barriers.end())
+      {
+      //cout << "kokohadonai2" <<endl; 
+	_barriers[id] = barrier;
+      } 
+    }
     iti++;
+  }
+}
+//====================================================================== 
+void RoadMap::checkVisible(std::vector<Vehicle*>* vehicles){
+  // 認知できない車両の消去
+  for(int i=0;i<vehicles->size();i++)
+   {
+     vehicles->at(i)->errorController()->resetInvisibleVehicles();
+   }
+ 
+  ITRMAPB itb = _barriers.begin();
+  while(itb!=_barriers.end())
+  {
+    Barrier* barrier = dynamic_cast<Barrier*>((*itb).second);
+    barrier->checkVehiclesVisible();
+    itb++;
   }
 }
 //======================================================================
@@ -450,17 +478,4 @@ void RoadMap::dispIntersections() const
   }
   cout << endl;
 }
-//======================================================================
-void RoadMap::addBarriers()
-{
-  ITRMAPI iti = _intersections.begin();
-  if (iti == _intersections.end())
-  {
-  std::vector<Barrier*> barriers = iti->second->barriers();
-  for(int i=0;i<barriers.size();i++)
-  {
-  _barriers[iti->second->id()+std::to_string(i)]= barriers.at(i);
-  }
-  }
-}
- 
+

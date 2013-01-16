@@ -257,10 +257,10 @@ public:
     void getBodyColor(double* result_r,
                       double* result_g,
                       double* result_b) const;
+   /// ずれを返す
+    double error() const;
 
-double error() const;
-
- double errorVelocity() const;  
+    double errorVelocity() const;  
     //@}
 
     //====================================================================
@@ -515,7 +515,7 @@ protected:
      */
     double _tripLength;
 
-    /// レーン中心線からのずれ[m]
+   /// レーン中心線からのずれ[m]
     double _error;
 
     /// 発生時刻

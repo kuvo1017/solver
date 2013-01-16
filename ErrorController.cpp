@@ -49,6 +49,7 @@ ErrorController::ErrorController(Vehicle* vehicle){
   _accidentTime = 0;
   _type = "not_error";
   _errorVelocity = 0.0;
+  std::vector<Vehicle*> _invisibleVehicles;
   double r = Random::uniform();
   if(_isLROn)
   {
@@ -119,6 +120,11 @@ VirtualLeader* ErrorController::rearError(VirtualLeader* resultLeader){
     }
   }
   return resultLeader;
+}
+//======================================================================
+void ErrorController::setInvisibleVehicle(Vehicle* vehicle)
+{
+  _invisibleVehicles.push_back(vehicle);
 }
 //======================================================================
 void ErrorController::LRError(double thisTti,double thatTtp) {
@@ -349,9 +355,14 @@ int ErrorController::rearErrorTime() const{
   return _rearErrorTime;
 } 
 //======================================================================
+const std::vector<Vehicle*>* ErrorController::invisibleVehicles() const{
+  return &_invisibleVehicles;
+} 
+//======================================================================
 int ErrorController::accidentTime() const{
   return _accidentTime;
 }
+//======================================================================
 string ErrorController::type() const{
   return _type;
 }
@@ -379,7 +390,11 @@ void ErrorController::errorOccur(string type){
   _vehicle->setBodyColor(0.8,0.8,0);
   VehicleIO::instance().writeVehicleErrorData(TimeManager::time(),_vehicle);
 }
-
+//======================================================================
+void ErrorController::resetInvisibleVehicles(){
+  _invisibleVehicles.clear();
+}
+ 
 //======================================================================
 void ErrorController::recogWall(){
   _isWall = true;
@@ -454,6 +469,7 @@ bool ErrorController::initErrorParams(){
 std::string ErrorController::setDataPath(){
   // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
   //ファイルパスの取得
+   return "../examples/Data1/"; 
   return "../simulations/LRError/";
   //return "../simulations/headError/";
   const char* path = "./_input.json";

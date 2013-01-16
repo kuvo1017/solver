@@ -130,6 +130,11 @@ double AmuVector::calcAngle(const AmuVector& crV) const
     theta *= -1;
   return theta;
 }
+//======================================================================
+double AmuVector::calcCrossProduct(const AmuVector& crV) const
+{
+   return this->x()*crV.x() - this->y()*crV.y();
+}
 
 //======================================================================
 double AmuVector::size() const

@@ -798,9 +798,19 @@ bool Vehicle::_isStoppedByCollisionInSection(
 
     // 交錯する可能性のあるエージェント
     Vehicle* headVehicle = (*clSection)[i]->headVehicle();
+#ifdef BARRIER
+    const std::vector<Vehicle*>* invisibleVehicles = _errorController->invisibleVehicles();
+    vector<Vehicle*>::const_iterator itv 
+      = find(invisibleVehicles->begin(),invisibleVehicles->end(),headVehicle);
+#endif
     if (!headVehicle
 	|| headVehicle==this
-	/* || !(_isVisible(headVehicle)) */ )
+ #ifdef BARRIER
+	|| itv!=invisibleVehicles->end()
+	//|| !(_isVisible(headVehicle)) 
+ #endif
+       )
+ 
       // この時点で見通しを考慮するならコメントを外す
     {
       continue;
@@ -1069,9 +1079,10 @@ void Vehicle::_searchPreferredAgentInIntersection(RelativeDirection turning)
 
       }
       // 衝突しているかのチェック（事故用）
-      if (CollisionJudge::isCollid(this,clVehicle)&&!(_errorController->isAccident()))
+      if (CollisionJudge::isCollidStrict(this,clVehicle)&&!(_errorController->isAccident()))
+	{
 	_errorController->accidentOccur();
-
+        }
       int thatDir = clVehicle->directionFrom();
 
       if (_isYielding(_intersection, thisDir, thatDir,
