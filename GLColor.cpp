@@ -217,6 +217,18 @@ void GLColor::setBus()
 {
   AutoGL_SetColor(0, 0.8, 0.5);
 }
+ //----------------------------------------------------------------------
+void GLColor::setErrorVehicle()
+{
+  AutoGL_SetColor(0.8, 0.8, 0);
+}
+
+//----------------------------------------------------------------------
+void GLColor::setAccidentVehicle()
+{
+  AutoGL_SetColor(1, 1, 1);
+}
+
 //----------------------------------------------------------------------
 void GLColor::setVehicleId(){
   AutoGL_SetColor(0, 0, 0);

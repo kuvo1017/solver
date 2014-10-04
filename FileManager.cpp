@@ -44,6 +44,7 @@ ofstream& FileManager::getOFStream(const string& filename)
         ofstream *ofs = new ofstream(filename.c_str(), ios::out);
         if(!ofs->good())
         {
+            std::cout << "Failed to open " << filename << endl; 
             cerr << "Failed to open " << filename << endl;
             assert(0);
             exit(-1);

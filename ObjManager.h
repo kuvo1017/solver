@@ -150,6 +150,7 @@ public:
      */
     static void deleteVehicle(Vehicle* vehicle);
 
+ static void deleteVehicle(Vehicle* vehicle,bool b); 
     /// @}
 };
 

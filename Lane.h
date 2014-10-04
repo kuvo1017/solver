@@ -241,6 +241,12 @@ public:
     /// レーン上の車両エージェントの平均速度を返す
     double averageVel() const;
 
+    /// _nearWallをtrueにする。
+    void nearWall();
+
+    /// _nearWallの値を返す
+    bool isNearWall();
+
     //@}
 
     //====================================================================
@@ -316,6 +322,8 @@ protected:
      */
     bool _isUsed;
 
+    /// 障害物の近くにあるかどうか
+    bool _nearWall;
     /// このレーンに配置されているRoadOccupant
     /**
      * エージェントが行動した後で_tmpAgentsに登録し、

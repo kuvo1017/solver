@@ -24,11 +24,11 @@ class Vehicle;
  */
 class VehicleIO
 {
-private:
+  private:
     VehicleIO();
     ~VehicleIO(){};
 
-public:
+  public:
     /// 唯一のインスタンスを返す
     static VehicleIO& instance();
 
@@ -37,8 +37,8 @@ public:
 
     /// 車両の動的データ（タイムステップごとの位置速度など）を出力する
     bool writeVehiclesDynamicData(const ulint time,
-                                  std::vector<Vehicle*>* vehicles);
-private:
+	std::vector<Vehicle*>* vehicles);
+  private:
     /// 動的データ出力の本体
     bool _writeVehicleDynamicData(Vehicle* vehicle);
 
@@ -49,7 +49,7 @@ private:
      */
     bool _makeDirectories(std::vector<std::string> paths) const;
 
-public:
+  public:
     /// 車両の静的データ（車種や形状など）を出力する
     bool writeVehicleStaticData(Vehicle* vehicle);
 
@@ -59,9 +59,15 @@ public:
     /// 走行中の全車両の走行距離データを出力する
     bool writeAllVehiclesDistanceData();
 
+    /// 事故のデータ
+    bool writeVehicleAccidentData(ulint time, Vehicle* vehicle);
+
+    /// errorのデータ
+    bool writeVehicleErrorData(ulint time, Vehicle* vehicle,string type);
+
     /// @}
 
-private:
+  private:
     /// 動的データファイルのPrefix
     static const std::string _timePrefix;
 
@@ -93,3 +99,4 @@ private:
 };
 
 #endif //__VEHICLEIO_H__
+

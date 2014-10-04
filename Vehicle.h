@@ -12,7 +12,9 @@
 #include "VehicleLaneShifter.h"
 #include "RelativeDirection.h"
 #include "TimeManager.h"
+//#include "ErrorController.h"
 
+class ErrorController;
 class RoadMap;
 class LaneBundle;
 class Intersection;
@@ -21,7 +23,6 @@ class Lane;
 class ARouter;
 class Route;
 class VirtualLeader;
-
 /**
  * @addtogroup Vehicle
  * @brief 自動車エージェント
@@ -368,6 +369,7 @@ public:
     /// 仮想先行エージェントの集合を返す
     const std::vector<VirtualLeader*>* virtualLeaders() const;
 
+    ErrorController* errorController();
     //@}
 
 public:
@@ -399,6 +401,7 @@ public:
     /// 交差点で通過するレーンの集合を返す
     const std::vector<Lane*>* lanesInIntersection() const;
 
+void stopByAccident();
     //@}
 
 #ifdef _OPENMP
@@ -605,6 +608,14 @@ protected:
     /// 仮想先行エージェントの集合
     std::vector<VirtualLeader*> _leaders;
 
+    //@}
+
+    /** @name 事故に関する変数 */
+    //@{
+
+    /// 事故を操作するオブジェクト
+    ErrorController* _errorController;
+    
     //@}
 };
 

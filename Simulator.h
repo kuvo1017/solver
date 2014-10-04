@@ -124,6 +124,8 @@ public:
     /// 車両発生コントローラを返す
     GenerateVehicleController* generateVehicleController();
 
+    /// 事故車の削除
+   void deleteAccidentVehicle();
     //@}
 
 private:

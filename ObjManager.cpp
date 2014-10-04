@@ -176,9 +176,22 @@ void ObjManager::deleteVehicle(Vehicle* vehicle)
     vector<Vehicle*>::iterator itv = find(_vehicles.begin(),
                                           _vehicles.end(),
                                           vehicle);
+    //std::cout <<"donai?" <<endl;
     if (itv!=_vehicles.end())
     {
         delete *itv;
         _vehicles.erase(itv);
     }
 }
+//======================================================================
+void ObjManager::deleteVehicle(Vehicle* vehicle,bool b)
+{
+    vector<Vehicle*>::iterator itv = find(_vehicles.begin(),
+                                          _vehicles.end(),
+                                          vehicle);
+    if (itv!=_vehicles.end())
+    {
+        _vehicles.erase(itv);
+    }
+    
+} 

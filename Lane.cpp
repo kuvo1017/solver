@@ -53,6 +53,7 @@ Lane::Lane(const string& id,
     _gradient = zz / xx * 100;
 
     _isUsed = false;
+    _nearWall = false;
 }
 
 //======================================================================
@@ -775,6 +776,16 @@ double Lane::averageVel() const
     return vel;
 }
 
+//======================================================================
+void Lane::nearWall(){
+  cout << "nearwall" << endl;
+  _nearWall = true;
+}
+//======================================================================
+bool Lane::isNearWall(){
+  return _nearWall;
+}
+ 
 //======================================================================
 void Lane::print() const
 {

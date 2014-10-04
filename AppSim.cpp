@@ -10,7 +10,6 @@ using namespace std;
 void AppSim::init(int argc, char** argv, bool output)
 {
     AppMates::init(argc, argv, false);
-
     // 出力の抑制
     GVManager::resetFlag("FLAG_OUTPUT_TIMELINE", false);
     GVManager::resetFlag("FLAG_OUTPUT_TRIP_INFO", false);

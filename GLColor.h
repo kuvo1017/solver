@@ -9,7 +9,7 @@
  */
 class GLColor
 {
-public:
+  public:
 
     //==================================================================
     // 背景、地面など全般的なもの
@@ -75,9 +75,11 @@ public:
     static void setSleepingVehicle();
     static void setTruck();
     static void setBus();
+    static void setErrorVehicle(); 
+    static void setAccidentVehicle(); 
     static void setVehicleId();
-  
-private:
+
+  private:
     GLColor();
     ~GLColor();
 };

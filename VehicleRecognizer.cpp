@@ -1,3 +1,4 @@
+#include "ErrorController.h"
 #include "Vehicle.h"
 #include "VirtualLeader.h"
 #include "Lane.h"
@@ -390,7 +391,11 @@ void Vehicle::_searchFrontAgent(double threshold)
                 front->velocity(),
                 "FRONT:"+front->id());
 #endif
+#ifndef ERROR_MODE
         _leaders.push_back(leader);
+#else
+	_leaders.push_back(_errorController->rearError(leader));
+#endif
     }
 
     else
@@ -1191,7 +1196,7 @@ bool Vehicle::_isYielding(Intersection* inter,
      * 相手のmainLaneまで正確に取得するのは現実的ではない．
      * 以下のコードでは進入方向とウインカーの状態を元にして判断している．
      */
-
+    return false;
     AmuPoint crossPoint;
 
     // 交錯を厳密に評価、交錯点上に車がいたら相手側が避ける

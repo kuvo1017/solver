@@ -144,6 +144,19 @@ check-syntax/fast:
 .PHONY : check-syntax/fast
 
 #=============================================================================
+# Target rules for targets named dox
+
+# Build rule for target.
+dox: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 dox
+.PHONY : dox
+
+# fast build rule for target.
+dox/fast:
+	$(MAKE) -f CMakeFiles/dox.dir/build.make CMakeFiles/dox.dir/build
+.PHONY : dox/fast
+
+#=============================================================================
 # Target rules for targets named mates
 
 # Build rule for target.
@@ -518,6 +531,30 @@ Clocker.cpp.s:
 	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/Clocker.cpp.s
 .PHONY : Clocker.cpp.s
 
+CollisionJudge.o: CollisionJudge.cpp.o
+.PHONY : CollisionJudge.o
+
+# target to build an object file
+CollisionJudge.cpp.o:
+	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/CollisionJudge.cpp.o
+.PHONY : CollisionJudge.cpp.o
+
+CollisionJudge.i: CollisionJudge.cpp.i
+.PHONY : CollisionJudge.i
+
+# target to preprocess a source file
+CollisionJudge.cpp.i:
+	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/CollisionJudge.cpp.i
+.PHONY : CollisionJudge.cpp.i
+
+CollisionJudge.s: CollisionJudge.cpp.s
+.PHONY : CollisionJudge.s
+
+# target to generate assembly for a file
+CollisionJudge.cpp.s:
+	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/CollisionJudge.cpp.s
+.PHONY : CollisionJudge.cpp.s
+
 Connector.o: Connector.cpp.o
 .PHONY : Connector.o
 
@@ -637,6 +674,30 @@ Drawer.s: Drawer.cpp.s
 Drawer.cpp.s:
 	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/Drawer.cpp.s
 .PHONY : Drawer.cpp.s
+
+ErrorController.o: ErrorController.cpp.o
+.PHONY : ErrorController.o
+
+# target to build an object file
+ErrorController.cpp.o:
+	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/ErrorController.cpp.o
+.PHONY : ErrorController.cpp.o
+
+ErrorController.i: ErrorController.cpp.i
+.PHONY : ErrorController.i
+
+# target to preprocess a source file
+ErrorController.cpp.i:
+	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/ErrorController.cpp.i
+.PHONY : ErrorController.cpp.i
+
+ErrorController.s: ErrorController.cpp.s
+.PHONY : ErrorController.s
+
+# target to generate assembly for a file
+ErrorController.cpp.s:
+	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/ErrorController.cpp.s
+.PHONY : ErrorController.cpp.s
 
 FileManager.o: FileManager.cpp.o
 .PHONY : FileManager.o
@@ -1895,6 +1956,7 @@ help:
 	@echo "... advmates-calc"
 	@echo "... advmates-sim"
 	@echo "... check-syntax"
+	@echo "... dox"
 	@echo "... edit_cache"
 	@echo "... mates"
 	@echo "... mates-util"
@@ -1942,6 +2004,9 @@ help:
 	@echo "... Clocker.o"
 	@echo "... Clocker.i"
 	@echo "... Clocker.s"
+	@echo "... CollisionJudge.o"
+	@echo "... CollisionJudge.i"
+	@echo "... CollisionJudge.s"
 	@echo "... Connector.o"
 	@echo "... Connector.i"
 	@echo "... Connector.s"
@@ -1957,6 +2022,9 @@ help:
 	@echo "... Drawer.o"
 	@echo "... Drawer.i"
 	@echo "... Drawer.s"
+	@echo "... ErrorController.o"
+	@echo "... ErrorController.i"
+	@echo "... ErrorController.s"
 	@echo "... FileManager.o"
 	@echo "... FileManager.i"
 	@echo "... FileManager.s"
