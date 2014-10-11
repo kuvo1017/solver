@@ -273,7 +273,11 @@ Lane* Vehicle::lane() const
 {
   return _lane;
 }
-
+//====================================================================== 
+LocalLaneRoute Vehicle::localRoute() const 
+{
+  return _localRoute;
+}
 //======================================================================
 bool Vehicle::isAwayFromOriginNode() const
 {

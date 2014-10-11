@@ -100,7 +100,11 @@ void GVInitializer::init(const string& dataPath)
       dataPath + "intersectionStruct.txt");
   GVManager::setNewString("SECTION_STRUCT_FILE",
       dataPath + "sectionStruct.txt");
-
+#ifdef ERROR_MODE
+  // エラー率を定義しているファイル
+  GVManager::setNewString("ERROR_PARAMS_FILE",
+      "./_input.json");
+#endif
   // 出力先
   string resultPath = dataPath + "result/";
   GVManager::setNewString("RESULT_OUTPUT_DIRECTORY",

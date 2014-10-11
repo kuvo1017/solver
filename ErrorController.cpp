@@ -1,4 +1,5 @@
 #include <vector>
+#include <sstream>
 #include "ErrorController.h"
 #include "Lane.h"
 #include "Random.h"
@@ -8,6 +9,14 @@
 #include "VirtualLeader.h"
 #include "CollisionJudge.h"
 #include "ObjManager.h"
+#include "GVManager.h"
+#include "picojson.h"
+
+bool ErrorController::_isRearOn = false;
+bool ErrorController::_isPassingOn = true; 
+bool ErrorController::_isLROn = true;
+bool ErrorController::_isSlideOn = true;
+bool ErrorController::_isHeadOn = true; 
 
 using namespace std;
 ErrorController::ErrorController(Vehicle* vehicle){
@@ -21,7 +30,6 @@ ErrorController::ErrorController(Vehicle* vehicle){
   _rearErrorTime = 0;
   _slideErrorTime=0;
   _isPassingError = false;
-  _isArrogance = false;
   _isLRError = false;
   _isShiftError = false;
   _isHeadError = false;
@@ -34,9 +42,15 @@ ErrorController::ErrorController(Vehicle* vehicle){
   _isSlow=false;
   _shiftTime=0;
   _accidentTime = 0;
+  if(Random::uniform(0,10000)>0)
+    _isArrogance =true;
+  else
+    _isArrogance = false;
 }
 //======================================================================
 VirtualLeader* ErrorController::rearError(VirtualLeader* resultLeader){
+  if(!_isRearOn)
+    return resultLeader;
   RoadOccupant* front = _vehicle->lane()->frontAgent(dynamic_cast<RoadOccupant*>(_vehicle));
   if (front){
     Vehicle* frontVehicle = dynamic_cast<Vehicle *>(front);
@@ -95,7 +109,87 @@ VirtualLeader* ErrorController::rearError(VirtualLeader* resultLeader){
   }
   return resultLeader;
 }
+//======================================================================
+void ErrorController::LRError(double thisTti,double thatTtp) {
+  if(!_isArrogance||_isLRError)
+    return;         
+  // 現在位置から交差点を通過仕切るまでの時間[秒]
+  double thisTtp;
+  // [msec]->[sec]
+  thatTtp = thatTtp/1000;
+  // 現在いるレーンの次のレーン、つまり交差点内のレーン
+  Lane* thisNextLane = _vehicle->localRoute().next(_vehicle->lane());
+  if(thisNextLane!=NULL)
+    thisTtp = thisTti + thisNextLane->length()/GVManager::getNumeric("VELOCITY_AT_TURNING_LEFT")*3.6;
+  // 誤差時間
+  double mistakeTime = 3.0;
+  if(thisTtp<thatTtp+mistakeTime)
+  {
 
+    RelativeDirection turning = _vehicle->localRoute().turning(); 
+    std::cout << "thisTtp: "<< thisTtp << "[s] thatTtp: "<< thatTtp <<"[s]"<< " Turning is "<<turning <<endl;
+    switch(turning){
+    case 2:
+      errorOccur("RightError");
+      break;
+    case 4:
+      errorOccur("StraightError");
+      break;
+    case 8:
+      errorOccur("LeftError");
+      break;
+    default:
+      break;
+    }
+
+    _isLRError = true;
+  }
+  else
+  {
+    _isLRError = false;
+  }
+}
+
+//======================================================================
+void ErrorController::LRError(Vehicle* thatV,double thisTti,double thatTti) {
+  if(!_isArrogance||_isLRError)
+    return;         
+  // 現在位置から交差点を通過仕切るまでの時間[秒]
+  double thisTtp,thatTtp;
+  // 現在いるレーンの次のレーン、つまり交差点内のレーン
+  Lane* thisNextLane = _vehicle->localRoute().next(_vehicle->lane());
+  Lane* thatNextLane = thatV->localRoute().next(thatV->lane()); 
+  if(thisNextLane!=NULL)
+    thisTtp = thisTti/1000 + thisNextLane->length()/GVManager::getNumeric("VELOCITY_AT_TURNING_LEFT")*3.6;
+  if(thatNextLane!=NULL)
+    thatTtp = thatTti/1000 + thatNextLane->length()/GVManager::getNumeric("VELOCITY_AT_TURNING_LEFT")*3.6;
+  // 誤差時間
+  double mistakeTime = 3.0;
+  if(thisTtp<thatTtp+mistakeTime)
+  {
+
+    RelativeDirection turning = _vehicle->localRoute().turning(); 
+    std::cout << "thisTtp: "<< thisTtp << "[s] thatTtp: "<< thatTtp <<"[s]"<< " Turning is "<<turning <<endl;
+    switch(turning){
+    case 2:
+      errorOccur("RightError");
+      break;
+    case 4:
+      errorOccur("StraightError");
+      break;
+    case 8:
+      errorOccur("LeftError");
+      break;
+    default:
+      break;
+    }
+    _isLRError = true;
+  }
+  else
+  {
+    _isLRError = false;
+  }
+}
 //======================================================================
 bool ErrorController::isRearError() const{
   return _rearError;
@@ -141,27 +235,25 @@ int ErrorController::accidentTime() const{
 }
 //======================================================================
 void ErrorController::accidentOccur(){
-  /*
+
   cout << "=================================" <<endl;
   cout << "Accident occured: car id is " <<  _vehicle->id() << endl;
   cout << "=================================" <<endl;
-  */
+
   _isAccident = true;
   _rearError=false;
   _isPassingError = false;
   _vehicle->setBodyColor(0,0,0); 
   //writeAccident();
   VehicleIO::instance().writeVehicleAccidentData(TimeManager::time(),_vehicle);
-  _vehicle->stopByAccident();
 }
 //======================================================================
 void ErrorController::errorOccur(string type){
-  /*
   cout << "=================================" <<endl;
   cout << "Error occured: car id is " <<  _vehicle->id() << endl;
+  cout << "error type:"<<type <<endl; 
   cout << "=================================" <<endl;
-  */
-  _vehicle->setBodyColor(0.5,0.5,0);
+  _vehicle->setBodyColor(0.8,0.8,0);
   VehicleIO::instance().writeVehicleErrorData(TimeManager::time(),_vehicle,type);
 }
 
@@ -174,12 +266,52 @@ bool ErrorController::accidentCheck(){
   if(_isAccident){
     if(_accidentTime<7000){
       _accidentTime+=TimeManager::unit();
-    return true;
+      return true;
     }else{
       return false;
     }
   }else{
-  return true;
+    return true;
   }
 }    
+//======================================================================  
+bool ErrorController::initErrorParams(){
+  //ファイルパスの取得
+  const char* path = "./_input.json";
 
+  // ファイルオープン
+  ifstream inputStream;
+  string thisLine;
+  inputStream.open(path);
+  if (!inputStream.is_open())
+  {
+    cerr << "cannot open file!" << endl;
+    exit(1);
+  }
+
+  stringstream sstream;
+  while (getline(inputStream, thisLine))
+  {
+    sstream << thisLine;
+  }
+  inputStream.close();
+  cout << "finish opening file!" << endl;
+
+ // CCLOG("sstream:%s", sstream.str().c_str());
+
+  // JSONのパース
+  picojson::value v; 
+  picojson::parse(v, sstream);
+
+  picojson::object& all = v.get<picojson::object>();
+  picojson::array& array = all["hoge"].get<picojson::array>();
+  for (picojson::array::iterator it = array.begin(); it != array.end(); it++)
+  {
+    picojson::object& tmpObject = it->get<picojson::object>();
+    int x = (int)tmpObject["x"].get<double>();
+    int y = (int)tmpObject["y"].get<double>();
+    int z = (int)tmpObject["z"].get<double>();
+   // CCLOG("x:%d, y:%d, z:%d", x, y, z);
+   std::cout << "x:"<<x<<" y:" << y<< " z:"<< z<< endl;
+  }
+}

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cassert>
+#include "ErrorController.h"
 
 using namespace std;
 
@@ -107,7 +108,9 @@ void Vehicle::determineAcceleration()
     {
         _velocity = 0.0;
     }
-
+    
+    if (_errorController->isAccident())
+    	_velocity = 0.0;
     // _vehicleの保存
     if (GVManager::getFlag("VEHICLE_VELOCITY_HISTORY_RECORD")
         && (TimeManager::step() - startStep())

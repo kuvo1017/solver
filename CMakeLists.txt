@@ -130,6 +130,9 @@ endif(AUTOGL_CONFIG)
 set(MT19937_HEADER_DIR  "${MATES_LIBRARY_DIR}/mt19937")
 set(MT19937_LIBRARY_DIR "${MATES_LIBRARY_DIR}/mt19937")
 
+# PICOJSON (Random number generator) settings
+set(PICOJSON_HEADER_DIR  "${MATES_LIBRARY_DIR}/picojson")
+ 
 #----------------------------------------------------------------------
 # MATES simulation settings
 option(EXCLUDE_VEHICLES "Define EXCLUDE_VEHICLES macro" OFF)
@@ -336,12 +339,14 @@ include_directories(${AUTOGL_HEADER_DIR})
 include_directories(${GZSTREAM_HEADER_DIR}) 
 #include_directories(${LOS_HEADER_DIR}) 
 include_directories(${MT19937_HEADER_DIR})
+include_directories(${PICOJSON_HEADER_DIR}) 
 
 # library path
 link_directories(${AUTOGL_LIBRARY_DIR})
 link_directories(${GZSTREAM_LIBRARY_DIR}) 
 #link_directories(${LOS_LIBRARY_DIR}) 
 link_directories(${MT19937_LIBRARY_DIR})
+#link_directories(${PICOJSON_LIBRARY_DIR}) 
 if(${PLATFORM} STREQUAL "darwin")
   link_directories(${X11_LIBRARY_DIR})
 endif(${PLATFORM} STREQUAL "darwin")
@@ -501,7 +506,7 @@ if(BUILD_MATES_SIM)
  
   target_link_libraries(${MATES_SIM}
     ${LIBMATES} ${LIBMATESGL} ${LIBMATESUTIL})
-  target_link_libraries(${MATES_SIM} mt19937 autogl m gzstream)
+  target_link_libraries(${MATES_SIM} mt19937 autogl m gzstream )
 
   if(USE_AUTOGL_CONFIG)
     target_link_libraries(${MATES_SIM}

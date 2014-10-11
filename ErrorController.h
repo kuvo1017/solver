@@ -44,11 +44,16 @@ class ErrorController{
   void recogWall();
   /// 横ずれエラーが起きている時間
   int slideErrorTime();
-  /// 
+  /// 追突事故の処理
   VirtualLeader* rearError(VirtualLeader* resultLeader);
+  /// 右左折事故の処理
+  void LRError(Vehicle* thatV,double thisTti,double thatTti) ; 
+ void LRError(double thisTti,double thatTtp) ;  
 /// 事故状態かどうかをチェックして、事故状態ならエージェント消去
 bool accidentCheck();
 
+
+  static bool initErrorParams();
 protected: 
   /// 車両オブジェクト
   Vehicle* _vehicle;
@@ -93,6 +98,18 @@ protected:
   bool _isWall;
   /// 一度車線変更してから立った時間
   int _shiftTime;
+  
+  /// シミュレーションで追突事故が起きる設定か
+  static bool _isRearOn;
+  /// シミュレーションで追突事故が起きる設定か
+  static bool _isPassingOn;
+  /// シミュレーションで追突事故が起きる設定か
+  static bool _isLROn;
+  /// シミュレーションで追突事故が起きる設定か
+  static bool _isSlideOn;
+  /// シミュレーションで追突事故が起きる設定か
+  static bool _isHeadOn;
+ 
 }; 
 #endif //__ERRORCONTROLLER_H_
 
