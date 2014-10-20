@@ -3,6 +3,7 @@
 #include "TimeManager.h"
 #include "GVManager.h"
 #include "VehicleIO.h"
+#include "ErrorController.h"
 #include <iostream>
 #include <cctype>
 #include <cstdlib>
@@ -140,6 +141,9 @@ int AppCalc::batchRun()
     ulint mt = GVManager::getMaxTime();
     if (mt>100)
         maxTime = mt;
+#ifdef ERROR_MODE
+maxTime = ErrorController::maxTime();
+#endif
 
     cout << "*** Run advmates-calc: max time=" << maxTime
          << " (dt=" << TimeManager::unit() << ") ***" << endl;

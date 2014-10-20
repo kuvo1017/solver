@@ -160,6 +160,7 @@ bool Simulator::getReadySampleScenario(double xmin, double xmax,
   // 車両発生に関する設定
   getReadyVehicles();
 
+  
   // 車両配置
   if (numVehicles)
   {
@@ -265,7 +266,6 @@ bool Simulator::timeIncrement()
 	<< TimeManager::time()/1000 << "[sec]" << endl;
     }
   }
-  ErrorController::initErrorParams();
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // エージェント列の更新
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

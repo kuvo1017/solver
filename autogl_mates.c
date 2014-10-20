@@ -4,7 +4,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include <GL/gl.h>
+#include <OpenGL/gl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>

@@ -118,19 +118,6 @@ advmates-calc/fast:
 .PHONY : advmates-calc/fast
 
 #=============================================================================
-# Target rules for targets named advmates-sim
-
-# Build rule for target.
-advmates-sim: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 advmates-sim
-.PHONY : advmates-sim
-
-# fast build rule for target.
-advmates-sim/fast:
-	$(MAKE) -f CMakeFiles/advmates-sim.dir/build.make CMakeFiles/advmates-sim.dir/build
-.PHONY : advmates-sim/fast
-
-#=============================================================================
 # Target rules for targets named check-syntax
 
 # Build rule for target.
@@ -181,19 +168,6 @@ mates-util: cmake_check_build_system
 mates-util/fast:
 	$(MAKE) -f CMakeFiles/mates-util.dir/build.make CMakeFiles/mates-util.dir/build
 .PHONY : mates-util/fast
-
-#=============================================================================
-# Target rules for targets named matesGL
-
-# Build rule for target.
-matesGL: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 matesGL
-.PHONY : matesGL
-
-# fast build rule for target.
-matesGL/fast:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/build
-.PHONY : matesGL/fast
 
 AmuConverter.o: AmuConverter.cpp.o
 .PHONY : AmuConverter.o
@@ -435,30 +409,6 @@ AppMates.cpp.s:
 	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/AppMates.cpp.s
 .PHONY : AppMates.cpp.s
 
-AppSim.o: AppSim.cpp.o
-.PHONY : AppSim.o
-
-# target to build an object file
-AppSim.cpp.o:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/AppSim.cpp.o
-.PHONY : AppSim.cpp.o
-
-AppSim.i: AppSim.cpp.i
-.PHONY : AppSim.i
-
-# target to preprocess a source file
-AppSim.cpp.i:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/AppSim.cpp.i
-.PHONY : AppSim.cpp.i
-
-AppSim.s: AppSim.cpp.s
-.PHONY : AppSim.s
-
-# target to generate assembly for a file
-AppSim.cpp.s:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/AppSim.cpp.s
-.PHONY : AppSim.cpp.s
-
 Blinker.o: Blinker.cpp.o
 .PHONY : Blinker.o
 
@@ -651,30 +601,6 @@ DetectorUnit.cpp.s:
 	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/DetectorUnit.cpp.s
 .PHONY : DetectorUnit.cpp.s
 
-Drawer.o: Drawer.cpp.o
-.PHONY : Drawer.o
-
-# target to build an object file
-Drawer.cpp.o:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/Drawer.cpp.o
-.PHONY : Drawer.cpp.o
-
-Drawer.i: Drawer.cpp.i
-.PHONY : Drawer.i
-
-# target to preprocess a source file
-Drawer.cpp.i:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/Drawer.cpp.i
-.PHONY : Drawer.cpp.i
-
-Drawer.s: Drawer.cpp.s
-.PHONY : Drawer.s
-
-# target to generate assembly for a file
-Drawer.cpp.s:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/Drawer.cpp.s
-.PHONY : Drawer.cpp.s
-
 ErrorController.o: ErrorController.cpp.o
 .PHONY : ErrorController.o
 
@@ -722,30 +648,6 @@ FileManager.s: FileManager.cpp.s
 FileManager.cpp.s:
 	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/FileManager.cpp.s
 .PHONY : FileManager.cpp.s
-
-GLColor.o: GLColor.cpp.o
-.PHONY : GLColor.o
-
-# target to build an object file
-GLColor.cpp.o:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/GLColor.cpp.o
-.PHONY : GLColor.cpp.o
-
-GLColor.i: GLColor.cpp.i
-.PHONY : GLColor.i
-
-# target to preprocess a source file
-GLColor.cpp.i:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/GLColor.cpp.i
-.PHONY : GLColor.cpp.i
-
-GLColor.s: GLColor.cpp.s
-.PHONY : GLColor.s
-
-# target to generate assembly for a file
-GLColor.cpp.s:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/GLColor.cpp.s
-.PHONY : GLColor.cpp.s
 
 GVInitializer.o: GVInitializer.cpp.o
 .PHONY : GVInitializer.o
@@ -914,6 +816,30 @@ IntersectionBuilder.s: IntersectionBuilder.cpp.s
 IntersectionBuilder.cpp.s:
 	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/IntersectionBuilder.cpp.s
 .PHONY : IntersectionBuilder.cpp.s
+
+LOSManager.o: LOSManager.cpp.o
+.PHONY : LOSManager.o
+
+# target to build an object file
+LOSManager.cpp.o:
+	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/LOSManager.cpp.o
+.PHONY : LOSManager.cpp.o
+
+LOSManager.i: LOSManager.cpp.i
+.PHONY : LOSManager.i
+
+# target to preprocess a source file
+LOSManager.cpp.i:
+	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/LOSManager.cpp.i
+.PHONY : LOSManager.cpp.i
+
+LOSManager.s: LOSManager.cpp.s
+.PHONY : LOSManager.s
+
+# target to generate assembly for a file
+LOSManager.cpp.s:
+	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/LOSManager.cpp.s
+.PHONY : LOSManager.cpp.s
 
 Lane.o: Lane.cpp.o
 .PHONY : Lane.o
@@ -1851,54 +1777,6 @@ VirtualLeader.cpp.s:
 	$(MAKE) -f CMakeFiles/mates.dir/build.make CMakeFiles/mates.dir/VirtualLeader.cpp.s
 .PHONY : VirtualLeader.cpp.s
 
-Visualizer.o: Visualizer.cpp.o
-.PHONY : Visualizer.o
-
-# target to build an object file
-Visualizer.cpp.o:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/Visualizer.cpp.o
-.PHONY : Visualizer.cpp.o
-
-Visualizer.i: Visualizer.cpp.i
-.PHONY : Visualizer.i
-
-# target to preprocess a source file
-Visualizer.cpp.i:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/Visualizer.cpp.i
-.PHONY : Visualizer.cpp.i
-
-Visualizer.s: Visualizer.cpp.s
-.PHONY : Visualizer.s
-
-# target to generate assembly for a file
-Visualizer.cpp.s:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/Visualizer.cpp.s
-.PHONY : Visualizer.cpp.s
-
-autogl_mates.o: autogl_mates.c.o
-.PHONY : autogl_mates.o
-
-# target to build an object file
-autogl_mates.c.o:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/autogl_mates.c.o
-.PHONY : autogl_mates.c.o
-
-autogl_mates.i: autogl_mates.c.i
-.PHONY : autogl_mates.i
-
-# target to preprocess a source file
-autogl_mates.c.i:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/autogl_mates.c.i
-.PHONY : autogl_mates.c.i
-
-autogl_mates.s: autogl_mates.c.s
-.PHONY : autogl_mates.s
-
-# target to generate assembly for a file
-autogl_mates.c.s:
-	$(MAKE) -f CMakeFiles/matesGL.dir/build.make CMakeFiles/matesGL.dir/autogl_mates.c.s
-.PHONY : autogl_mates.c.s
-
 mainCalc.o: mainCalc.cpp.o
 .PHONY : mainCalc.o
 
@@ -1923,30 +1801,6 @@ mainCalc.cpp.s:
 	$(MAKE) -f CMakeFiles/advmates-calc.dir/build.make CMakeFiles/advmates-calc.dir/mainCalc.cpp.s
 .PHONY : mainCalc.cpp.s
 
-mainSim.o: mainSim.cpp.o
-.PHONY : mainSim.o
-
-# target to build an object file
-mainSim.cpp.o:
-	$(MAKE) -f CMakeFiles/advmates-sim.dir/build.make CMakeFiles/advmates-sim.dir/mainSim.cpp.o
-.PHONY : mainSim.cpp.o
-
-mainSim.i: mainSim.cpp.i
-.PHONY : mainSim.i
-
-# target to preprocess a source file
-mainSim.cpp.i:
-	$(MAKE) -f CMakeFiles/advmates-sim.dir/build.make CMakeFiles/advmates-sim.dir/mainSim.cpp.i
-.PHONY : mainSim.cpp.i
-
-mainSim.s: mainSim.cpp.s
-.PHONY : mainSim.s
-
-# target to generate assembly for a file
-mainSim.cpp.s:
-	$(MAKE) -f CMakeFiles/advmates-sim.dir/build.make CMakeFiles/advmates-sim.dir/mainSim.cpp.s
-.PHONY : mainSim.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1954,13 +1808,11 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... advmates-calc"
-	@echo "... advmates-sim"
 	@echo "... check-syntax"
 	@echo "... dox"
 	@echo "... edit_cache"
 	@echo "... mates"
 	@echo "... mates-util"
-	@echo "... matesGL"
 	@echo "... rebuild_cache"
 	@echo "... AmuConverter.o"
 	@echo "... AmuConverter.i"
@@ -1992,9 +1844,6 @@ help:
 	@echo "... AppMates.o"
 	@echo "... AppMates.i"
 	@echo "... AppMates.s"
-	@echo "... AppSim.o"
-	@echo "... AppSim.i"
-	@echo "... AppSim.s"
 	@echo "... Blinker.o"
 	@echo "... Blinker.i"
 	@echo "... Blinker.s"
@@ -2019,18 +1868,12 @@ help:
 	@echo "... DetectorUnit.o"
 	@echo "... DetectorUnit.i"
 	@echo "... DetectorUnit.s"
-	@echo "... Drawer.o"
-	@echo "... Drawer.i"
-	@echo "... Drawer.s"
 	@echo "... ErrorController.o"
 	@echo "... ErrorController.i"
 	@echo "... ErrorController.s"
 	@echo "... FileManager.o"
 	@echo "... FileManager.i"
 	@echo "... FileManager.s"
-	@echo "... GLColor.o"
-	@echo "... GLColor.i"
-	@echo "... GLColor.s"
 	@echo "... GVInitializer.o"
 	@echo "... GVInitializer.i"
 	@echo "... GVInitializer.s"
@@ -2052,6 +1895,9 @@ help:
 	@echo "... IntersectionBuilder.o"
 	@echo "... IntersectionBuilder.i"
 	@echo "... IntersectionBuilder.s"
+	@echo "... LOSManager.o"
+	@echo "... LOSManager.i"
+	@echo "... LOSManager.s"
 	@echo "... Lane.o"
 	@echo "... Lane.i"
 	@echo "... Lane.s"
@@ -2169,18 +2015,9 @@ help:
 	@echo "... VirtualLeader.o"
 	@echo "... VirtualLeader.i"
 	@echo "... VirtualLeader.s"
-	@echo "... Visualizer.o"
-	@echo "... Visualizer.i"
-	@echo "... Visualizer.s"
-	@echo "... autogl_mates.o"
-	@echo "... autogl_mates.i"
-	@echo "... autogl_mates.s"
 	@echo "... mainCalc.o"
 	@echo "... mainCalc.i"
 	@echo "... mainCalc.s"
-	@echo "... mainSim.o"
-	@echo "... mainSim.i"
-	@echo "... mainSim.s"
 .PHONY : help
 
 

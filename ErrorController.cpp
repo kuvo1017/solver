@@ -42,7 +42,9 @@ ErrorController::ErrorController(Vehicle* vehicle){
   _isSlow=false;
   _shiftTime=0;
   _accidentTime = 0;
-  if(Random::uniform(0,10000)>0)
+  double r = Random::uniform();
+  //std::cout << "random is "<<r <<" arrognce:"<< GVManager::getNumeric("ARROGANCE_LR")<<endl;
+  if(r<GVManager::getNumeric("ARROGANCE_LR"))
     _isArrogance =true;
   else
     _isArrogance = false;
@@ -276,6 +278,7 @@ bool ErrorController::accidentCheck(){
 }    
 //======================================================================  
 bool ErrorController::initErrorParams(){
+  // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
   //ファイルパスの取得
   const char* path = "./_input.json";
 
@@ -297,21 +300,91 @@ bool ErrorController::initErrorParams(){
   inputStream.close();
   cout << "finish opening file!" << endl;
 
- // CCLOG("sstream:%s", sstream.str().c_str());
+  // CCLOG("sstream:%s", sstream.str().c_str());
 
   // JSONのパース
   picojson::value v; 
   picojson::parse(v, sstream);
 
   picojson::object& all = v.get<picojson::object>();
-  picojson::array& array = all["hoge"].get<picojson::array>();
-  for (picojson::array::iterator it = array.begin(); it != array.end(); it++)
+  /*
+     picojson::array& array = all["hoge"].get<picojson::array>();
+     for (picojson::array::iterator it = array.begin(); it != array.end(); it++)
+     {
+     picojson::object& all = it->get<picojson::object>();
+   */
+  GVManager::setNewNumeric("NOLOOK_REAR",all["nolook_rear"].get<double>());
+  GVManager::setNewNumeric("ARROGANCE_PASSING",all["arrogance_passing"].get<double>());
+  GVManager::setNewNumeric("ARROGANCE_LR",all["arrogance_LR"].get<double>());
+  GVManager::setNewNumeric("NOLOOK_SHIFT",all["nolook_shift"].get<double>());
+  GVManager::setNewNumeric("NOLOOK_HEAD",all["nolook_head"].get<double>());
+  // CCLOG("x:%d, y:%d, z:%d", x, y, z);
+  //}
+} 
+//======================================================================   
+std::string ErrorController::setDataPath(){
+ // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
+  //ファイルパスの取得
+  const char* path = "./_input.json";
+
+  // ファイルオープン
+  ifstream inputStream;
+  string thisLine;
+  inputStream.open(path);
+  if (!inputStream.is_open())
   {
-    picojson::object& tmpObject = it->get<picojson::object>();
-    int x = (int)tmpObject["x"].get<double>();
-    int y = (int)tmpObject["y"].get<double>();
-    int z = (int)tmpObject["z"].get<double>();
-   // CCLOG("x:%d, y:%d, z:%d", x, y, z);
-   std::cout << "x:"<<x<<" y:" << y<< " z:"<< z<< endl;
+    cerr << "cannot open file!" << endl;
+    exit(1);
   }
+
+  stringstream sstream;
+  while (getline(inputStream, thisLine))
+  {
+    sstream << thisLine;
+  }
+  inputStream.close();
+  cout << "finish opening file!" << endl;
+
+  // CCLOG("sstream:%s", sstream.str().c_str());
+
+  // JSONのパース
+  picojson::value v; 
+  picojson::parse(v, sstream);
+  picojson::object& all = v.get<picojson::object>(); 
+  std::string dataPath = (std::string) all["data_path"].get<std::string>().c_str(); 
+  cout << dataPath <<endl;
+  return dataPath;
 }
+
+//======================================================================   
+int ErrorController::maxTime(){
+ // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
+  //ファイルパスの取得
+  const char* path = "./_input.json";
+
+  // ファイルオープン
+  ifstream inputStream;
+  string thisLine;
+  inputStream.open(path);
+  if (!inputStream.is_open())
+  {
+    cerr << "cannot open file!" << endl;
+    exit(1);
+  }
+
+  stringstream sstream;
+  while (getline(inputStream, thisLine))
+  {
+    sstream << thisLine;
+  }
+  inputStream.close();
+  cout << "finish opening file!" << endl;
+
+  // JSONのパース
+  picojson::value v; 
+  picojson::parse(v, sstream);
+  picojson::object& all = v.get<picojson::object>(); 
+  int maxTime = 100000;//(int)all["max_time"].get<int>(); 
+  return maxTime;
+}
+ 

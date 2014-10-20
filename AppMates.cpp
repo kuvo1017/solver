@@ -4,6 +4,7 @@
 #include "GVManager.h"
 #include "Random.h"
 #include "Simulator.h"
+#include "ErrorController.h"
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -24,8 +25,12 @@ using namespace std;
 //======================================================================
 AppMates::AppMates() :  _simulator(), _dataPath(), _key()
 {
+#ifdef ERROR_MODE
+_dataPath = ErrorController::setDataPath();
+#else
   //_dataPathと_keyのデフォルト値を設定
-  _dataPath = "./";
+_dataPath = "./";
+#endif 
 
 #ifdef MATES_NDEBUG
   _key = time(NULL);
@@ -290,6 +295,7 @@ bool AppMates::getReadySimulator()
 //======================================================================
 bool AppMates::_initDataPath(string arg)
 {
+
   if (!arg.empty())
   {
     if (arg[arg.length()-1] != '/')
@@ -297,6 +303,7 @@ bool AppMates::_initDataPath(string arg)
       arg += '/';
     }
     _dataPath = arg;
+
   }
   return true;
 }

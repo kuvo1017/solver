@@ -100,7 +100,7 @@ ifeq (${PLATFORM}, Unix)
 endif
 ifeq (${PLATFORM}, Darwin_fink)
   INCLUDES += -I${AUTOGL_HEADER_DIR} -I${MT19937_HEADER_DIR}
-  INCLUDES += -I/usr/X11/include
+  INCLUDES += -I/opt/X11/include
   LIBSGL   += -L${AUTOGL_LIBRARY_DIR} -lautogl
   LIBSGL   += `sh ${AUTOGL_LIBRARY_DIR}/advautogl-config`
   LIBS     += -L${MT19937_LIBRARY_DIR} -lmt19937

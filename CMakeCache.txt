@@ -257,187 +257,187 @@ Project_BINARY_DIR:STATIC=/Users/shikichi_takuya/advmates/trunk/solver
 Project_SOURCE_DIR:STATIC=/Users/shikichi_takuya/advmates/trunk/solver
 
 //Path to a file.
-X11_ICE_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_ICE_INCLUDE_PATH:PATH=X11_ICE_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_ICE_LIB:FILEPATH=/usr/X11R6/lib/libICE.dylib
+X11_ICE_LIB:FILEPATH=X11_ICE_LIB-NOTFOUND
 
 //Path to a file.
-X11_SM_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_SM_INCLUDE_PATH:PATH=X11_SM_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_SM_LIB:FILEPATH=/usr/X11R6/lib/libSM.dylib
+X11_SM_LIB:FILEPATH=X11_SM_LIB-NOTFOUND
 
 //Path to a file.
-X11_X11_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_X11_INCLUDE_PATH:PATH=X11_X11_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_X11_LIB:FILEPATH=/usr/X11R6/lib/libX11.dylib
+X11_X11_LIB:FILEPATH=X11_X11_LIB-NOTFOUND
 
 //Path to a file.
-X11_XRes_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_XRes_INCLUDE_PATH:PATH=X11_XRes_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_XRes_LIB:FILEPATH=/usr/X11R6/lib/libXRes.dylib
+X11_XRes_LIB:FILEPATH=X11_XRes_LIB-NOTFOUND
 
 //Path to a file.
-X11_XShm_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_XShm_INCLUDE_PATH:PATH=X11_XShm_INCLUDE_PATH-NOTFOUND
 
 //Path to a file.
-X11_XSync_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_XSync_INCLUDE_PATH:PATH=X11_XSync_INCLUDE_PATH-NOTFOUND
 
 //Path to a file.
-X11_XTest_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_XTest_INCLUDE_PATH:PATH=X11_XTest_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_XTest_LIB:FILEPATH=/usr/X11R6/lib/libXtst.dylib
+X11_XTest_LIB:FILEPATH=X11_XTest_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xaccessrules_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xaccessrules_INCLUDE_PATH:PATH=X11_Xaccessrules_INCLUDE_PATH-NOTFOUND
 
 //Path to a file.
-X11_Xaccessstr_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xaccessstr_INCLUDE_PATH:PATH=X11_Xaccessstr_INCLUDE_PATH-NOTFOUND
 
 //Path to a file.
-X11_Xau_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xau_INCLUDE_PATH:PATH=X11_Xau_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xau_LIB:FILEPATH=/usr/X11R6/lib/libXau.dylib
+X11_Xau_LIB:FILEPATH=X11_Xau_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xcomposite_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xcomposite_INCLUDE_PATH:PATH=X11_Xcomposite_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xcomposite_LIB:FILEPATH=/usr/X11R6/lib/libXcomposite.dylib
+X11_Xcomposite_LIB:FILEPATH=X11_Xcomposite_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xcursor_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xcursor_INCLUDE_PATH:PATH=X11_Xcursor_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xcursor_LIB:FILEPATH=/usr/X11R6/lib/libXcursor.dylib
+X11_Xcursor_LIB:FILEPATH=X11_Xcursor_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xdamage_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xdamage_INCLUDE_PATH:PATH=X11_Xdamage_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xdamage_LIB:FILEPATH=/usr/X11R6/lib/libXdamage.dylib
+X11_Xdamage_LIB:FILEPATH=X11_Xdamage_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xdmcp_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xdmcp_INCLUDE_PATH:PATH=X11_Xdmcp_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xdmcp_LIB:FILEPATH=/usr/X11R6/lib/libXdmcp.dylib
+X11_Xdmcp_LIB:FILEPATH=X11_Xdmcp_LIB-NOTFOUND
 
 //Path to a library.
-X11_Xext_LIB:FILEPATH=/usr/X11R6/lib/libXext.dylib
+X11_Xext_LIB:FILEPATH=X11_Xext_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xfixes_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xfixes_INCLUDE_PATH:PATH=X11_Xfixes_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xfixes_LIB:FILEPATH=/usr/X11R6/lib/libXfixes.dylib
+X11_Xfixes_LIB:FILEPATH=X11_Xfixes_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xft_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xft_INCLUDE_PATH:PATH=X11_Xft_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xft_LIB:FILEPATH=/usr/X11R6/lib/libXft.dylib
+X11_Xft_LIB:FILEPATH=X11_Xft_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xi_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xi_INCLUDE_PATH:PATH=X11_Xi_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xi_LIB:FILEPATH=/usr/X11R6/lib/libXi.dylib
+X11_Xi_LIB:FILEPATH=X11_Xi_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xinerama_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xinerama_INCLUDE_PATH:PATH=X11_Xinerama_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xinerama_LIB:FILEPATH=/usr/X11R6/lib/libXinerama.dylib
+X11_Xinerama_LIB:FILEPATH=X11_Xinerama_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xinput_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xinput_INCLUDE_PATH:PATH=X11_Xinput_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xinput_LIB:FILEPATH=/usr/X11R6/lib/libXi.dylib
+X11_Xinput_LIB:FILEPATH=X11_Xinput_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xkb_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xkb_INCLUDE_PATH:PATH=X11_Xkb_INCLUDE_PATH-NOTFOUND
 
 //Path to a file.
-X11_Xkbfile_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xkbfile_INCLUDE_PATH:PATH=X11_Xkbfile_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xkbfile_LIB:FILEPATH=/usr/X11R6/lib/libxkbfile.dylib
+X11_Xkbfile_LIB:FILEPATH=X11_Xkbfile_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xkblib_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xkblib_INCLUDE_PATH:PATH=X11_Xkblib_INCLUDE_PATH-NOTFOUND
 
 //Path to a file.
-X11_Xlib_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xlib_INCLUDE_PATH:PATH=X11_Xlib_INCLUDE_PATH-NOTFOUND
 
 //Path to a file.
-X11_Xmu_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xmu_INCLUDE_PATH:PATH=X11_Xmu_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xmu_LIB:FILEPATH=/usr/X11R6/lib/libXmu.dylib
+X11_Xmu_LIB:FILEPATH=X11_Xmu_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xpm_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xpm_INCLUDE_PATH:PATH=X11_Xpm_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xpm_LIB:FILEPATH=/usr/X11R6/lib/libXpm.dylib
+X11_Xpm_LIB:FILEPATH=X11_Xpm_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xrandr_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xrandr_INCLUDE_PATH:PATH=X11_Xrandr_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xrandr_LIB:FILEPATH=/usr/X11R6/lib/libXrandr.dylib
+X11_Xrandr_LIB:FILEPATH=X11_Xrandr_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xrender_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xrender_INCLUDE_PATH:PATH=X11_Xrender_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xrender_LIB:FILEPATH=/usr/X11R6/lib/libXrender.dylib
+X11_Xrender_LIB:FILEPATH=X11_Xrender_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xscreensaver_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xscreensaver_INCLUDE_PATH:PATH=X11_Xscreensaver_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xscreensaver_LIB:FILEPATH=/usr/X11R6/lib/libXss.dylib
+X11_Xscreensaver_LIB:FILEPATH=X11_Xscreensaver_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xshape_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xshape_INCLUDE_PATH:PATH=X11_Xshape_INCLUDE_PATH-NOTFOUND
 
 //Path to a file.
-X11_Xt_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xt_INCLUDE_PATH:PATH=X11_Xt_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xt_LIB:FILEPATH=/usr/X11R6/lib/libXt.dylib
+X11_Xt_LIB:FILEPATH=X11_Xt_LIB-NOTFOUND
 
 //Path to a file.
-X11_Xutil_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xutil_INCLUDE_PATH:PATH=X11_Xutil_INCLUDE_PATH-NOTFOUND
 
 //Path to a file.
-X11_Xv_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_Xv_INCLUDE_PATH:PATH=X11_Xv_INCLUDE_PATH-NOTFOUND
 
 //Path to a library.
-X11_Xv_LIB:FILEPATH=/usr/X11R6/lib/libXv.dylib
+X11_Xv_LIB:FILEPATH=X11_Xv_LIB-NOTFOUND
 
 //Path to a library.
-X11_Xxf86misc_LIB:FILEPATH=/usr/X11R6/lib/libXxf86misc.dylib
+X11_Xxf86misc_LIB:FILEPATH=X11_Xxf86misc_LIB-NOTFOUND
 
 //Path to a library.
-X11_Xxf86vm_LIB:FILEPATH=/usr/X11R6/lib/libXxf86vm.dylib
+X11_Xxf86vm_LIB:FILEPATH=X11_Xxf86vm_LIB-NOTFOUND
 
 //Path to a file.
-X11_dpms_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_dpms_INCLUDE_PATH:PATH=X11_dpms_INCLUDE_PATH-NOTFOUND
 
 //Path to a file.
-X11_xf86misc_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_xf86misc_INCLUDE_PATH:PATH=X11_xf86misc_INCLUDE_PATH-NOTFOUND
 
 //Path to a file.
-X11_xf86vmode_INCLUDE_PATH:PATH=/usr/X11R6/include
+X11_xf86vmode_INCLUDE_PATH:PATH=X11_xf86vmode_INCLUDE_PATH-NOTFOUND
 
 //Path to a file.
 ZLIB_INCLUDE_DIR:PATH=/usr/include
@@ -447,9 +447,6 @@ ZLIB_LIBRARY:FILEPATH=/usr/lib/libz.dylib
 
 //Dependencies for the target
 mates-util_LIB_DEPENDS:STATIC=general;/usr/lib/libz.dylib;
-
-//Dependencies for the target
-matesGL_LIB_DEPENDS:STATIC=general;/usr/lib/libz.dylib;
 
 //Dependencies for the target
 mates_LIB_DEPENDS:STATIC=general;/usr/lib/libz.dylib;
@@ -517,21 +514,11 @@ CMAKE_EXPORT_COMPILE_COMMANDS-ADVANCED:INTERNAL=1
 CMAKE_GENERATOR:INTERNAL=Unix Makefiles
 //Name of generator toolset.
 CMAKE_GENERATOR_TOOLSET:INTERNAL=
-//Have function connect
-CMAKE_HAVE_CONNECT:INTERNAL=1
-//Have function gethostbyname
-CMAKE_HAVE_GETHOSTBYNAME:INTERNAL=1
-//Have function remove
-CMAKE_HAVE_REMOVE:INTERNAL=1
-//Have function shmat
-CMAKE_HAVE_SHMAT:INTERNAL=1
 //Start directory with the top level CMakeLists.txt file for this
 // project
 CMAKE_HOME_DIRECTORY:INTERNAL=/Users/shikichi_takuya/advmates/trunk/solver
 //ADVANCED property for variable: CMAKE_INSTALL_NAME_TOOL
 CMAKE_INSTALL_NAME_TOOL-ADVANCED:INTERNAL=1
-//Have library ICE
-CMAKE_LIB_ICE_HAS_ICECONNECTIONNUMBER:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MAKE_PROGRAM
 CMAKE_MAKE_PROGRAM-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS
@@ -578,8 +565,6 @@ FIND_PACKAGE_MESSAGE_DETAILS_GLUT:INTERNAL=[-framework GLUT][/System/Library/Fra
 FIND_PACKAGE_MESSAGE_DETAILS_GTK2_GTK:INTERNAL=[/usr/local/lib/libgtk-x11-2.0.dylib][/usr/local/include/gtk-2.0][/usr/local/include/gtk-2.0][/usr/local/lib/gtk-2.0/include][/usr/local/lib/libgdk-x11-2.0.dylib][/usr/local/include/glib-2.0][/usr/local/lib/glib-2.0/include][/usr/local/lib/libglib-2.0.dylib][v()]
 //Details about finding OpenGL
 FIND_PACKAGE_MESSAGE_DETAILS_OpenGL:INTERNAL=[/System/Library/Frameworks/OpenGL.framework][v()]
-//Details about finding X11
-FIND_PACKAGE_MESSAGE_DETAILS_X11:INTERNAL=[/usr/X11R6/lib/libX11.dylib][/usr/X11R6/include]
 //Details about finding ZLIB
 FIND_PACKAGE_MESSAGE_DETAILS_ZLIB:INTERNAL=[/usr/lib/libz.dylib][/usr/include][v1.2.5()]
 //ADVANCED property for variable: FREETYPE_INCLUDE_DIR_freetype2
@@ -648,8 +633,6 @@ OpenMP_FLAG_DETECTED:INTERNAL=
 X11_ICE_INCLUDE_PATH-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_ICE_LIB
 X11_ICE_LIB-ADVANCED:INTERNAL=1
-//Have library /usr/X11R6/lib/libX11.dylib;/usr/X11R6/lib/libXext.dylib
-X11_LIB_X11_SOLO:INTERNAL=1
 //ADVANCED property for variable: X11_SM_INCLUDE_PATH
 X11_SM_INCLUDE_PATH-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: X11_SM_LIB

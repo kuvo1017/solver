@@ -4,6 +4,7 @@
 #include <iostream>
 //#include "Vehicle.h"
 #include "VirtualLeader.h"
+#include "picojson.h"
 using namespace std;
 
 class Vehicle;
@@ -52,8 +53,12 @@ class ErrorController{
 /// 事故状態かどうかをチェックして、事故状態ならエージェント消去
 bool accidentCheck();
 
-
+/// OACIS用にファイルパスを返す
+static std::string setDataPath();
+/// 各エラー率の初期化
   static bool initErrorParams();
+/// シミュレーションの終了時間をJSONから読み込む
+static int maxTime();
 protected: 
   /// 車両オブジェクト
   Vehicle* _vehicle;

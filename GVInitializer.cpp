@@ -1,5 +1,6 @@
 #include "GVInitializer.h"
 #include "GVManager.h"
+#include "ErrorController.h"
 #include <iostream>
 
 using namespace std;
@@ -7,7 +8,7 @@ using namespace std;
 //======================================================================
 void GVInitializer::init(const string& dataPath)
 {
-  GVManager::setNewString("DATA_DIRECTORY",
+ GVManager::setNewString("DATA_DIRECTORY",
       dataPath);
 
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -137,12 +138,17 @@ void GVInitializer::init(const string& dataPath)
       resultPath + "vehicleTrip.txt");
   GVManager::setNewString("RESULT_VEHICLE_COUNT_FILE",
       resultPath + "vehicleCount.txt");
-
+#ifndef OACIS
   GVManager::setNewString("RESULT_ERROR_FILE",
       resultPath + "error.txt");
   GVManager::setNewString("RESULT_ACCIDENT_FILE",
       resultPath + "accident.txt");
-
+#else
+   GVManager::setNewString("RESULT_ERROR_FILE",
+      "./error.txt");
+  GVManager::setNewString("RESULT_ACCIDENT_FILE",
+       "./accident.txt");
+#endif
 
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // 定数の定義
@@ -267,6 +273,9 @@ void GVInitializer::init(const string& dataPath)
   // 起きた事故の回数
   GVManager::setNewNumeric("ACCIDENT_COUNT",0);
 
+#ifdef ERROR_MODE
+ErrorController::initErrorParams();
+#endif
 
 #ifdef _OPENMP
   /* マルチスレッドに関するもの */
