@@ -241,6 +241,7 @@ if(NOT USE_AUTOGL_CONFIG AND BUILD_MATES_SIM)
     if(OPENGL_FOUND)
     else(OPENGL_FOUND)
       set(BUILD_MATES_SIM FALSE)
+      message(STATUS "cannot find openGL")
     endif(OPENGL_FOUND)
 
     # GLUT
@@ -253,6 +254,7 @@ if(NOT USE_AUTOGL_CONFIG AND BUILD_MATES_SIM)
     if(GLUT_FOUND)
     else(GLUT_FOUND)
       set(BUILD_MATES_SIM FALSE)
+       message(STATUS "cannot find glut") 
     endif(GLUT_FOUND)
 
     # GTK2
@@ -265,6 +267,7 @@ if(NOT USE_AUTOGL_CONFIG AND BUILD_MATES_SIM)
     if(GTK2_FOUND)
       include_directories(${GTK2_INCLUDE_DIRS})
     else(GTK2_FOUND)
+        message(STATUS "cannot find GTK2") 
       set(BUILD_MATES_SIM FALSE)
     endif(GTK2_FOUND)
 
@@ -280,9 +283,10 @@ if(NOT USE_AUTOGL_CONFIG AND BUILD_MATES_SIM)
       include_directories(${X11_INCLUDE_DIR})
     else(X11_FOUND)
       set(BUILD_MATES_SIM FALSE)
+         message(STATUS "cannot find X11")  
     endif(X11_FOUND)
   endif(${PLATFORM} STREQUAL "darwin")
-
+            
   #********************************************************************
   # for PLATFORM Cygwin on Windows
   #

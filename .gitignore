@@ -1,3 +1,6 @@
-CMakefiles/
-#実行ファイルは全無視
-*.[ao]
+Makefile.alt
+CMakeFiles/
+Makefile
+CMakeCache.txt
+kdv-solver/
+
