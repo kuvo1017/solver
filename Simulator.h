@@ -7,6 +7,7 @@
 #include "VehicleFamily.h"
 #include "VehicleIO.h"
 #include "SignalIO.h"
+#include "LOSManager.h"
 
 class GenerateVehicleController;
 class ODNode;
@@ -147,6 +148,9 @@ private:
 
     /// 信号情報の入出力を担当するオブジェクト
     SignalIO* _signalIO;
+
+  /// LOS計算マネージャ↲
+    LOSManager* _los;
     //@}
 };
 

@@ -50,6 +50,7 @@ Simulator::Simulator()
 
   _vehicleIO = &VehicleIO::instance();
   _signalIO = &SignalIO::instance();
+  _los = new LOSManager();
 }
 
 //======================================================================
@@ -66,6 +67,7 @@ Simulator::~Simulator()
   {
     delete _roadMap;
   }
+  if (_los) delete _los;
 }
 
 //======================================================================
@@ -136,6 +138,13 @@ bool Simulator::getReadyRoadMap()
   ofs << _roadMap->intersections()->size() << "\n" // 交差点の総数
     << totalNumberOfSignals;		     // 信号機の総数
 
+   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // LOS情報の初期化
+#ifdef LOS
+  _los->init();
+#endif
+  
+ 
   return _roadMap;
 }
 
