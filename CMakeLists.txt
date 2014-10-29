@@ -507,7 +507,7 @@ if(BUILD_MATES_SIM)
     WORKING_DIRECTORY ${GZSTREAM_LIBRARY_DIR})
    add_custom_command(TARGET ${MATES_SIM}
     PRE_LINK
-    COMMAND make
+    COMMAND make liblos.a
     WORKING_DIRECTORY ${LOS_LIBRARY_DIR})
  
   target_link_libraries(${MATES_SIM}
