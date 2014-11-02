@@ -243,14 +243,16 @@ void Intersection::setBarrier()
   int numNext = _next.size();
   for(int i=0;i<numNext;i++)
   {
-    Intersection* nexts[2];
+    Section* nexts[2];
     for(int j=0;j<2;j++){
       if(i+j<numNext)
-	nexts[j] = _next[i+j];
+	nexts[j] = nextSection(_next[i+j]);
       else
-	nexts[j] = _next[0];
+	nexts[j] = nextSection(_next[0]);
     }
     Barrier* barrier = new Barrier(this,nexts[0],nexts[1]);
+
+  cout << "!!!!!!!!enter!!!!!!!!!!!!"<<endl;
     _barriers->push_back(barrier);
   }
 }

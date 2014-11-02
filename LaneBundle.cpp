@@ -38,6 +38,12 @@ const AmuPoint LaneBundle::vertex(int i) const
 }
 
 //======================================================================
+const std::vector<AmuPoint> LaneBundle::vertices() const
+{
+    return _vertices;
+}
+ 
+//======================================================================
 void LaneBundle::addVertex(AmuPoint vertex)
 {
     _vertices.push_back(vertex);

@@ -132,10 +132,13 @@ bool RoadMap::checkIntersectionLane()
 }
 
 void RoadMap::checkNextLanes(){
+  
   ITRMAPI iti = _intersections.begin();
   while(iti!=_intersections.end())
   {
     Intersection* is = dynamic_cast<Intersection*>((*iti).second);
+    is->setBarrier();
+    /*
     cout << "id:"<<is->id()<< endl;
     int numNext = is->numNext();
     cout << "number of nexts:"<<numNext;
@@ -150,6 +153,7 @@ void RoadMap::checkNextLanes(){
     cout <<"x:"<< is->vertex(i).x()<<" y:"<<is->vertex(i).y()<<", ";
     }
     cout << endl;
+    */
     iti++;
   }
 }

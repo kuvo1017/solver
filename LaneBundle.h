@@ -16,34 +16,34 @@ class RoadOccupant;
 class Vehicle;
 
 typedef std::map<std::string,
-                 Lane*,
-                 std::less<std::string> > RMAPLAN;
+	Lane*,
+	std::less<std::string> > RMAPLAN;
 typedef std::map<std::string,
-                 Lane*,
-                 std::less<std::string> >::iterator ITRMAPLAN;
+	Lane*,
+	std::less<std::string> >::iterator ITRMAPLAN;
 typedef std::map<std::string,
-                 Lane*,
-                 std::less<std::string> >::const_iterator CITRMAPLAN;
+	Lane*,
+	std::less<std::string> >::const_iterator CITRMAPLAN;
 
 typedef std::map<std::string,
-                 Connector*,
-                 std::less<std::string> > RMAPCON;
+	Connector*,
+	std::less<std::string> > RMAPCON;
 typedef std::map<std::string,
-                 Connector*,
-                 std::less<std::string> >::iterator ITRMAPCON;
+	Connector*,
+	std::less<std::string> >::iterator ITRMAPCON;
 typedef std::map<std::string,
-                 Connector*,
-                 std::less<std::string> >::const_iterator CITRMAPCON;
+	Connector*,
+	std::less<std::string> >::const_iterator CITRMAPCON;
 
 typedef std::map<std::string,
-                 RoadEntity*,
-                 std::less<std::string> > RMAPENT;
+	RoadEntity*,
+	std::less<std::string> > RMAPENT;
 typedef std::map<std::string,
-                 RoadEntity*,
-                 std::less<std::string> >::iterator ITRMAPENT;
+	RoadEntity*,
+	std::less<std::string> >::iterator ITRMAPENT;
 typedef std::map<std::string,
-                 RoadEntity*,
-                 std::less<std::string> >::const_iterator CITRMAPENT;
+	RoadEntity*,
+	std::less<std::string> >::const_iterator CITRMAPENT;
 
 /// レーン束クラス
 /**
@@ -53,7 +53,7 @@ typedef std::map<std::string,
  */
 class LaneBundle
 {
-public:
+  public:
     LaneBundle(const std::string& id, RoadMap* parent);
     virtual ~LaneBundle();
 
@@ -66,6 +66,9 @@ public:
 
     /// 中心点を返す
     virtual const AmuPoint center() const = 0;
+
+    /// 頂点のベクターを返す
+    const std::vector<AmuPoint> vertices() const;
 
     /// i番目の頂点を返す
     const AmuPoint vertex(int i) const;
@@ -162,7 +165,7 @@ public:
 
     /// @}
     //====================================================================
-protected:
+  protected:
     /// 識別番号
     std::string _id;
 
@@ -198,7 +201,7 @@ protected:
      * renewAgentLineの最後に_isUsed=falseに戻される．
      */
     bool _isUsed;
-    
+
     /// 他の車両から注目を集める行動(車線変更など)をとっている車両
     /**
      * 車線変更中であるので，LaneではなくSectionに持たせる．
