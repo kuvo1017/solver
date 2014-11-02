@@ -4,6 +4,6 @@
 "arrogance_LR":0.5,
 "nolook_shift":1,
 "nolook_head":1,
-"data_path":"../simulations/LRError/",
+"data_path":"../examples/Data5/",
 "max_time":10000
 }

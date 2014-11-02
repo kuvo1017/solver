@@ -16,7 +16,7 @@ class Lane;
 class RoadEntity;
 class Section;
 class Connector;
-
+class Barrier;
 class Vehicle;
 
 /// 交差点クラス
@@ -93,7 +93,8 @@ public:
     /// 交差点@p interに接続するか
     bool isNetworked(std::vector<const Intersection*>* alreadySearched,
                      const Intersection* inter);
-
+/// 障害物をセットする
+void setBarrier();
     /// 交差点@p interに向かう単路を返す
     Section* nextSection(const Intersection* inter) const;
 
@@ -216,6 +217,9 @@ public:
                                         RelativeDirection turning,
                                         Vehicle* vehicle) const;
 
+ /// 障害物
+std::vector<Barrier*>* barriers() const;
+ 
     /// @}
 
     //======================================================================
@@ -303,6 +307,8 @@ protected:
     /// 入力したレーン開始終了位置
     std::vector<std::string> _laneBegEnd;
 
+/// 障害物
+std::vector<Barrier*>* _barriers;
     //====================================================================
 public:
     /** 

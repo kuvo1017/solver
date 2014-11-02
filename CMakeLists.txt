@@ -112,8 +112,8 @@ set(GZSTREAM_HEADER_DIR "${MATES_LIBRARY_DIR}/gzstream")
 set(GZSTREAM_LIBRARY_DIR "${MATES_LIBRARY_DIR}/gzstream") 
 
 #  settings settings
-set(LOS_HEADER_DIR "${MATES_LIBRARY_DIR}/los")
-set(LOS_LIBRARY_DIR "${MATES_LIBRARY_DIR}/los") 
+#set(LOS_HEADER_DIR "${MATES_LIBRARY_DIR}/los")
+#set(LOS_LIBRARY_DIR "${MATES_LIBRARY_DIR}/los") 
  
 # for use advautogl-config
 if(AUTOGL_CONFIG)
@@ -157,7 +157,7 @@ endif(ZLIB_FOUND)
 
 add_definitions("-DERROR_MODE") 
 add_definitions("-DOACIS")
-add_definitions("-DLOS")
+#add_definitions("-DLOS")
 #**********************************************************************
 if(NOT USE_AUTOGL_CONFIG AND BUILD_MATES_SIM)
 
@@ -343,14 +343,14 @@ endif(USE_OPENMP)
 # include path
 include_directories(${AUTOGL_HEADER_DIR})
 include_directories(${GZSTREAM_HEADER_DIR}) 
-include_directories(${LOS_HEADER_DIR}) 
+#include_directories(${LOS_HEADER_DIR}) 
 include_directories(${MT19937_HEADER_DIR})
 include_directories(${PICOJSON_HEADER_DIR}) 
 
 # library path
 link_directories(${AUTOGL_LIBRARY_DIR})
 link_directories(${GZSTREAM_LIBRARY_DIR}) 
-link_directories(${LOS_LIBRARY_DIR}) 
+#link_directories(${LOS_LIBRARY_DIR}) 
 link_directories(${MT19937_LIBRARY_DIR})
 #link_directories(${PICOJSON_LIBRARY_DIR}) 
 if(${PLATFORM} STREQUAL "darwin")
@@ -384,6 +384,7 @@ set(MATES_UTIL_SRCS
 
 set(MATES_COMMON_SRCS
   AppMates.cpp
+  Barrier.cpp
   Blinker.cpp
   Border.cpp
   Clocker.cpp
@@ -407,7 +408,6 @@ set(MATES_COMMON_SRCS
   LaneInSection.cpp
   LocalLaneRoute.cpp
   LocalLaneRouter.cpp
-  LOSManager.cpp
   NodeAStar.cpp
   ObjManager.cpp
   ODNode.cpp
@@ -506,11 +506,7 @@ if(BUILD_MATES_SIM)
     PRE_LINK
     COMMAND make
     WORKING_DIRECTORY ${GZSTREAM_LIBRARY_DIR})
-   add_custom_command(TARGET ${MATES_SIM}
-    PRE_LINK
-    COMMAND make liblos.a
-    WORKING_DIRECTORY ${LOS_LIBRARY_DIR})
- 
+
   target_link_libraries(${MATES_SIM}
     ${LIBMATES} ${LIBMATESGL} ${LIBMATESUTIL})
   target_link_libraries(${MATES_SIM} mt19937 autogl m gzstream )

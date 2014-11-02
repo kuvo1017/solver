@@ -14,6 +14,7 @@
 #include "SubIntersection.h"
 #include "RoadOccupant.h"
 #include "Vehicle.h"
+#include "Barrier.h"
 #include <cmath>
 #include <iostream>
 #include <algorithm>
@@ -236,6 +237,24 @@ void Intersection::setNext(Intersection* ptInter)
     }
     _next.push_back(ptInter);
 }
+//====================================================================== 
+void Intersection::setBarrier()
+{
+  int numNext = _next.size();
+  for(int i=0;i<numNext;i++)
+  {
+    Intersection* nexts[2];
+    for(int j=0;j<2;j++){
+      if(i+j<numNext)
+	nexts[j] = _next[i+j];
+      else
+	nexts[j] = _next[0];
+    }
+    Barrier* barrier = new Barrier(this,nexts[0],nexts[1]);
+    _barriers->push_back(barrier);
+  }
+}
+
 
 //======================================================================
 bool Intersection::isReachable(const Intersection* from,
