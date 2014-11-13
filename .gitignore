@@ -3,4 +3,7 @@ CMakeFiles/
 Makefile
 CMakeCache.txt
 kdv-solver/
+*.a
+advmates-calc
+advmates-sim
 
