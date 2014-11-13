@@ -39,7 +39,10 @@ public:
     /// 自動車を描画する
     static void drawVehicles();
 
+    /// 自動でauto time increment
+    static void autoStart();
     //@}
+
 
 protected:
     //******************************************************************
@@ -152,6 +155,7 @@ protected:
     static int _isSubsectionId;    //!< サブセクションの識別番号を表示するか
     static int _surfaceMode;       //!< 路面描画モード(0:描画属性，1:通行権)
     static int _isSignals;         //!< 信号を表示するか
+    static int _isBarriers;         //!< 信号を表示するか 
     static int _isRoadsideUnits;   //!< 路側器を表示するか
     static int _connectorIdMode;   //!< コネクタID描画モード(0:Disable，1:Global，2:Local)
     //@}

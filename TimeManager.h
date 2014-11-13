@@ -98,6 +98,8 @@ public:
     /// 時計を消去する
     static void deleteAllClockers();
 
+    /// 指定した時計の時間を返す
+    static double getTime(std::string clockName); 
     //@}
 
 private:

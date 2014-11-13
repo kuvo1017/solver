@@ -9,8 +9,10 @@
 #include "VirtualLeader.h"
 #include "CollisionJudge.h"
 #include "ObjManager.h"
+#include "DetectorUnit.h"
 #include "GVManager.h"
 #include "picojson.h"
+#include "FileManager.h"
 
 bool ErrorController::_isRearOn = false;
 bool ErrorController::_isPassingOn = true; 
@@ -42,9 +44,10 @@ ErrorController::ErrorController(Vehicle* vehicle){
   _isSlow=false;
   _shiftTime=0;
   _accidentTime = 0;
+  _type = "not_error";
   double r = Random::uniform();
   //std::cout << "random is "<<r <<" arrognce:"<< GVManager::getNumeric("ARROGANCE_LR")<<endl;
-  if(r<GVManager::getNumeric("ARROGANCE_LR"))
+  if(r < GVManager::getNumeric("ARROGANCE_LR"))
     _isArrogance =true;
   else
     _isArrogance = false;
@@ -124,7 +127,7 @@ void ErrorController::LRError(double thisTti,double thatTtp) {
   if(thisNextLane!=NULL)
     thisTtp = thisTti + thisNextLane->length()/GVManager::getNumeric("VELOCITY_AT_TURNING_LEFT")*3.6;
   // 誤差時間
-  double mistakeTime = 3.0;
+  double mistakeTime = 4.0;
   if(thisTtp<thatTtp+mistakeTime)
   {
 
@@ -235,6 +238,9 @@ int ErrorController::rearErrorTime() const{
 int ErrorController::accidentTime() const{
   return _accidentTime;
 }
+string ErrorController::type() const{
+  return _type;
+}
 //======================================================================
 void ErrorController::accidentOccur(){
 
@@ -251,12 +257,13 @@ void ErrorController::accidentOccur(){
 }
 //======================================================================
 void ErrorController::errorOccur(string type){
+  _type = type;
   cout << "=================================" <<endl;
   cout << "Error occured: car id is " <<  _vehicle->id() << endl;
   cout << "error type:"<<type <<endl; 
   cout << "=================================" <<endl;
   _vehicle->setBodyColor(0.8,0.8,0);
-  VehicleIO::instance().writeVehicleErrorData(TimeManager::time(),_vehicle,type);
+  VehicleIO::instance().writeVehicleErrorData(TimeManager::time(),_vehicle);
 }
 
 //======================================================================
@@ -323,7 +330,7 @@ bool ErrorController::initErrorParams(){
 } 
 //======================================================================   
 std::string ErrorController::setDataPath(){
- // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
+  // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
   //ファイルパスの取得
   const char* path = "./_input.json";
 
@@ -358,7 +365,7 @@ std::string ErrorController::setDataPath(){
 
 //======================================================================   
 int ErrorController::maxTime(){
- // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
+  // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
   //ファイルパスの取得
   const char* path = "./_input.json";
 
@@ -387,4 +394,48 @@ int ErrorController::maxTime(){
   int maxTime = 100000;//(int)all["max_time"].get<int>(); 
   return maxTime;
 }
- 
+
+//======================================================================    
+void ErrorController::checkStatData(){
+  vector<DetectorUnit*>* detectors = ObjManager::detectorUnits();
+  cout << detectors->size() << endl;
+  if(detectors->size() > 0)
+  {
+    int totalP =0;
+    int totalT =0;
+    for(int i=0;i<detectors->size();i++)
+    {
+      DetectorUnit* detector = detectors->at(i);
+      detector->monitorLanes();
+      DetectorUnit::StatVehicleData svd = detector->statVehicleData(); 
+      totalP+=svd.totalAllPassengers;
+      totalT+=svd.totalAllTrucks; 
+    }
+    cout << "===============================\n"
+      << "statitic accident data\n" 
+      << "計算時間:" <<TimeManager::getTime("TOTALRUN")<<"\n"
+      << "発生小型車両台数:" << totalP<< "\n"
+      << "発生大型車両台数:" << totalT<< "\n" 
+      << "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
+      << "==============================="<<endl; 
+      writeStatData(totalP,totalT);
+  }else
+  {
+    cerr << "no detector file" <<endl;
+  }   
+}
+//======================================================================
+void ErrorController::writeStatData(int totalP,int totalT){
+  // error.txtのオープン
+  string file;
+  GVManager::getVariable("RESULT_STAT_ACCIDENT_FILE", &file);
+  ofstream& ofsGD1 = FileManager::getOFStream(file);
+  // オープンに失敗した場合は関数内で落ちるはず。
+  // 車両台数等の動的グローバル情報の書き出し
+  ofsGD1 << TimeManager::getTime("TOTALRUN")<<"," 
+    << TimeManager::time()/1000 << ","
+    <<  totalP<< ","
+    <<  totalT<< ","
+    << GVManager::getNumeric("ACCIDENT_COUNT") << ","
+    << endl;
+}

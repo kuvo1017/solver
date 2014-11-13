@@ -157,3 +157,19 @@ void TimeManager::deleteAllClockers()
     }
     _clockers.erase(_clockers.begin(), _clockers.end());
 }
+//======================================================================
+double TimeManager::getTime(std::string clockName)
+{
+  // 該当する時計の検索
+  Clocker* clocker;
+  ITRMAPCLK iclk = _clockers.find(clockName);
+  if (iclk==_clockers.end())
+  {
+    // 見つからない場合
+    cerr << "clock " << clockName << " is not found" << endl;
+    return false;
+  } 
+  return (*iclk).second->totalTime();
+
+}
+

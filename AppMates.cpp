@@ -142,6 +142,7 @@ struct option AppMates::longOptions[] =
   {"no-output-monitor-d", 0, 0, 20},
   {"no-output-monitor-s", 0, 0, 21},
   {"no-generate-random-vehicle", 0, 0, 40},
+  {"auto-start",0,0,50},
   {0, 0, 0, 0}
 };
 
@@ -197,6 +198,9 @@ void AppMates::parseArgument(int argc, char** argv)
       case 40:
 	GVManager::setNewFlag("FLAG_GEN_RAND_VEHICLE", false);
 	break;
+      case 50:
+        GVManager::setNewFlag("FLAG_AUTO_START", true);
+	break; 
 #endif //USE_MINGW
       default:
 	break;
@@ -321,18 +325,3 @@ bool AppMates::_initRandomSeed(string arg)
     return false;
   }
 }
-/*
-//======================================================================
-bool AppMates::_initErrorPath(string arg)
-{
-  if (!arg.empty())
-  {
-
-    if (arg[arg.length()-1] != '/')
-    {
-      arg += '/';
-    } 
-    _errorPath =  arg; 
-  }
-} 
-*/

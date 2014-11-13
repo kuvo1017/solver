@@ -71,6 +71,7 @@ Simulator::~Simulator()
 //======================================================================
 bool Simulator::hasInit() const
 {
+
   if (_roadMap)
   {
     return true;
@@ -117,7 +118,6 @@ bool Simulator::getReadyRoadMap()
   {
     _roadMap->dispIntersections();
   }
-
   // signal_count.txtの出力
   string fSignalCount;
   GVManager::getVariable("RESULT_SIGNAL_COUNT_FILE", &fSignalCount);
@@ -136,8 +136,10 @@ bool Simulator::getReadyRoadMap()
   ofs << _roadMap->intersections()->size() << "\n" // 交差点の総数
     << totalNumberOfSignals;		     // 信号機の総数
 
-_roadMap->checkNextLanes();
- return _roadMap;
+#ifdef BARRIER
+  _roadMap->setBarriers();
+#endif
+  return _roadMap;
 }
 
 //======================================================================
@@ -161,7 +163,7 @@ bool Simulator::getReadySampleScenario(double xmin, double xmax,
   // 車両発生に関する設定
   getReadyVehicles();
 
-  
+
   // 車両配置
   if (numVehicles)
   {
@@ -194,6 +196,7 @@ bool Simulator::getReadyRoadsideUnit()
 
   // 感知器データ出力ファイルの準備
   vector<DetectorUnit*>* detectorUnits = ObjManager::detectorUnits();
+  cout << "kokomade" << endl;
   DetectorIO::getReadyOutputFiles(detectorUnits);
   if (GVManager::getFlag("FLAG_VERBOSE"))
   {
@@ -289,13 +292,18 @@ bool Simulator::timeIncrement()
     DetectorIO::writeTrafficData(detectorUnits);
   }
 
+#ifdef ERROR_MODE
+  // 事故の記録
+  if(TimeManager::time() % 1000 == 0)
+    ErrorController::checkStatData();
+#endif
+
   // エージェントの消去
   TimeManager::startClock("DELETE_AGENT");
   deleteAccidentVehicle();
   _roadMap->deleteArrivedAgents();
   TimeManager::stopClock("DELETE_AGENT");
 
-  // 事故エージェントの消去
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // エージェントの発生
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -446,15 +454,14 @@ GenerateVehicleController* Simulator::generateVehicleController()
 void Simulator::deleteAccidentVehicle(){
   std::vector<Vehicle*>* vehicles = ObjManager::vehicles();
   std::vector<Vehicle*>::iterator it = vehicles->begin();
-  
   while(it != vehicles->end()){
     if(!((*it)->errorController()->accidentCheck())){
       //std::cout << "!" << endl;
       //vehicles->erase(it);
       //Vehicle* vehicle = dynamic_cast<Vehicle*>(*it);
       ObjManager::deleteVehicle(dynamic_cast<Vehicle*>(*it),true);
-      }
-   it++;
+    }
+    it++;
   }
-  
+
 }

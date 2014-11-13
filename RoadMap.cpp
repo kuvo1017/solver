@@ -131,29 +131,14 @@ bool RoadMap::checkIntersectionLane()
   return result;
 }
 
-void RoadMap::checkNextLanes(){
+void RoadMap::setBarriers(){
   
   ITRMAPI iti = _intersections.begin();
   while(iti!=_intersections.end())
   {
     Intersection* is = dynamic_cast<Intersection*>((*iti).second);
     is->setBarrier();
-    /*
-    cout << "id:"<<is->id()<< endl;
-    int numNext = is->numNext();
-    cout << "number of nexts:"<<numNext;
-    for(int i=0;i<numNext;i++)
-    {
-      cout << is->next(i)->id()<<", ";
-    }
-    cout<<endl;
-    cout<<"numVertices:"<<is->numVertices()<<endl;
-    for(int i=0;i<is->numVertices();i++)
-    {
-    cout <<"x:"<< is->vertex(i).x()<<" y:"<<is->vertex(i).y()<<", ";
-    }
-    cout << endl;
-    */
+   
     iti++;
   }
 }
@@ -465,3 +450,17 @@ void RoadMap::dispIntersections() const
   }
   cout << endl;
 }
+//======================================================================
+void RoadMap::addBarriers()
+{
+  ITRMAPI iti = _intersections.begin();
+  if (iti == _intersections.end())
+  {
+  std::vector<Barrier*> barriers = iti->second->barriers();
+  for(int i=0;i<barriers.size();i++)
+  {
+  _barriers[iti->second->id()+std::to_string(i)]= barriers.at(i);
+  }
+  }
+}
+ 

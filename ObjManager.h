@@ -8,6 +8,7 @@
 class Connector;
 class DetectorUnit;
 class Vehicle;
+class Barrier;
 
 /// エージェント・オブジェクトの生成・消去および識別番号を管理するクラス
 /**
@@ -38,6 +39,7 @@ private:
      *  コネクタが途中で消去されることはないのでnumConnectorは必要ない
      */
 
+static std::vector<Barrier*> _barriers;
 public:
     //====================================================================
     /** @name オブジェクト全般に関する動作 */

@@ -27,10 +27,10 @@ class Vehicle;
  */
 class Intersection : public LaneBundle
 {
-public:
+  public:
     Intersection(const std::string& id,
-                 const std::string& type,
-                 RoadMap* parent);
+	const std::string& type,
+	RoadMap* parent);
     virtual ~Intersection();
 
     //====================================================================
@@ -81,20 +81,21 @@ public:
 
     /// 交差点@p from から交差点@p toに通過することができるか
     bool isReachable(const Intersection* from,
-                     const Intersection* to) const;
+	const Intersection* to) const;
 
     /// 交差点@p interに接続するか
     /**
      * 直接接続する必要はなく，同一のグラフ上に存在すればtrueを返す
      */
     bool isNetworked(const Intersection* start,
-                     const Intersection* inter);
+	const Intersection* inter);
 
     /// 交差点@p interに接続するか
     bool isNetworked(std::vector<const Intersection*>* alreadySearched,
-                     const Intersection* inter);
-/// 障害物をセットする
-void setBarrier();
+	const Intersection* inter);
+    /// 障害物をセットする
+    void setBarrier();
+
     /// 交差点@p interに向かう単路を返す
     Section* nextSection(const Intersection* inter) const;
 
@@ -156,12 +157,12 @@ void setBarrier();
      * @param result_section 交錯レーンに接続する上流単路内のレーン
      */
     void collisionLanes(const std::vector<Lane*>* lanes,
-                        std::vector<Lane*>* result_inter,
-                        std::vector<Lane*>* result_section);
+	std::vector<Lane*>* result_inter,
+	std::vector<Lane*>* result_section);
 
     /// collisionLanesのうち、交点の位置が@p lengthより前方のものを返す
     std::vector<Lane*> collisionLanesFront(Lane* lane,
-                                           double length) const;
+	double length) const;
 
     /// サブセクション@p entityの辺@p edgeと接するサブセクションを返す
     RoadEntity* pairedEntity(RoadEntity* entity, int edge) const;
@@ -186,7 +187,7 @@ void setBarrier();
 
     /// @p in0から@p in1という経路の相対方向を返す
     RelativeDirection relativeDirection(Intersection* in0,
-                                        Intersection* in1) const;
+	Intersection* in1) const;
 
     /// @p 境界dir0から見た境界dir1の相対方向を返す
     RelativeDirection relativeDirection(int dir0, int dir1) const;
@@ -214,12 +215,12 @@ void setBarrier();
 
     /// @p from から 進行方向 @p turning に向かう車両の進入許可を返す
     Signal::SignalPermission permission(int from,
-                                        RelativeDirection turning,
-                                        Vehicle* vehicle) const;
+	RelativeDirection turning,
+	Vehicle* vehicle) const;
 
- /// 障害物
-std::vector<Barrier*>* barriers() const;
- 
+    /// 障害物
+    std::vector<Barrier*> barriers() const;
+
     /// @}
 
     //======================================================================
@@ -241,7 +242,7 @@ std::vector<Barrier*>* barriers() const;
     /// 詳細情報を出力する
     void printDetail(bool odNode) const;
 
-protected:
+  protected:
     /// 中心点
     AmuPoint _center;
 
@@ -307,10 +308,10 @@ protected:
     /// 入力したレーン開始終了位置
     std::vector<std::string> _laneBegEnd;
 
-/// 障害物
-std::vector<Barrier*>* _barriers;
+    /// 障害物
+    std::vector<Barrier*> _barriers;
     //====================================================================
-public:
+  public:
     /** 
      * @name 交差点の詳細構造を作成する関数群
      * @note 長いので別ファイルで定義する
@@ -363,7 +364,7 @@ public:
     virtual bool createLanesFromFile();
     /// １レーンの作成
     void createLane(int idInt, const Connector* pointBegin,
-                    const Connector* pointEnd, bool setLaneBegEnd);
+	const Connector* pointEnd, bool setLaneBegEnd);
 
     /// サブネットワークの構築
     bool createSubnetwork();
@@ -377,7 +378,7 @@ public:
 
     /// @p line 上にconnectorを作成する
     void _createConnectorsOnLine(AmuLineSegment line, 
-                                 int numIn, int numOut, int borderId);
+	int numIn, int numOut, int borderId);
 
     /// 境界@p dirの横断歩道の幅
     /**

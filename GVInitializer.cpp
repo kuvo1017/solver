@@ -47,6 +47,9 @@ void GVInitializer::init(const string& dataPath)
   // エージェントの走行距離，旅行時間を出力するか
   GVManager::setNewFlag("FLAG_OUTPUT_TRIP_INFO", true);
 
+  // 自動で開始するか
+  GVManager::setNewFlag("FLAG_AUTO_START", false);
+   
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // グローバル変数設定ファイル
   GVManager::setNewString("GV_INIT_FILE",
@@ -101,7 +104,7 @@ void GVInitializer::init(const string& dataPath)
       dataPath + "intersectionStruct.txt");
   GVManager::setNewString("SECTION_STRUCT_FILE",
       dataPath + "sectionStruct.txt");
-#ifdef ERROR_MODE
+#ifdef OACIS
   // エラー率を定義しているファイル
   GVManager::setNewString("ERROR_PARAMS_FILE",
       "./_input.json");
@@ -140,14 +143,16 @@ void GVInitializer::init(const string& dataPath)
       resultPath + "vehicleCount.txt");
 #ifndef OACIS
   GVManager::setNewString("RESULT_ERROR_FILE",
-      resultPath + "error.txt");
+      resultPath + "_error.txt");
   GVManager::setNewString("RESULT_ACCIDENT_FILE",
-      resultPath + "accident.txt");
+      resultPath + "_accident.txt");
 #else
    GVManager::setNewString("RESULT_ERROR_FILE",
-      "./error.txt");
+      "./_error.txt");
   GVManager::setNewString("RESULT_ACCIDENT_FILE",
-       "./accident.txt");
+       "./_accident.txt");
+   GVManager::setNewString("RESULT_STAT_ACCIDENT_FILE",
+       "./_stat_accident.txt");
 #endif
 
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

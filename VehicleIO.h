@@ -63,7 +63,7 @@ class VehicleIO
     bool writeVehicleAccidentData(ulint time, Vehicle* vehicle);
 
     /// errorのデータ
-    bool writeVehicleErrorData(ulint time, Vehicle* vehicle,string type);
+    bool writeVehicleErrorData(ulint time, Vehicle* vehicle);
 
     /// @}
 
