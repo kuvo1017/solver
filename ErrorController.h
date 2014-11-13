@@ -60,11 +60,13 @@ class ErrorController{
     /// 各エラー率の初期化
     static bool initErrorParams();
     /// シミュレーションの終了時間をJSONから読み込む
-    static int maxTime();
+    static bool stopRun();
     /// 
     static void checkStatData(); 
     /// 
     static void writeStatData(int totalP,int totalT);
+    ///
+    static void endRun();
   protected: 
     /// 車両オブジェクト
     Vehicle* _vehicle;
@@ -111,7 +113,10 @@ class ErrorController{
     int _shiftTime;
     /// エラーの種類
     string _type;
-
+    ///
+    static int _maxTotal;
+    /// シミュレーションを終わらせるか
+    static bool _stopRun;
     /// シミュレーションで追突事故が起きる設定か
     static bool _isRearOn;
     /// シミュレーションで追突事故が起きる設定か

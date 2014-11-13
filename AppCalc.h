@@ -39,7 +39,7 @@ protected:
     unsigned long _maxTime;
 
     /// デフォルト計算時間
-    static const unsigned long DEFAULT_MAX_TIME = 3600ul * 1000ul; // 1 hour
+    static const unsigned long DEFAULT_MAX_TIME = 3600ul * 1000ul*1000ul; // 1000 hour
 
 private:
     /** @name コマンドラインオプションの解析に用いる */

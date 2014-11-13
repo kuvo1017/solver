@@ -16,9 +16,11 @@
 
 bool ErrorController::_isRearOn = false;
 bool ErrorController::_isPassingOn = true; 
-bool ErrorController::_isLROn = true;
-bool ErrorController::_isSlideOn = true;
-bool ErrorController::_isHeadOn = true; 
+bool ErrorController::_isLROn = false;
+bool ErrorController::_isSlideOn = false;
+bool ErrorController::_isHeadOn = false; 
+int ErrorController::_maxTotal = 1000*1000*500;
+bool ErrorController::_stopRun = false;
 
 using namespace std;
 ErrorController::ErrorController(Vehicle* vehicle){
@@ -363,38 +365,6 @@ std::string ErrorController::setDataPath(){
   return dataPath;
 }
 
-//======================================================================   
-int ErrorController::maxTime(){
-  // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
-  //ファイルパスの取得
-  const char* path = "./_input.json";
-
-  // ファイルオープン
-  ifstream inputStream;
-  string thisLine;
-  inputStream.open(path);
-  if (!inputStream.is_open())
-  {
-    cerr << "cannot open file!" << endl;
-    exit(1);
-  }
-
-  stringstream sstream;
-  while (getline(inputStream, thisLine))
-  {
-    sstream << thisLine;
-  }
-  inputStream.close();
-  cout << "finish opening file!" << endl;
-
-  // JSONのパース
-  picojson::value v; 
-  picojson::parse(v, sstream);
-  picojson::object& all = v.get<picojson::object>(); 
-  int maxTime = 100000;//(int)all["max_time"].get<int>(); 
-  return maxTime;
-}
-
 //======================================================================    
 void ErrorController::checkStatData(){
   vector<DetectorUnit*>* detectors = ObjManager::detectorUnits();
@@ -419,6 +389,8 @@ void ErrorController::checkStatData(){
       << "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
       << "==============================="<<endl; 
       writeStatData(totalP,totalT);
+      if(totalP+totalT> _maxTotal)
+        _stopRun = true;
   }else
   {
     cerr << "no detector file" <<endl;
@@ -439,3 +411,8 @@ void ErrorController::writeStatData(int totalP,int totalT){
     << GVManager::getNumeric("ACCIDENT_COUNT") << ","
     << endl;
 }
+//====================================================================== 
+bool ErrorController::stopRun(){
+  return _stopRun;
+}
+
