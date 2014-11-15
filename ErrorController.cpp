@@ -16,10 +16,10 @@
 
 bool ErrorController::_isRearOn = false;
 bool ErrorController::_isPassingOn = true; 
-bool ErrorController::_isLROn = false;
+bool ErrorController::_isLROn = true;
 bool ErrorController::_isSlideOn = false;
 bool ErrorController::_isHeadOn = false; 
-int ErrorController::_maxTotal = 1000*1000*500;
+int ErrorController::_maxTotal = 10;//00*1000*500;
 bool ErrorController::_stopRun = false;
 
 using namespace std;
@@ -48,7 +48,7 @@ ErrorController::ErrorController(Vehicle* vehicle){
   _accidentTime = 0;
   _type = "not_error";
   double r = Random::uniform();
-  //std::cout << "random is "<<r <<" arrognce:"<< GVManager::getNumeric("ARROGANCE_LR")<<endl;
+  std::cout << "random is "<<r <<" arrognce:"<< GVManager::getNumeric("ARROGANCE_LR")<<endl;
   if(r < GVManager::getNumeric("ARROGANCE_LR"))
     _isArrogance =true;
   else
@@ -289,7 +289,9 @@ bool ErrorController::accidentCheck(){
 bool ErrorController::initErrorParams(){
   // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
   //ファイルパスの取得
-  const char* path = "./_input.json";
+  return "../simulations/LRError/";
+  string s1,s2;
+  string path = "./_input.json";
 
   // ファイルオープン
   ifstream inputStream;
@@ -322,11 +324,17 @@ bool ErrorController::initErrorParams(){
      {
      picojson::object& all = it->get<picojson::object>();
    */
+  GVManager::setNewNumeric("NOLOOK_REAR",0.0);
+  GVManager::setNewNumeric("ARROGANCE_PASSING",0.0);
+  GVManager::setNewNumeric("NOLOOK_SHIFT",0.0);
+  GVManager::setNewNumeric("NOLOOK_HEAD",0.0);
+  /*
   GVManager::setNewNumeric("NOLOOK_REAR",all["nolook_rear"].get<double>());
   GVManager::setNewNumeric("ARROGANCE_PASSING",all["arrogance_passing"].get<double>());
   GVManager::setNewNumeric("ARROGANCE_LR",all["arrogance_LR"].get<double>());
   GVManager::setNewNumeric("NOLOOK_SHIFT",all["nolook_shift"].get<double>());
   GVManager::setNewNumeric("NOLOOK_HEAD",all["nolook_head"].get<double>());
+  */
   // CCLOG("x:%d, y:%d, z:%d", x, y, z);
   //}
 } 
@@ -334,6 +342,7 @@ bool ErrorController::initErrorParams(){
 std::string ErrorController::setDataPath(){
   // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
   //ファイルパスの取得
+  return "../simulations/LRError/";
   const char* path = "./_input.json";
 
   // ファイルオープン
