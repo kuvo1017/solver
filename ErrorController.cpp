@@ -129,7 +129,7 @@ void ErrorController::LRError(double thisTti,double thatTtp) {
   if(thisNextLane!=NULL)
     thisTtp = thisTti + thisNextLane->length()/GVManager::getNumeric("VELOCITY_AT_TURNING_LEFT")*3.6;
   // 誤差時間
-  double mistakeTime = 4.0;
+  double mistakeTime = 3.0;
   if(thisTtp<thatTtp+mistakeTime)
   {
 
