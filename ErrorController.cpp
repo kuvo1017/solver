@@ -19,8 +19,8 @@ bool ErrorController::_isPassingOn = true;
 bool ErrorController::_isLROn = true;
 bool ErrorController::_isSlideOn = false;
 bool ErrorController::_isHeadOn = false; 
-int ErrorController::_stopNAccident = 100;
-int ErrorController::_maxTotal = 1000*1000*5/4.5;
+int ErrorController::_stopNAccident = 10000;
+int ErrorController::_maxTotal = 1000*1000*5/5.0;
 bool ErrorController::_stopRun = false;
 
 using namespace std;
