@@ -16,10 +16,11 @@
 
 bool ErrorController::_isRearOn = false;
 bool ErrorController::_isPassingOn = true; 
-bool ErrorController::_isLROn = true;
+bool ErrorController::_isLROn = false;
 bool ErrorController::_isSlideOn = false;
-bool ErrorController::_isHeadOn = false; 
-int ErrorController::_maxTotal = 10;//00*1000*500;
+bool ErrorController::_isHeadOn = true; 
+int ErrorController::_stopNAccident = 100;
+int ErrorController::_maxTotal = 1000*1000*5/4.5;
 bool ErrorController::_stopRun = false;
 
 using namespace std;
@@ -48,7 +49,6 @@ ErrorController::ErrorController(Vehicle* vehicle){
   _accidentTime = 0;
   _type = "not_error";
   double r = Random::uniform();
-  std::cout << "random is "<<r <<" arrognce:"<< GVManager::getNumeric("ARROGANCE_LR")<<endl;
   if(r < GVManager::getNumeric("ARROGANCE_LR"))
     _isArrogance =true;
   else
@@ -198,6 +198,90 @@ void ErrorController::LRError(Vehicle* thatV,double thisTti,double thatTti) {
   }
 }
 //======================================================================
+bool ErrorController::headError(){
+  //多くの対称を認知したときに先行者の速度等を認知するかわりに予測する処理
+  //追突事故の再現用
+  //をonにする
+  //確率をあげるポイント
+  if(!_isHeadOn)
+    return false;
+  int p=1;
+  const std::vector<VirtualLeader *>* leaders = _vehicle->virtualLeaders(); 
+  for(int i=0;i<leaders->size();i++){
+    string type = leaders->at(i)->getType();
+    if(type=="SHIFTFRONT_CAR")
+      p+=0.5;
+    else if(type=="MERGE_CAR")
+      p+=1;
+    else if(type=="RED_SIGNAL")
+      p+=0.1;
+    int x = Random::uniform();
+    if(x*p>GVManager::getNumeric("NOLOOK_HEAD")){
+      errorOccur("head");
+      _isHeadError=true;
+    }
+  }
+  return _isHeadError;
+}
+//======================================================================
+double ErrorController::errorVelocity() 
+{
+  {
+    double error = _vehicle->error();
+    if(_isHeadError ){
+
+      if(error==0.0)
+	return -2.0/60.0/60.0;
+      else if(error<-3.0)
+	return 2.0/60.0/60.0;
+      else if(error>0)
+	return 0.0;
+    }
+  }
+}
+
+//======================================================================
+void ErrorController::checkHeadAccident()
+{
+  {
+    Section* section = _vehicle->section();
+    if(!_isAccident && section != NULL){
+      const map<string, Lane*, less<string> >* lanes = _vehicle->laneBundle()->lanes();
+      map<string, Lane*, less<string> >::const_iterator  ite = lanes->begin();
+      // 自分の方向
+      int myDirection = _vehicle->section()->isUp(_vehicle->lane());
+      //自分の対向車線
+      Lane* onComingLane=NULL;
+      while (ite != lanes->end()) {
+	Lane* lane = ite->second;
+	if(section->isUp(lane)!=myDirection){
+	  // 右車線
+	  Lane* rl = NULL;
+	  // 右車線の長さ
+	  double rll;
+	  section->getRightSideLane(lane,lane->length(),&rl,&rll);
+	  if(rl==NULL){
+	    onComingLane = lane;
+	  }
+	}
+	ite++;
+      }
+
+      if(onComingLane!=NULL){
+	Vehicle* frontSideVehicle = onComingLane->followingVehicle(_vehicle->lane()->length()-_vehicle->length());
+	if(frontSideVehicle!=NULL){
+	  if(CollisionJudge::isCollid(_vehicle,frontSideVehicle)){
+	    accidentOccur();
+	    frontSideVehicle->errorController()->accidentOccur();
+	    //_velocity -> _errorVelocity=0.0;
+	    _isHeadError=false;
+	  }
+	}
+      }
+    }
+  }   
+}
+//======================================================================
 bool ErrorController::isRearError() const{
   return _rearError;
 }
@@ -289,6 +373,10 @@ bool ErrorController::accidentCheck(){
 bool ErrorController::initErrorParams(){
   // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
   //ファイルパスの取得
+  GVManager::setNewNumeric("NOLOOK_REAR",0.0);
+  GVManager::setNewNumeric("ARROGANCE_PASSING",0.0);
+  GVManager::setNewNumeric("NOLOOK_SHIFT",0.0);
+  GVManager::setNewNumeric("NOLOOK_HEAD",0.5);
   return "../simulations/LRError/";
   string s1,s2;
   string path = "./_input.json";
@@ -324,17 +412,13 @@ bool ErrorController::initErrorParams(){
      {
      picojson::object& all = it->get<picojson::object>();
    */
-  GVManager::setNewNumeric("NOLOOK_REAR",0.0);
-  GVManager::setNewNumeric("ARROGANCE_PASSING",0.0);
-  GVManager::setNewNumeric("NOLOOK_SHIFT",0.0);
-  GVManager::setNewNumeric("NOLOOK_HEAD",0.0);
-  /*
-  GVManager::setNewNumeric("NOLOOK_REAR",all["nolook_rear"].get<double>());
-  GVManager::setNewNumeric("ARROGANCE_PASSING",all["arrogance_passing"].get<double>());
-  GVManager::setNewNumeric("ARROGANCE_LR",all["arrogance_LR"].get<double>());
-  GVManager::setNewNumeric("NOLOOK_SHIFT",all["nolook_shift"].get<double>());
-  GVManager::setNewNumeric("NOLOOK_HEAD",all["nolook_head"].get<double>());
-  */
+ /*
+     GVManager::setNewNumeric("NOLOOK_REAR",all["nolook_rear"].get<double>());
+     GVManager::setNewNumeric("ARROGANCE_PASSING",all["arrogance_passing"].get<double>());
+     GVManager::setNewNumeric("ARROGANCE_LR",all["arrogance_LR"].get<double>());
+     GVManager::setNewNumeric("NOLOOK_SHIFT",all["nolook_shift"].get<double>());
+     GVManager::setNewNumeric("NOLOOK_HEAD",all["nolook_head"].get<double>());
+   */
   // CCLOG("x:%d, y:%d, z:%d", x, y, z);
   //}
 } 
@@ -342,7 +426,7 @@ bool ErrorController::initErrorParams(){
 std::string ErrorController::setDataPath(){
   // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
   //ファイルパスの取得
-  return "../simulations/LRError/";
+  return "../simulations/headError/";
   const char* path = "./_input.json";
 
   // ファイルオープン
@@ -392,14 +476,15 @@ void ErrorController::checkStatData(){
     }
     cout << "===============================\n"
       << "statitic accident data\n" 
+      << "エラー率：" << GVManager::getNumeric("ARROGANCE_LR") << "\n"  
       << "計算時間:" <<TimeManager::getTime("TOTALRUN")<<"\n"
       << "発生小型車両台数:" << totalP<< "\n"
       << "発生大型車両台数:" << totalT<< "\n" 
       << "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
       << "==============================="<<endl; 
-      writeStatData(totalP,totalT);
-      if(totalP+totalT> _maxTotal)
-        _stopRun = true;
+    writeStatData(totalP,totalT);
+    if(totalP+totalT> _maxTotal || _stopNAccident < GVManager::getNumeric("ACCIDENT_COUNT"))
+      _stopRun = true;
   }else
   {
     cerr << "no detector file" <<endl;

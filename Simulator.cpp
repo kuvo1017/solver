@@ -244,10 +244,10 @@ bool Simulator::run(ulint time)
   if (time>TimeManager::time())
   {
     TimeManager::startClock("TOTALRUN");
-    while (time>TimeManager::time() && !ErrorController::stopRun())
+    while (time>TimeManager::time() && !ErrorController::stopRun()
+    && (time<86400000))
     {
       timeIncrement();
-//  cout <<"stop:" <<ErrorController::stopRun() << endl;
     }
     TimeManager::stopClock("TOTALRUN");
     return true;
@@ -269,8 +269,10 @@ bool Simulator::timeIncrement()
     {
       cout << "Time: "
 	<< TimeManager::time()/1000 << "[sec]" << endl;
+
     }
   }
+
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // エージェント列の更新
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -295,7 +297,7 @@ bool Simulator::timeIncrement()
 
 #ifdef ERROR_MODE
   // 事故の記録
-  if(TimeManager::time() % 1000 == 0)
+  if(TimeManager::time() % 100000 == 0)
     ErrorController::checkStatData();
 #endif
 
@@ -320,7 +322,6 @@ bool Simulator::timeIncrement()
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #ifndef EXCLUDE_VEHICLES
   vector<Vehicle*>* vehicles = ObjManager::vehicles();
-
 #ifndef _OPENMP
   TimeManager::startClock("RECOGNIZE");
   for_each(vehicles->begin(), vehicles->end(),

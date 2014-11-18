@@ -258,6 +258,9 @@ public:
                       double* result_g,
                       double* result_b) const;
 
+double error() const;
+
+ double errorVelocity() const;  
     //@}
 
     //====================================================================
