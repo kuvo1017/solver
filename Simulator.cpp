@@ -244,7 +244,8 @@ bool Simulator::run(ulint time)
   if (time>TimeManager::time())
   {
     TimeManager::startClock("TOTALRUN");
-    while (time>TimeManager::time() && !ErrorController::stopRun())
+    while (time>TimeManager::time() && !ErrorController::stopRun()
+    &&(time<86400000))
     {
       timeIncrement();
 //  cout <<"stop:" <<ErrorController::stopRun() << endl;
