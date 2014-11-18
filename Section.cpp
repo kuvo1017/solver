@@ -197,6 +197,31 @@ bool Section::isReachable(const Lane* lane, int dir) const
     }
     return result;
 }
+//======================================================================
+void Section::getLeftSideLane(const Lane* startLane,
+			      const double startLength,
+			      Lane* *result_sideLane,
+			      double* result_length) const{
+  AmuVector searchVector = startLane->directionVector();
+  searchVector.revoltXY(M_PI_2);
+
+  this->_getSideLane(startLane, startLength, searchVector, 
+		     result_sideLane, result_length);
+}
+
+//======================================================================
+void Section::getRightSideLane(const Lane* startLane,
+			      const double startLength,
+			      Lane* *result_sideLane,
+			      double* result_length) const{
+  AmuVector searchVector = startLane->directionVector();
+  searchVector.revoltXY(-M_PI_2);
+
+  this->_getSideLane(startLane, startLength, searchVector, 
+  
+		     result_sideLane, result_length);
+}
+ 
 
 //======================================================================
 RoadEntity* Section::pairedEntity(RoadEntity* entity,
@@ -343,6 +368,64 @@ int Section::_numAgents(double start, double len, bool up) const
         }
     }
     return result;
+}
+
+//======================================================================
+void Section::_getSideLane(const Lane* startLane,
+			   const double startLength,
+			   const AmuVector& searchVector,
+			   Lane* *result_sideLane,
+			   double* result_length) const{
+  // これら2つの関数は要delete!!!
+  //assert(startLength <= startLane->length());
+  if (startLength>startLane->length()) {
+    cout << __FUNCTION__ << ":" << _id << "-" << startLane->id()
+	 << "," << startLength << endl;
+    exit(1);
+  }
+  
+  AmuPoint searchBeginAmuPoint =
+    startLane->createInteriorPoint(startLength,
+				   startLane->length()-startLength);
+  if (!searchBeginAmuPoint.flag()) {
+    cerr << "WARNING: StreetA::_getSideLane : bad searchBeginAmuPoint" << endl;
+  }
+  AmuPoint searchEndAmuPoint = AmuPoint(searchBeginAmuPoint.x()+searchVector.x(),
+			       searchBeginAmuPoint.y()+searchVector.y(),
+			       searchBeginAmuPoint.z()+searchVector.z());
+ AmuLineSegment searchLineSegment(searchBeginAmuPoint, searchEndAmuPoint);
+
+  double distance = 0;
+
+  vector<Lane*> sameDirectionLanes;
+  for(map<string, Lane*, less<string> >::const_iterator itl = _lanes.begin();
+      itl != _lanes.end(); itl++){
+    // 進行方向が同じである場合のみを抽出
+    if(this->isUp((*itl).second) == this->isUp(startLane)){
+      sameDirectionLanes.push_back((*itl).second);
+    }
+  }
+
+  for(vector<Lane*>::const_iterator it = sameDirectionLanes.begin();
+      it != sameDirectionLanes.end(); it++){
+    // 交点を求める。tmpAmuPointは交点の一時保管場所
+    AmuPoint* tmpAmuPoint = new AmuPoint();
+    bool isIntersect =
+      (*it)->createIntersectionPoint(searchLineSegment, tmpAmuPoint);
+    if(isIntersect == true){
+      assert(tmpAmuPoint->x() != 0 || tmpAmuPoint->y() !=0);
+      if((*it) != startLane){
+        // ここで距離のチェック。近ければそのレーンを残す。
+        // 最終的に一番近いレーンを返す。
+        if(distance == 0 || distance > searchBeginAmuPoint.distance(*tmpAmuPoint)){
+          distance = searchBeginAmuPoint.distance(*tmpAmuPoint);
+          *result_length = tmpAmuPoint->distance((*it)->beginConnector()->point());
+          *result_sideLane = *it;
+        }
+      }
+    }
+    delete tmpAmuPoint;
+  }
 }
 
 //======================================================================

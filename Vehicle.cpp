@@ -168,6 +168,18 @@ void Vehicle::getBodyColor(double* result_r,
 }
 
 //======================================================================
+double Vehicle::error() const
+{
+return _error;
+}
+//======================================================================
+double Vehicle::errorVelocity() const
+{
+return _error;
+}
+ 
+
+//======================================================================
 double Vehicle::length() const
 {
   return _length;

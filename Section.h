@@ -85,6 +85,30 @@ public:
     /// レーン@p laneから辿って，次の交差点の境界@p direction に達するか
     bool isReachable(const Lane* lane, int dir) const;
 
+   /// 指定したレーンの左隣のレーンを得る
+  /**
+   * あるレーン@p laneの指定した位置@p startLengthから見た
+   * 左隣のレーンを@p result_sideLaneに，
+   * そのレーン上での位置を@p result_lengthに格納する
+   * 存在しない場合は@p result_sideLaneに@c NULLを格納する
+   */
+  void getLeftSideLane(const Lane* startLane,
+		       const double startLength,
+		       Lane* *result_sideLane,
+		       double* result_length) const;
+
+  /// 指定したレーンの右隣のレーンを得る
+  /** 
+   * @sa getLeftSideLane(const Lane* startLane,
+   *                     const double startLength,
+   *                     Lane* *result_sideLane,
+   *                     double* result_length) const
+   */
+  void getRightSideLane(const Lane* startLane,
+			const double startLength,
+			Lane* *result_sideLane,
+			double* result_length) const;
+ 
 public:
     /// サブセクション@p entityの辺@p edgeと接するサブセクションを返す 
     /**
@@ -112,6 +136,13 @@ public:
 protected:
     /// 単路の@p start地点から距離@p lenにいる@p isUp方向のエージェント数を返す
     int _numAgents(double start, double len, bool isUp) const;
+   /// getXxxSideLaneから用いる
+  void _getSideLane(const Lane* startLane,
+		    const double startLength,
+		    const AmuVector& searchVector,
+		    Lane* *result_sideLane,
+		    double* result_length) const;
+ 
 
 public:
     /// 上り方向の@p start地点から距離@p lenにいるエージェント数を返す

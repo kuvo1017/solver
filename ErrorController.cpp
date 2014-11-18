@@ -19,7 +19,8 @@ bool ErrorController::_isPassingOn = true;
 bool ErrorController::_isLROn = true;
 bool ErrorController::_isSlideOn = false;
 bool ErrorController::_isHeadOn = false; 
-int ErrorController::_maxTotal = 10;//00*1000*500;
+int ErrorController::_stopNAccident = 100;
+int ErrorController::_maxTotal = 1000*1000*5/4.5;
 bool ErrorController::_stopRun = false;
 
 using namespace std;
@@ -48,7 +49,6 @@ ErrorController::ErrorController(Vehicle* vehicle){
   _accidentTime = 0;
   _type = "not_error";
   double r = Random::uniform();
-  std::cout << "random is "<<r <<" arrognce:"<< GVManager::getNumeric("ARROGANCE_LR")<<endl;
   if(r < GVManager::getNumeric("ARROGANCE_LR"))
     _isArrogance =true;
   else
@@ -198,230 +198,315 @@ void ErrorController::LRError(Vehicle* thatV,double thisTti,double thatTti) {
   }
 }
 //======================================================================
-bool ErrorController::isRearError() const{
-  return _rearError;
-}
-//======================================================================
-bool ErrorController::isLRError() const{
-  return _isLRError;
-}
-//======================================================================
-bool ErrorController::isShiftError() const{
-  return _isShiftError;
-}
-//======================================================================
-bool ErrorController::isHeadError() const{
+bool ErrorController::headError(){
+  //多くの対称を認知したときに先行者の速度等を認知するかわりに予測する処理
+  //追突事故の再現用
+  //をonにする
+  //確率をあげるポイント
+  if(!_isHeadOn)
+    return false;
+  int p=1;
+  const std::vector<VirtualLeader *>* leaders = _vehicle->virtualLeaders(); 
+  for(int i=0;i<leaders->size();i++){
+    string type = leaders->at(i)->getType();
+    if(type=="SHIFTFRONT_CAR")
+      p+=5;
+    else if(type=="MERGE_CAR")
+      p+=10;
+    else if(type=="RED_SIGNAL")
+      p+=1;
+    int x = Random::uniform(0,10000);
+    if(x*p<GVManager::getNumeric("NOLOOK_HEAD")){
+      errorOccur("head");
+      _isHeadError=true;
+    }
+  }
   return _isHeadError;
 }
 //======================================================================
-bool ErrorController::isShiftEnd() const{
-  return _isShiftEnd;
-}
-/*
-//======================================================================
-void ErrorController::shifEnd() const{
+double ErrorController::errorVelocity() 
+{
+  {
+    double error = _vehicle->error();
+    if(_isHeadError ){
 
-_isShiftEnd=true;
-}
- */
-//======================================================================
-bool ErrorController::isPassingError() const{
-  return _isPassingError;
-}
-//======================================================================
-bool ErrorController::isAccident() const{
-  return _isAccident;
-}
-//======================================================================
-int ErrorController::rearErrorTime() const{
-  return _rearErrorTime;
-} 
-//======================================================================
-int ErrorController::accidentTime() const{
-  return _accidentTime;
-}
-string ErrorController::type() const{
-  return _type;
-}
-//======================================================================
-void ErrorController::accidentOccur(){
-
-  cout << "=================================" <<endl;
-  cout << "Accident occured: car id is " <<  _vehicle->id() << endl;
-  cout << "=================================" <<endl;
-
-  _isAccident = true;
-  _rearError=false;
-  _isPassingError = false;
-  _vehicle->setBodyColor(0,0,0); 
-  //writeAccident();
-  VehicleIO::instance().writeVehicleAccidentData(TimeManager::time(),_vehicle);
-}
-//======================================================================
-void ErrorController::errorOccur(string type){
-  _type = type;
-  cout << "=================================" <<endl;
-  cout << "Error occured: car id is " <<  _vehicle->id() << endl;
-  cout << "error type:"<<type <<endl; 
-  cout << "=================================" <<endl;
-  _vehicle->setBodyColor(0.8,0.8,0);
-  VehicleIO::instance().writeVehicleErrorData(TimeManager::time(),_vehicle);
-}
-
-//======================================================================
-void ErrorController::recogWall(){
-  _isWall = true;
-}
-//====================================================================== 
-bool ErrorController::accidentCheck(){
-  if(_isAccident){
-    if(_accidentTime<7000){
-      _accidentTime+=TimeManager::unit();
-      return true;
-    }else{
-      return false;
+      if(error==0.0)
+	return -2.0/60.0/60.0;
+      else if(error<-3.0)
+	return 2.0/60.0/60.0;
+      else if(error>0)
+	return 0.0;
     }
-  }else{
-    return true;
   }
-}    
-//======================================================================  
-bool ErrorController::initErrorParams(){
-  // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
-  //ファイルパスの取得
-  return "../simulations/LRError/";
-  string s1,s2;
-  string path = "./_input.json";
-
-  // ファイルオープン
-  ifstream inputStream;
-  string thisLine;
-  inputStream.open(path);
-  if (!inputStream.is_open())
-  {
-    cerr << "cannot open file!" << endl;
-    exit(1);
-  }
-
-  stringstream sstream;
-  while (getline(inputStream, thisLine))
-  {
-    sstream << thisLine;
-  }
-  inputStream.close();
-  cout << "finish opening file!" << endl;
-
-  // CCLOG("sstream:%s", sstream.str().c_str());
-
-  // JSONのパース
-  picojson::value v; 
-  picojson::parse(v, sstream);
-
-  picojson::object& all = v.get<picojson::object>();
-  /*
-     picojson::array& array = all["hoge"].get<picojson::array>();
-     for (picojson::array::iterator it = array.begin(); it != array.end(); it++)
-     {
-     picojson::object& all = it->get<picojson::object>();
-   */
-  GVManager::setNewNumeric("NOLOOK_REAR",0.0);
-  GVManager::setNewNumeric("ARROGANCE_PASSING",0.0);
-  GVManager::setNewNumeric("NOLOOK_SHIFT",0.0);
-  GVManager::setNewNumeric("NOLOOK_HEAD",0.0);
-  /*
-  GVManager::setNewNumeric("NOLOOK_REAR",all["nolook_rear"].get<double>());
-  GVManager::setNewNumeric("ARROGANCE_PASSING",all["arrogance_passing"].get<double>());
-  GVManager::setNewNumeric("ARROGANCE_LR",all["arrogance_LR"].get<double>());
-  GVManager::setNewNumeric("NOLOOK_SHIFT",all["nolook_shift"].get<double>());
-  GVManager::setNewNumeric("NOLOOK_HEAD",all["nolook_head"].get<double>());
-  */
-  // CCLOG("x:%d, y:%d, z:%d", x, y, z);
-  //}
-} 
-//======================================================================   
-std::string ErrorController::setDataPath(){
-  // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
-  //ファイルパスの取得
-  return "../simulations/LRError/";
-  const char* path = "./_input.json";
-
-  // ファイルオープン
-  ifstream inputStream;
-  string thisLine;
-  inputStream.open(path);
-  if (!inputStream.is_open())
-  {
-    cerr << "cannot open file!" << endl;
-    exit(1);
-  }
-
-  stringstream sstream;
-  while (getline(inputStream, thisLine))
-  {
-    sstream << thisLine;
-  }
-  inputStream.close();
-  cout << "finish opening file!" << endl;
-
-  // CCLOG("sstream:%s", sstream.str().c_str());
-
-  // JSONのパース
-  picojson::value v; 
-  picojson::parse(v, sstream);
-  picojson::object& all = v.get<picojson::object>(); 
-  std::string dataPath = (std::string) all["data_path"].get<std::string>().c_str(); 
-  cout << dataPath <<endl;
-  return dataPath;
 }
 
-//======================================================================    
-void ErrorController::checkStatData(){
-  vector<DetectorUnit*>* detectors = ObjManager::detectorUnits();
-  cout << detectors->size() << endl;
-  if(detectors->size() > 0)
+//======================================================================
+void ErrorController::checkHeadAccident()
+{
   {
-    int totalP =0;
-    int totalT =0;
-    for(int i=0;i<detectors->size();i++)
-    {
-      DetectorUnit* detector = detectors->at(i);
-      detector->monitorLanes();
-      DetectorUnit::StatVehicleData svd = detector->statVehicleData(); 
-      totalP+=svd.totalAllPassengers;
-      totalT+=svd.totalAllTrucks; 
+    Section* section = _vehicle->section();
+    if(!_isAccident && section != NULL){
+      const map<string, Lane*, less<string> >* lanes = _vehicle->laneBundle()->lanes();
+      map<string, Lane*, less<string> >::const_iterator  ite = lanes->begin();
+      // 自分の方向
+      int myDirection = _vehicle->section()->isUp(_vehicle->lane());
+      //自分の対向車線
+      Lane* onComingLane=NULL;
+      while (ite != lanes->end()) {
+	Lane* lane = ite->second;
+	if(section->isUp(lane)!=myDirection){
+	  // 右車線
+	  Lane* rl = NULL;
+	  // 右車線の長さ
+	  double rll;
+	  section->getRightSideLane(lane,lane->length(),&rl,&rll);
+	  if(rl==NULL){
+	    onComingLane = lane;
+	  }
+	}
+	ite++;
+      }
+
+      if(onComingLane!=NULL){
+	Vehicle* frontSideVehicle = onComingLane->followingVehicle(_vehicle->lane()->length()-_vehicle->length());
+	if(frontSideVehicle!=NULL){
+	  if(CollisionJudge::isCollid(_vehicle,frontSideVehicle)){
+	    accidentOccur();
+	    frontSideVehicle->errorController()->accidentOccur();
+	    //_velocity -> _errorVelocity=0.0;
+	    _isHeadError=false;
+	  }
+	}
+      }
     }
-    cout << "===============================\n"
-      << "statitic accident data\n" 
-      << "計算時間:" <<TimeManager::getTime("TOTALRUN")<<"\n"
-      << "発生小型車両台数:" << totalP<< "\n"
-      << "発生大型車両台数:" << totalT<< "\n" 
-      << "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
-      << "==============================="<<endl; 
-      writeStatData(totalP,totalT);
-      if(totalP+totalT> _maxTotal)
-        _stopRun = true;
-  }else
-  {
-    cerr << "no detector file" <<endl;
   }   
 }
-//======================================================================
-void ErrorController::writeStatData(int totalP,int totalT){
-  // error.txtのオープン
-  string file;
-  GVManager::getVariable("RESULT_STAT_ACCIDENT_FILE", &file);
-  ofstream& ofsGD1 = FileManager::getOFStream(file);
-  // オープンに失敗した場合は関数内で落ちるはず。
-  // 車両台数等の動的グローバル情報の書き出し
-  ofsGD1 << TimeManager::getTime("TOTALRUN")<<"," 
-    << TimeManager::time()/1000 << ","
-    <<  totalP<< ","
-    <<  totalT<< ","
-    << GVManager::getNumeric("ACCIDENT_COUNT") << ","
-    << endl;
-}
-//====================================================================== 
-bool ErrorController::stopRun(){
-  return _stopRun;
-}
+  //======================================================================
+  bool ErrorController::isRearError() const{
+    return _rearError;
+  }
+  //======================================================================
+  bool ErrorController::isLRError() const{
+    return _isLRError;
+  }
+  //======================================================================
+  bool ErrorController::isShiftError() const{
+    return _isShiftError;
+  }
+  //======================================================================
+  bool ErrorController::isHeadError() const{
+    return _isHeadError;
+  }
+  //======================================================================
+  bool ErrorController::isShiftEnd() const{
+    return _isShiftEnd;
+  }
+  /*
+  //======================================================================
+  void ErrorController::shifEnd() const{
+
+  _isShiftEnd=true;
+  }
+   */
+  //======================================================================
+  bool ErrorController::isPassingError() const{
+    return _isPassingError;
+  }
+  //======================================================================
+  bool ErrorController::isAccident() const{
+    return _isAccident;
+  }
+  //======================================================================
+  int ErrorController::rearErrorTime() const{
+    return _rearErrorTime;
+  } 
+  //======================================================================
+  int ErrorController::accidentTime() const{
+    return _accidentTime;
+  }
+  string ErrorController::type() const{
+    return _type;
+  }
+  //======================================================================
+  void ErrorController::accidentOccur(){
+
+    cout << "=================================" <<endl;
+    cout << "Accident occured: car id is " <<  _vehicle->id() << endl;
+    cout << "=================================" <<endl;
+
+    _isAccident = true;
+    _rearError=false;
+    _isPassingError = false;
+    _vehicle->setBodyColor(0,0,0); 
+    //writeAccident();
+    VehicleIO::instance().writeVehicleAccidentData(TimeManager::time(),_vehicle);
+  }
+  //======================================================================
+  void ErrorController::errorOccur(string type){
+    _type = type;
+    cout << "=================================" <<endl;
+    cout << "Error occured: car id is " <<  _vehicle->id() << endl;
+    cout << "error type:"<<type <<endl; 
+    cout << "=================================" <<endl;
+    _vehicle->setBodyColor(0.8,0.8,0);
+    VehicleIO::instance().writeVehicleErrorData(TimeManager::time(),_vehicle);
+  }
+
+  //======================================================================
+  void ErrorController::recogWall(){
+    _isWall = true;
+  }
+  //====================================================================== 
+  bool ErrorController::accidentCheck(){
+    if(_isAccident){
+      if(_accidentTime<7000){
+	_accidentTime+=TimeManager::unit();
+	return true;
+      }else{
+	return false;
+      }
+    }else{
+      return true;
+    }
+  }    
+  //======================================================================  
+  bool ErrorController::initErrorParams(){
+    // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
+    //ファイルパスの取得
+    return "../simulations/LRError/";
+    string s1,s2;
+    string path = "./_input.json";
+
+    // ファイルオープン
+    ifstream inputStream;
+    string thisLine;
+    inputStream.open(path);
+    if (!inputStream.is_open())
+    {
+      cerr << "cannot open file!" << endl;
+      exit(1);
+    }
+
+    stringstream sstream;
+    while (getline(inputStream, thisLine))
+    {
+      sstream << thisLine;
+    }
+    inputStream.close();
+    cout << "finish opening file!" << endl;
+
+    // CCLOG("sstream:%s", sstream.str().c_str());
+
+    // JSONのパース
+    picojson::value v; 
+    picojson::parse(v, sstream);
+
+    picojson::object& all = v.get<picojson::object>();
+    /*
+       picojson::array& array = all["hoge"].get<picojson::array>();
+       for (picojson::array::iterator it = array.begin(); it != array.end(); it++)
+       {
+       picojson::object& all = it->get<picojson::object>();
+     */
+    GVManager::setNewNumeric("NOLOOK_REAR",0.0);
+    GVManager::setNewNumeric("ARROGANCE_PASSING",0.0);
+    GVManager::setNewNumeric("NOLOOK_SHIFT",0.0);
+    GVManager::setNewNumeric("NOLOOK_HEAD",0.0);
+    /*
+       GVManager::setNewNumeric("NOLOOK_REAR",all["nolook_rear"].get<double>());
+       GVManager::setNewNumeric("ARROGANCE_PASSING",all["arrogance_passing"].get<double>());
+       GVManager::setNewNumeric("ARROGANCE_LR",all["arrogance_LR"].get<double>());
+       GVManager::setNewNumeric("NOLOOK_SHIFT",all["nolook_shift"].get<double>());
+       GVManager::setNewNumeric("NOLOOK_HEAD",all["nolook_head"].get<double>());
+     */
+    // CCLOG("x:%d, y:%d, z:%d", x, y, z);
+    //}
+  } 
+  //======================================================================   
+  std::string ErrorController::setDataPath(){
+    // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
+    //ファイルパスの取得
+    return "../simulations/LRError/";
+    const char* path = "./_input.json";
+
+    // ファイルオープン
+    ifstream inputStream;
+    string thisLine;
+    inputStream.open(path);
+    if (!inputStream.is_open())
+    {
+      cerr << "cannot open file!" << endl;
+      exit(1);
+    }
+
+    stringstream sstream;
+    while (getline(inputStream, thisLine))
+    {
+      sstream << thisLine;
+    }
+    inputStream.close();
+    cout << "finish opening file!" << endl;
+
+    // CCLOG("sstream:%s", sstream.str().c_str());
+
+    // JSONのパース
+    picojson::value v; 
+    picojson::parse(v, sstream);
+    picojson::object& all = v.get<picojson::object>(); 
+    std::string dataPath = (std::string) all["data_path"].get<std::string>().c_str(); 
+    cout << dataPath <<endl;
+    return dataPath;
+  }
+
+  //======================================================================    
+  void ErrorController::checkStatData(){
+    vector<DetectorUnit*>* detectors = ObjManager::detectorUnits();
+    cout << detectors->size() << endl;
+    if(detectors->size() > 0)
+    {
+      int totalP =0;
+      int totalT =0;
+      for(int i=0;i<detectors->size();i++)
+      {
+	DetectorUnit* detector = detectors->at(i);
+	detector->monitorLanes();
+	DetectorUnit::StatVehicleData svd = detector->statVehicleData(); 
+	totalP+=svd.totalAllPassengers;
+	totalT+=svd.totalAllTrucks; 
+      }
+      cout << "===============================\n"
+	<< "statitic accident data\n" 
+	<< "エラー率：" << GVManager::getNumeric("ARROGANCE_LR") << "\n"  
+	<< "計算時間:" <<TimeManager::getTime("TOTALRUN")<<"\n"
+	<< "発生小型車両台数:" << totalP<< "\n"
+	<< "発生大型車両台数:" << totalT<< "\n" 
+	<< "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
+	<< "==============================="<<endl; 
+      writeStatData(totalP,totalT);
+      if(totalP+totalT> _maxTotal || _stopNAccident < GVManager::getNumeric("ACCIDENT_COUNT"))
+	_stopRun = true;
+    }else
+    {
+      cerr << "no detector file" <<endl;
+    }   
+  }
+  //======================================================================
+  void ErrorController::writeStatData(int totalP,int totalT){
+    // error.txtのオープン
+    string file;
+    GVManager::getVariable("RESULT_STAT_ACCIDENT_FILE", &file);
+    ofstream& ofsGD1 = FileManager::getOFStream(file);
+    // オープンに失敗した場合は関数内で落ちるはず。
+    // 車両台数等の動的グローバル情報の書き出し
+    ofsGD1 << TimeManager::getTime("TOTALRUN")<<"," 
+      << TimeManager::time()/1000 << ","
+      <<  totalP<< ","
+      <<  totalT<< ","
+      << GVManager::getNumeric("ACCIDENT_COUNT") << ","
+      << endl;
+  }
+  //====================================================================== 
+  bool ErrorController::stopRun(){
+    return _stopRun;
+  }
 

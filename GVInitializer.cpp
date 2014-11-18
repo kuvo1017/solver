@@ -32,9 +32,14 @@ void GVInitializer::init(const string& dataPath)
   // 車両発生情報が定義されていない交差点から車両を発生させるか
   GVManager::setNewFlag("FLAG_GEN_RAND_VEHICLE", true);
 
-  // 時系列データを出力するか
-  GVManager::setNewFlag("FLAG_OUTPUT_TIMELINE", true);
 
+#ifdef OACIS
+  // 時系列データを出力するか
+   GVManager::setNewFlag("FLAG_OUTPUT_TIMELINE", false);
+#else
+  // 時系列データを出力するか
+   GVManager::setNewFlag("FLAG_OUTPUT_TIMELINE", true);
+#endif
   // 計測機器の詳細データを出力するか
   GVManager::setNewFlag("FLAG_OUTPUT_MONITOR_D", true);
 

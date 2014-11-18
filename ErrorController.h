@@ -50,6 +50,12 @@ class ErrorController{
     /// 右左折事故の処理
     void LRError(Vehicle* thatV,double thisTti,double thatTti) ; 
     void LRError(double thisTti,double thatTtp) ;  
+    /// 正面衝突エラーが起きるかを計算
+    bool headError();
+    /// 正面衝突事故が起きている時に横ずれの速度を返す
+    double errorVelocity();
+    /// 正面衝突事故が起きてるかどうかをチェック
+    void checkHeadAccident();
     /// 事故状態かどうかをチェックして、事故状態ならエージェント消去
     bool accidentCheck();
     /// エラーの種類を返す
@@ -113,6 +119,8 @@ class ErrorController{
     int _shiftTime;
     /// エラーの種類
     string _type;
+    ///
+    static int _stopNAccident;
     ///
     static int _maxTotal;
     /// シミュレーションを終わらせるか
