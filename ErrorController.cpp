@@ -15,8 +15,8 @@
 #include "FileManager.h"
 
 bool ErrorController::_isRearOn = false;
-bool ErrorController::_isPassingOn = true; 
-bool ErrorController::_isLROn = true;
+bool ErrorController::_isPassingOn = false; 
+bool ErrorController::_isLROn = false;
 bool ErrorController::_isSlideOn = false;
 bool ErrorController::_isHeadOn = false; 
 int ErrorController::_stopNAccident = 10000;
@@ -62,8 +62,8 @@ VirtualLeader* ErrorController::rearError(VirtualLeader* resultLeader){
   if (front){
     Vehicle* frontVehicle = dynamic_cast<Vehicle *>(front);
     if(CollisionJudge::isCollid(_vehicle,frontVehicle)){
-      accidentOccur();
-      frontVehicle->errorController()->accidentOccur();
+      accidentOccur("rear-end");
+      frontVehicle->errorController()->accidentOccur("rear-end");
     }
     //多くの対称を認知したときに先行者の速度等を認知するかわりに予測する処理
     //追突事故の再現用
@@ -271,8 +271,8 @@ void ErrorController::checkHeadAccident()
 	Vehicle* frontSideVehicle = onComingLane->followingVehicle(_vehicle->lane()->length()-_vehicle->length());
 	if(frontSideVehicle!=NULL){
 	  if(CollisionJudge::isCollid(_vehicle,frontSideVehicle)){
-	    accidentOccur();
-	    frontSideVehicle->errorController()->accidentOccur();
+	    accidentOccur("head");
+	    frontSideVehicle->errorController()->accidentOccur("head");
 	    //_velocity -> _errorVelocity=0.0;
 	    _isHeadError=false;
 	  }
@@ -328,10 +328,11 @@ void ErrorController::checkHeadAccident()
     return _type;
   }
   //======================================================================
-  void ErrorController::accidentOccur(){
+  void ErrorController::accidentOccur(std::string type){
 
     cout << "=================================" <<endl;
     cout << "Accident occured: car id is " <<  _vehicle->id() << endl;
+    cout << "error type:" << type <<endl;
     cout << "=================================" <<endl;
 
     _isAccident = true;
@@ -426,7 +427,10 @@ void ErrorController::checkHeadAccident()
   std::string ErrorController::setDataPath(){
     // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
     //ファイルパスの取得
-    return "../simulations/LRError/";
+     std::string dataPath = "../simulations/LRError/";
+    //std::string dataPath = "../simulations/rearError/";
+    return dataPath;
+/*
     const char* path = "./_input.json";
 
     // ファイルオープン
@@ -456,6 +460,7 @@ void ErrorController::checkHeadAccident()
     std::string dataPath = (std::string) all["data_path"].get<std::string>().c_str(); 
     cout << dataPath <<endl;
     return dataPath;
+    */
   }
 
   //======================================================================    

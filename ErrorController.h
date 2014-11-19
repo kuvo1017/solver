@@ -38,7 +38,7 @@ class ErrorController{
     /// エラーが起きたときに外部ファイルに記入する
     void writeError();
     /// 事故が起こった時の処理
-    void accidentOccur();
+    void accidentOccur(std::string type);
     /// エラーが起こった時の処理
     void errorOccur(string type);
     ///　交障害物を認識している状態にする。
