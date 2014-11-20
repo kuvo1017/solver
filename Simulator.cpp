@@ -296,7 +296,7 @@ bool Simulator::timeIncrement()
 
 #ifdef ERROR_MODE
   // 事故の記録
-  if(TimeManager::time() % 1000 == 0)
+  if(TimeManager::time() % 100000 == 0)
     ErrorController::checkStatData();
 #endif
 
