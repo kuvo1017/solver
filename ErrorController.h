@@ -8,6 +8,7 @@
 using namespace std;
 
 class Vehicle;
+class Lane;
 
 class ErrorController{ 
   public:
@@ -44,7 +45,7 @@ class ErrorController{
     ///　交障害物を認識している状態にする。
     void recogWall();
     /// 横ずれエラーが起きている時間
-    int slideErrorTime();
+    int headErrorTime();
     /// 追突事故の処理
     VirtualLeader* rearError(VirtualLeader* resultLeader);
     /// 右左折事故の処理
@@ -54,9 +55,7 @@ class ErrorController{
     bool headError();
     /// 正面衝突事故が起きている時に横ずれの速度を返す
     double errorVelocity();
-    /// 正面衝突事故が起きてるかどうかをチェック
-    void checkHeadAccident();
-    /// 事故状態かどうかをチェックして、事故状態ならエージェント消去
+   /// 事故状態かどうかをチェックして、事故状態ならエージェント消去
     bool accidentCheck();
     /// エラーの種類を返す
     string type() const;
@@ -86,7 +85,7 @@ class ErrorController{
     ///　予測エラー継続時間
     int _rearErrorTime;
     /// 横ずれエラー時間
-    int _slideErrorTime;
+    int _headErrorTime;
     ///　障害物エラーか
     int _isPassingError;
     ///　傲慢なエージェントか
@@ -107,6 +106,8 @@ class ErrorController{
     double _velocityDifference;
     ///  先行者のid
     string _rearId;
+    /// 正面衝突事故が起きてるかどうかをチェック
+    bool _checkHeadAccident();
     ///  事故が起こった瞬間か
     bool _accidentOccur;
     ///  事故が起こっているか
@@ -117,6 +118,10 @@ class ErrorController{
     bool _isWall;
     /// 一度車線変更してから立った時間
     int _shiftTime;
+    /// 横ずれの速度(m/msec)
+    double _errorVelocity;
+    /// 自車が最も右側にいる時の右側対向車線
+    Lane* _onComingLane();
     /// エラーの種類
     string _type;
     ///

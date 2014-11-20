@@ -3,6 +3,7 @@
 #include "Section.h"
 #include "Intersection.h"
 #include "GVManager.h"
+#include "ErrorController.h"
 #include <cassert>
 
 using namespace std;
@@ -35,6 +36,7 @@ void Vehicle::run()
      */
     if (_laneShifter.isActive())
     {
+        cout << _errorVelocity << endl;
         _error += _errorVelocity * TimeManager::unit();
 
         _laneShifter.proceedShift();
@@ -49,6 +51,16 @@ void Vehicle::run()
     {
         _laneShifter.beginShift();
     }
+#ifdef ERROR_MODE
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // 正面衝突のエラーが起きている時
+    if(_errorController->isHeadError())
+    {
+       _errorVelocity = _errorController->errorVelocity();
+      _error += _errorVelocity * TimeManager::unit();
+    }
+#endif
+ 
     
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // レーンへの登録処理

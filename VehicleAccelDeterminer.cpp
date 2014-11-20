@@ -26,7 +26,6 @@ void Vehicle::determineAcceleration()
 #ifdef ERROR_MODE
     if(_errorController->headError())
     {
-
       _errorVelocity = _errorController->errorVelocity();
     }
     else

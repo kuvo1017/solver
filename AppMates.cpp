@@ -174,7 +174,7 @@ void AppMates::parseArgument(int argc, char** argv)
         //double rate = (double) *optarg;
 	str = optarg;
 	cout << "optarg is " << std::stof(str) <<endl;
-	GVManager::setNewNumeric("ARROGANCE_LR",(double) std::stof(str));  
+	GVManager::setNewNumeric("NOLOOK_HEAD",(double) std::stof(str));  
 	break;
       case 'R':
       case 'r': // 乱数の種を指定する
