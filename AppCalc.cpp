@@ -144,7 +144,7 @@ int AppCalc::batchRun()
 
     cout << "*** Run advmates-calc: max time=" << maxTime
          << " (dt=" << TimeManager::unit() << ") ***" << endl;
-    _simulator->run(maxTime/1000000);
+    _simulator->run(maxTime*3);
 
     if (GVManager::getFlag("FLAG_OUTPUT_TRIP_INFO"))
     {
