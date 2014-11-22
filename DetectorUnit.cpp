@@ -158,13 +158,14 @@ void DetectorUnit::monitorLanes()
         vector<Detector::PassedVehicleData> result_pvd;
         if (_detectors[i]->getPassedVehicleData(&result_pvd))
         {
-            _unitPvd.insert(_unitPvd.end(),
+	  cout << "haitterude" <<endl;
+	  _unitPvd.insert(_unitPvd.end(),
                             result_pvd.begin(),
                             result_pvd.end());
             for (unsigned int j=0; j<result_pvd.size(); j++)
             {
                 if (VehicleFamily::isTruck(result_pvd[j].vehicle->type()))
-                { 
+                {      
                     // 大型車
                     _unitSvd.numTrucks[i]++;
                     _unitSvd.sumTrucks++;
@@ -172,6 +173,7 @@ void DetectorUnit::monitorLanes()
                 }
                 else
                 {
+
                     // 乗用車
                     _unitSvd.numPassengers[i]++;
                     _unitSvd.sumPassengers++;
