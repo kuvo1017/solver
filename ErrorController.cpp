@@ -203,25 +203,20 @@ void ErrorController::LRError(Vehicle* thatV,double thisTti,double thatTti) {
 //======================================================================
 bool ErrorController::headError(){
   //多くの対称を認知したときに先行者の速度等を認知するかわりに予測する処理
-  //追突事故の再現用
-  //をonにする
-  //確率をあげるポイント
-  if(_checkHeadAccident())
+  if(_checkHeadAccident() || !_isHeadOn || (_onComingLane()==nullptr))
+  {
     return false;
-  if(!_isHeadOn)
-    return false;
-  if(_onComingLane())
-    return false;
-  double p=0.1;
+  }
+  double p=100;
   const std::vector<VirtualLeader *>* leaders = _vehicle->virtualLeaders(); 
   for(int i=0;i<leaders->size();i++){
     string type = leaders->at(i)->getType();
     if(type=="SHIFTFRONT_CAR")
-      p+=0.3;
+      p-=40;
     else if(type=="MERGE_CAR")
-      p+=0.5;
+      p-=40;
     else if(type=="RED_SIGNAL")
-      p+=0.1;
+      p-=10;
     double x = Random::uniform();
     if(x*p<GVManager::getNumeric("NOLOOK_HEAD")){
       errorOccur("head");
@@ -233,25 +228,28 @@ bool ErrorController::headError(){
 //======================================================================
 double ErrorController::errorVelocity() 
 {
-  {
+    if(_isAccident)
+    {
+    return 0.0;
+    }
     double error = _vehicle->error();
     if(_isHeadError ){
       if(error<-3.0 )
       {
-	_errorVelocity =  7.5/60.0/60.0;
+	_errorVelocity =  3.0/60.0/60.0;
       }
       else if(error > 0)
       {
 	_errorVelocity =  0.0;
+	_isHeadError = false;
       }
       else if(_headErrorTime ==0)
       {
-	_errorVelocity = -7.5/60.0/60.0;
+	_errorVelocity = -3.0/60.0/60.0;
       }
       _headErrorTime+=TimeManager::unit();
     }
     return _errorVelocity;
-  }
 }
 
 //======================================================================
@@ -273,19 +271,20 @@ bool ErrorController::_checkHeadAccident()
   return false;
 }
 //====================================================================== 
-Lane* _onComingLane()
+Lane* ErrorController::_onComingLane()
 {
   Lane* onComingLane=NULL;
+  Section* section = _vehicle->section();
   if(!_isAccident 
       && section != NULL)
   {
     // 自車が最も右側の車線にいるかをチェック
     // もしいなければ、正面衝突が起こらないため
     Lane* rightLane = NULL;
-    double rightLaneLenth;
+    double rightLaneLength =0.0;
     Lane* myLane = _vehicle->lane();
-    section->getRightSideLane(myLane,myLane->length(),rightLane,rightLaneLenth);
-    if(rightLane == NULL)
+    section->getRightSideLane(myLane,myLane->length(),&rightLane,&rightLaneLength);
+    if(rightLaneLength != 0)
       return onComingLane;
     const map<string, Lane*, less<string> >* lanes = _vehicle->laneBundle()->lanes();
     map<string, Lane*, less<string> >::const_iterator  ite = lanes->begin();

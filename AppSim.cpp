@@ -49,7 +49,6 @@ int AppSim::run()
         _vis->visualize();
 	if(GVManager::getFlag("FLAG_AUTO_START"))
 	    _vis->autoStart(); 
-	cout << "check2" << endl;
         return EXIT_SUCCESS;
     }
     else

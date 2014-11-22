@@ -135,7 +135,6 @@ Visualizer::Visualizer()
     GVManager::setNewFlag("VIS_BARRIER",
                           (_isBarriers==1));
 #else
-     cout << "haitteruyo" <<endl;
      GVManager::setNewFlag("VIS_BARRIER",
                           (_isBarriers==0));
 #endif
@@ -148,7 +147,6 @@ void Visualizer::setSimulator(Simulator* simulator)
 {
     assert(simulator->hasInit());
     _sim = simulator;
-    cout << "check" << endl;
 }
 
 //======================================================================

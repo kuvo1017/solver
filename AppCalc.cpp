@@ -17,6 +17,7 @@ using namespace std;
 //======================================================================
 AppCalc::AppCalc()
 {
+    cout << "appcalc now" <<endl;
     _maxTime = DEFAULT_MAX_TIME;
 }
 
@@ -144,7 +145,7 @@ int AppCalc::batchRun()
 
     cout << "*** Run advmates-calc: max time=" << maxTime
          << " (dt=" << TimeManager::unit() << ") ***" << endl;
-    _simulator->run(maxTime);
+    _simulator->run(maxTime/1000);
 
     if (GVManager::getFlag("FLAG_OUTPUT_TRIP_INFO"))
     {

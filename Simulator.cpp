@@ -61,7 +61,7 @@ Simulator::~Simulator()
   TimeManager::deleteAllClockers();
   FileManager::deleteAllOFStreams();
   ObjManager::deleteAll();
-
+ 
   if (_roadMap!=NULL)
   {
     delete _roadMap;
@@ -71,7 +71,6 @@ Simulator::~Simulator()
 //======================================================================
 bool Simulator::hasInit() const
 {
-
   if (_roadMap)
   {
     return true;
@@ -85,6 +84,7 @@ bool Simulator::hasInit() const
 //======================================================================
 bool Simulator::getReadyRoadMap()
 {
+
   RoadMapBuilder builder;
 
   // 道路ネットワークの作成
@@ -244,8 +244,7 @@ bool Simulator::run(ulint time)
   if (time>TimeManager::time())
   {
     TimeManager::startClock("TOTALRUN");
-    while (time>TimeManager::time() && !ErrorController::stopRun()
-    && (time<86400000))
+    while (time>TimeManager::time() && !ErrorController::stopRun())
     {
       timeIncrement();
     }
