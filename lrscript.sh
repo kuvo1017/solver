@@ -5,5 +5,5 @@
    do
 	./advmates-calc -d $rate
    done
-   ruby ./file.rb
+   ruby ./file.rb $i
  done

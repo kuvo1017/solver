@@ -1,7 +1,7 @@
 # coding:utf-8 
 require 'csv'
 
-csv = CSV.open("_result_whole.csv","a") 
+csv = CSV.open("_result_whole_" + ARGV[0]+ ".csv" ,"w") 
 #outfile = File.open('_result_whole.csv', 'a')
 #CSV::Writer.generate(outfile) do |writer|
 #csv = CSV.open("_result_whole_" + $ARGV[0] + ".csv","w")
