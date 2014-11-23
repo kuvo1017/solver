@@ -196,7 +196,6 @@ bool Simulator::getReadyRoadsideUnit()
 
   // 感知器データ出力ファイルの準備
   vector<DetectorUnit*>* detectorUnits = ObjManager::detectorUnits();
-  cout << "kokomade" << endl;
   DetectorIO::getReadyOutputFiles(detectorUnits);
   if (GVManager::getFlag("FLAG_VERBOSE"))
   {

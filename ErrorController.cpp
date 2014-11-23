@@ -16,8 +16,8 @@
 
 bool ErrorController::_isRearOn = false;
 bool ErrorController::_isPassingOn = false; 
-bool ErrorController::_isLROn = false;
-bool ErrorController::_isHeadOn = true; 
+bool ErrorController::_isLROn = true;
+bool ErrorController::_isHeadOn = false; 
 int ErrorController::_stopNAccident = 100;
 int ErrorController::_maxTotal = 1000*1000*5/4.5;
 bool ErrorController::_stopRun = false;
@@ -395,7 +395,7 @@ bool ErrorController::accidentCheck(){
   }else{
     return true;
   }
-}    
+}
 //======================================================================  
 bool ErrorController::initErrorParams(){
   // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
@@ -403,7 +403,7 @@ bool ErrorController::initErrorParams(){
   GVManager::setNewNumeric("NOLOOK_REAR",0.0);
   GVManager::setNewNumeric("ARROGANCE_PASSING",0.0);
   GVManager::setNewNumeric("NOLOOK_SHIFT",0.0);
-  GVManager::setNewNumeric("NOLOOK_HEAD",0.5);
+  GVManager::setNewNumeric("NOLOOK_HEAD",0.0);
   return "../simulations/LRError/";
   string s1,s2;
   string path = "./_input.json";
@@ -453,7 +453,8 @@ bool ErrorController::initErrorParams(){
 std::string ErrorController::setDataPath(){
   // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
   //ファイルパスの取得
-  return "../simulations/headError/";
+  return "../simulations/LRError/";
+  //return "../simulations/headError/";
   const char* path = "./_input.json";
 
   // ファイルオープン
@@ -488,7 +489,6 @@ std::string ErrorController::setDataPath(){
 //======================================================================    
 void ErrorController::checkStatData(){
   vector<DetectorUnit*>* detectors = ObjManager::detectorUnits();
-  cout << detectors->size() << endl;
   if(detectors->size() > 0)
   {
     int totalP =0;
@@ -503,7 +503,7 @@ void ErrorController::checkStatData(){
     }
     cout << "===============================\n"
       << "statitic accident data\n" 
-      << "エラー率：" << GVManager::getNumeric("NOLOOK_HEAD") << "\n"  
+      << "エラー率：" << GVManager::getNumeric("ARROGANCE_LR") << "\n"  
       << "計算時間:" <<TimeManager::getTime("TOTALRUN")<<"\n"
       << "発生小型車両台数:" << totalP<< "\n"
       << "発生大型車両台数:" << totalT<< "\n" 

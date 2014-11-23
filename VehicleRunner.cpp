@@ -36,7 +36,6 @@ void Vehicle::run()
      */
     if (_laneShifter.isActive())
     {
-        cout << _errorVelocity << endl;
         _error += _errorVelocity * TimeManager::unit();
 
         _laneShifter.proceedShift();
