@@ -241,6 +241,10 @@ void Intersection::setNext(Intersection* ptInter)
 void Intersection::setBarrier()
 {
   int numNext = _next.size();
+  if(numNext < 2)
+  {
+    return;
+  }
   for(int i=0;i<numNext;i++)
   {
     Section* nexts[2];

@@ -383,7 +383,6 @@ void IntersectionDrawer::draw(const Intersection& inter) const
   if (GVManager::getFlag("VIS_BARRIER"))
   {
     drawBarriers(inter); 
-    cout << "お絵かき完了?" << endl; 
   } 
 }
 //----------------------------------------------------------------------
@@ -533,11 +532,14 @@ BarrierDrawer& BarrierDrawer::instance()
 void BarrierDrawer::draw(const Intersection& inter) const
 {
   std::vector<Barrier*> barriers = inter.barriers();
+  if(barriers.size()==0)
+  {
+    return;
+  }
   if(&barriers != NULL)
   {
     for(int i=0;i<1;i++)
     {
-
       Barrier* barrier = barriers[i];
       if (barrier!=NULL)
       {
@@ -546,7 +548,6 @@ void BarrierDrawer::draw(const Intersection& inter) const
 	AutoGL_DrawTriangle(barrier->x(0), barrier->y(0), barrier->z(0),
 	    barrier->x(1), barrier->y(1), barrier->z(1),
 	    barrier->x(2), barrier->y(2), barrier->z(2));
-	std::cout << "上半分" <<endl;    
 	// 下半分の描画
 	AutoGL_DrawTriangle(barrier->x(2), barrier->y(2), barrier->z(2),
 	    barrier->x(3), barrier->y(3), barrier->z(3),
