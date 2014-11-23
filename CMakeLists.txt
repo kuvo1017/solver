@@ -157,6 +157,7 @@ endif(ZLIB_FOUND)
 
 add_definitions("-DERROR_MODE") 
 add_definitions("-DOACIS")
+add_definitions("-std=c++11")
 #add_definitions("-DBARRIER")
 #**********************************************************************
 if(NOT USE_AUTOGL_CONFIG AND BUILD_MATES_SIM)
