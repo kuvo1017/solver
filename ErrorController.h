@@ -69,7 +69,7 @@ class ErrorController{
     /// 
     static void checkStatData(); 
     /// 
-    static void writeStatData(int totalP,int totalT);
+    static void writeStatData(int totalP,int totalT,string time);
     ///
     static void endRun();
   protected: 

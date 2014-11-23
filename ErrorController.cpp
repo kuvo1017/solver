@@ -1,5 +1,6 @@
 #include <vector>
 #include <sstream>
+#include <time.h>
 #include "ErrorController.h"
 #include "Lane.h"
 #include "Random.h"
@@ -493,6 +494,9 @@ void ErrorController::checkStatData(){
   {
     int totalP =0;
     int totalT =0;
+    time_t now = time(NULL);
+    struct tm *pnow = localtime(&now);
+    string time = to_string(pnow->tm_hour) + ":"+ to_string(pnow->tm_min) + ":"+ to_string(pnow->tm_sec);  
     for(int i=0;i<detectors->size();i++)
     {
       DetectorUnit* detector = detectors->at(i);
@@ -501,15 +505,16 @@ void ErrorController::checkStatData(){
       totalP+=svd.totalAllPassengers;
       totalT+=svd.totalAllTrucks; 
     }
+
     cout << "===============================\n"
       << "statitic accident data\n" 
       << "エラー率：" << GVManager::getNumeric("ARROGANCE_LR") << "\n"  
-      << "計算時間:" <<TimeManager::getTime("TOTALRUN")<<"\n"
+      << "計算時間:" <<time <<"\n"
       << "発生小型車両台数:" << totalP<< "\n"
       << "発生大型車両台数:" << totalT<< "\n" 
       << "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
       << "==============================="<<endl; 
-    writeStatData(totalP,totalT);
+    writeStatData(totalP,totalT,time);
     if(totalP+totalT> _maxTotal || _stopNAccident < GVManager::getNumeric("ACCIDENT_COUNT"))
       _stopRun = true;
   }else
@@ -518,14 +523,14 @@ void ErrorController::checkStatData(){
   }   
 }
 //======================================================================
-void ErrorController::writeStatData(int totalP,int totalT){
+void ErrorController::writeStatData(int totalP,int totalT,string time){
   // error.txtのオープン
   string file;
   GVManager::getVariable("RESULT_STAT_ACCIDENT_FILE", &file);
   ofstream& ofsGD1 = FileManager::getOFStream(file);
   // オープンに失敗した場合は関数内で落ちるはず。
   // 車両台数等の動的グローバル情報の書き出し
-  ofsGD1 << TimeManager::getTime("TOTALRUN")<<"," 
+  ofsGD1 << time<<"," 
     << TimeManager::time()/1000 << ","
     <<  totalP<< ","
     <<  totalT<< ","

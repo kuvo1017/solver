@@ -244,6 +244,7 @@ bool Simulator::run(ulint time)
   {
     TimeManager::startClock("TOTALRUN");
     while (time>TimeManager::time() && !ErrorController::stopRun())
+    //&& TimeManager::time() < 2*1000)
     {
       timeIncrement();
     }
