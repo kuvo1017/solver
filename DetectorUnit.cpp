@@ -158,7 +158,6 @@ void DetectorUnit::monitorLanes()
         vector<Detector::PassedVehicleData> result_pvd;
         if (_detectors[i]->getPassedVehicleData(&result_pvd))
         {
-	  cout << "haitterude" <<endl;
 	  _unitPvd.insert(_unitPvd.end(),
                             result_pvd.begin(),
                             result_pvd.end());
