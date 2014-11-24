@@ -37,7 +37,6 @@ AppMates::AppMates() :  _simulator(), _dataPath(), _key()
 #else
   _key = 2;
 #endif
-  cout << "kiteruyo2"<<endl;
 }
 
 //======================================================================
@@ -111,7 +110,6 @@ void AppMates::init(int argc, char** argv, bool output)
 
   // シミュレータの準備
   // RoadMapの作成
-  cout << "kiteruyo2" << endl;
   bool isReady = getReadySimulator();
   if (!isReady)
   {

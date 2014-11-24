@@ -47,7 +47,6 @@ int AppSim::run()
     {
         _vis->setSimulator(_simulator);
         _vis->visualize();
-	cout << "kokomade" << endl;
 	if(GVManager::getFlag("FLAG_AUTO_START"))
 	    _vis->autoStart(); 
         return EXIT_SUCCESS;

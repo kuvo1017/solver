@@ -538,7 +538,7 @@ void BarrierDrawer::draw(const Intersection& inter) const
   }
   if(&barriers != NULL)
   {
-    for(int i=0;i<1;i++)
+    for(int i=0;i<barriers.size();i++)
     {
       Barrier* barrier = barriers[i];
       if (barrier!=NULL)

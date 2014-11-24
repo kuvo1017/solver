@@ -256,10 +256,9 @@ void Intersection::setBarrier()
     }
     if(nexts[0]->id()!=nexts[1]->id())
     {
-      cout << "!!!!!!!!enter!!!!!!!!!!!!"<<endl;
-      cout << _barriers.size()<<endl;
+      //cout << "!!!!!!!!enter!!!!!!!!!!!!"<<endl;
       _barriers.push_back(new Barrier(this,nexts[0],nexts[1]));
-      cout << "!!!!!!!!push_backed!!!!!!!!!!!!"<<endl; 
+      //cout << "!!!!!!!!push_backed!!!!!!!!!!!!"<<endl; 
     }
   }
 }
