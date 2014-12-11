@@ -6,9 +6,9 @@ csv = CSV.open("_result_whole_" + ARGV[0]+ ".csv" ,"w")
 #CSV::Writer.generate(outfile) do |writer|
 #csv = CSV.open("_result_whole_" + $ARGV[0] + ".csv","w")
 #csv << ["計算時間","シミュレーション内時間","小型車発生台数","大型車発生台数","事故数","エラー率"]
-rates = ["0.001","0.002","0.003","0.005","0.008","0.010","0.020","0.030","0.050", "0.1"]
+rates = ["10","20","30"]
 rates.each do |r|
-  zeros = "000.txt"
+  zeros = " .txt"
   file = open("./_stat_accident" + r + zeros)
   count = 0
   file.each do |line|
