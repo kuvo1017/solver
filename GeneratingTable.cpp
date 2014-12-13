@@ -2,6 +2,7 @@
 #include "Conf.h"
 #include "Router.h"
 #include "AmuStringOperator.h"
+#include "GVManager.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -329,13 +330,25 @@ bool GeneratingTable::init(const std::string& fileName)
             goal = ost1.str();
 
             // 発生量
-            volume = atoi(tokens[4].c_str());
+           volume = atoi(tokens[4].c_str());
 
             // 車種ID
-            vehicleType = atoi(tokens[5].c_str());
-
-            // 経由地
-            curIndex = 6;
+	   vehicleType = atoi(tokens[5].c_str());
+#ifdef OACIS
+	   cout << "vehicleType is " << vehicleType << endl;
+	   if(vehicleType >=20 && vehicleType < 30)
+	   {
+ 	   cout << "small!!" << endl;
+             volume = GVManager::getNumeric("SMALL_TRAFFIC_VOLUME");
+	   }else if(vehicleType >=50 && vehicleType < 60) 
+	   {
+  	   cout << "large!!" << endl;
+             volume = GVManager::getNumeric("LARGE_TRAFFIC_VOLUME");
+	     cout  << "volume is " << volume <<endl;
+	   }
+#endif
+	   // 経由地
+	   curIndex = 6;
             numStoppingInters = atoi(tokens[curIndex].c_str());
             curIndex++;
             stopPoints.reserve(numStoppingInters);

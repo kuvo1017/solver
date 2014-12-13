@@ -49,7 +49,7 @@ bool GVManager::getVariable(const std::string& key, double* value)
 //======================================================================
 double GVManager::getNumeric(const std::string& key)
 {
-    //cout << key <<endl;
+//    cout << key <<endl;
     assert(_isNumericKeyFound(key));
     return _numerics[key];
 }

@@ -5,6 +5,7 @@
 #include "Random.h"
 #include "Simulator.h"
 #include "ErrorController.h"
+#include "OacisIO.h"
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -25,10 +26,10 @@ using namespace std;
 //======================================================================
 AppMates::AppMates() :  _simulator(), _dataPath(), _key()
 {
-#ifdef ERROR_MODE
-  _dataPath = ErrorController::setDataPath();
+#ifdef OACIS
+  _dataPath = OacisIO::inputParams();
 #else
-  //_dataPathと_keyのデフォルト値を設定
+ //_dataPathと_keyのデフォルト値を設定
   _dataPath = "./";
 #endif 
 
@@ -172,11 +173,13 @@ void AppMates::parseArgument(int argc, char** argv)
 	break;
       case 'D':
       case 'd': // データディレクトリを指定する
-	//_initDataPath(optarg);
+	_initDataPath(optarg);
         //double rate = (double) *optarg;
+	/*
 	str = optarg;
 	cout << "optarg is " << std::stof(str) <<endl;
 	GVManager::setNewNumeric("ARROGANCE_LR",(double) std::stof(str));  
+	*/
 	break;
       case 'R':
       case 'r': // 乱数の種を指定する

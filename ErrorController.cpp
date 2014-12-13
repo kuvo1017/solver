@@ -403,6 +403,7 @@ bool ErrorController::initErrorParams(){
   //ファイルパスの取得
   GVManager::setNewNumeric("NOLOOK_REAR",0.0);
   GVManager::setNewNumeric("ARROGANCE_PASSING",0.0);
+  GVManager::setNewNumeric("ARROGANCE_LR",0.0);
   GVManager::setNewNumeric("NOLOOK_SHIFT",0.0);
   GVManager::setNewNumeric("NOLOOK_HEAD",0.0);
   return "../simulations/LRError/";
