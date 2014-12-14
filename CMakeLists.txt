@@ -180,7 +180,7 @@ if(NOT USE_AUTOGL_CONFIG AND BUILD_MATES_SIM)
     endif(NOT GTK2_FOUND)
 
     # stof
-    add_definitions("-std=c++11")  
+    add_definitions("-std=c++0x")  
   endif(${PLATFORM} STREQUAL "linux")
 
   #********************************************************************

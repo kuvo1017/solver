@@ -6,5 +6,9 @@ kdv-solver/
 *.a
 advmates-calc
 advmates-sim
-_*
+_s*
+_a*
+_e*
+_r*
+ 
 old-solver/
