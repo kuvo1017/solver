@@ -41,6 +41,8 @@ std::string OacisIO::inputParams(){
   GVManager::setNewNumeric("NOLOOK_HEAD",all["nolook_head"].get<double>());
   GVManager::setNewNumeric("SMALL_TRAFFIC_VOLUME",all["small_traffic_volume"].get<double>());
   GVManager::setNewNumeric("LARGE_TRAFFIC_VOLUME",all["large_traffic_volume"].get<double>());
-  cout << "nolook_rear is " <<GVManager::getNumeric("NOLOOK_REAR") <<endl;
-  return "../simulations/lr-error/LRError/";
+  std::string dataPath =  all["data_path"].get<std::string>(); 
+  std::cout << dataPath<<endl;
+  return dataPath;
+
 } 

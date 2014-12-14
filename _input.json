@@ -4,7 +4,7 @@
 "arrogance_LR":0.5,
 "nolook_shift":0,
 "nolook_head":0,
-"data_path":"../simulations/LRError/",
+"data_path":"../simulations/lr_error/",
 "max_accident":100,
 "max_time":100,
 "small_traffic_volume":100,
