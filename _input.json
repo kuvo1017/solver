@@ -1,7 +1,7 @@
 {
 "nolook_rear":0 ,
 "arrogance_passing":0,
-"arrogance_LR":0.5,
+"arrogance_LR":1.0e-6,
 "nolook_shift":0,
 "nolook_head":0,
 "data_path":"../simulations/lr_error/",
