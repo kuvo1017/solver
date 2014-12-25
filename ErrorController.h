@@ -69,8 +69,8 @@ class ErrorController{
     /// 
     static void checkStatData(); 
     /// 
-    static void writeStatData(int totalP,int totalT,string time);
-    ///
+   static void writeStatData(int totalP,int totalT,std::string time);
+   ///
     static void endRun();
   protected: 
     /// 車両オブジェクト

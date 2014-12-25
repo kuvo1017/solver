@@ -506,11 +506,21 @@ void ErrorController::checkStatData(){
       totalP+=svd.totalAllPassengers;
       totalT+=svd.totalAllTrucks; 
     }
+<<<<<<< HEAD
 
     cout << "===============================\n"
       << "statitic accident data\n" 
       << "エラー率：" << GVManager::getNumeric("ARROGANCE_LR") << "\n"  
       << "計算時間:" <<time <<"\n"
+=======
+    time_t now = time(NULL);
+    struct tm *pnow = localtime(&now);
+    std::string time = to_string(pnow->tm_hour) + ":"+ to_string(pnow->tm_min) + ":" +to_string(pnow->tm_sec);  
+    cout << "===============================\n"
+      << "statitic accident data\n" 
+      << "エラー率：" << GVManager::getNumeric("NOLOOK_HEAD") << "\n"  
+      << "計算時間:" <<time<<"\n"
+>>>>>>> origin
       << "発生小型車両台数:" << totalP<< "\n"
       << "発生大型車両台数:" << totalT<< "\n" 
       << "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
@@ -524,7 +534,11 @@ void ErrorController::checkStatData(){
   }   
 }
 //======================================================================
+<<<<<<< HEAD
 void ErrorController::writeStatData(int totalP,int totalT,string time){
+=======
+void ErrorController::writeStatData(int totalP,int totalT,std::string time){
+>>>>>>> origin
   // error.txtのオープン
   string file;
   GVManager::getVariable("RESULT_STAT_ACCIDENT_FILE", &file);
