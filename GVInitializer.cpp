@@ -283,11 +283,11 @@ void GVInitializer::init(const string& dataPath)
 
   // 起きた事故の回数
   GVManager::setNewNumeric("ACCIDENT_COUNT",0);
-
+/*
 #ifdef ERROR_MODE
 ErrorController::initErrorParams();
 #endif
-
+ */
 #ifdef _OPENMP
   /* マルチスレッドに関するもの */
 

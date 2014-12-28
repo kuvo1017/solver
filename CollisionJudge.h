@@ -16,6 +16,7 @@ class CollisionJudge{
   //対向車線にある車と正面衝突したかどうかの判定
   static bool isHeadCollid(Vehicle* v1,Vehicle* v2);
   
+  static bool _checkCross(AmuVector& ea1, AmuVector& ea2, AmuVector& eb1,double dist);
  private:
   
 };

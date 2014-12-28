@@ -42,7 +42,7 @@ class ErrorController{
     void accidentOccur();
     /// エラーが起こった時の処理
     void errorOccur(string type);
-    ///　交障害物を認識している状態にする。
+   ///　交障害物を認識している状態にする。
     void recogWall();
     /// 横ずれエラーが起きている時間
     int headErrorTime();
@@ -55,7 +55,9 @@ class ErrorController{
     bool headError();
     /// 正面衝突事故が起きている時に横ずれの速度を返す
     double errorVelocity();
-   /// 事故状態かどうかをチェックして、事故状態ならエージェント消去
+   /// error状態かどうかをチェックして、事故状態ならエージェント消去
+    void errorCheck();
+    /// 事故状態かどうかをチェックして、事故状態ならエージェント消去
     bool accidentCheck();
     /// エラーの種類を返す
     string type() const;
@@ -84,6 +86,8 @@ class ErrorController{
     double _rearErrorVelocity;
     ///　予測エラー継続時間
     int _rearErrorTime;
+  /// error ga 
+ void _errorEnd();
     /// 横ずれエラー時間
     int _headErrorTime;
     ///　障害物エラーか

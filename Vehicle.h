@@ -241,6 +241,9 @@ public:
     /// 車体の長さを返す
     double bodyLength() const;
 
+/// xyheimennnni
+double bodyDiagnoalXY() const;
+
     /// 車体の高さを返す
     double bodyHeight() const;
 
@@ -452,6 +455,8 @@ protected:
     /// 車体の長さ
     double _bodyLength;
 
+///
+ double _bodyDiagnoalXY; 
     /// 車体の高さ
     double _bodyHeight;
 

@@ -461,6 +461,9 @@ void Simulator::deleteAccidentVehicle(){
       //vehicles->erase(it);
       //Vehicle* vehicle = dynamic_cast<Vehicle*>(*it);
       ObjManager::deleteVehicle(dynamic_cast<Vehicle*>(*it),true);
+    }else{
+    // errormo kokode tsuideni kesu
+    (*it)->errorController()->errorCheck();
     }
     it++;
   }

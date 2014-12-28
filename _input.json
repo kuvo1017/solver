@@ -1,12 +1,12 @@
 {
-"nolook_rear":0 ,
+"nolook_rear":0.0 ,
 "arrogance_passing":0,
 "arrogance_LR":0.5,
 "nolook_shift":0,
-"nolook_head":0,
+"nolook_head":0.0,
 "data_path":"../simulations/lr_error/",
 "max_accident":100,
 "max_time":100,
-"small_traffic_volume":1000,
-"large_traffic_volume":50
+"small_traffic_volume":700,
+"large_traffic_volume":0
 }
