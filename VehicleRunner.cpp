@@ -4,6 +4,7 @@
 #include "Intersection.h"
 #include "GVManager.h"
 #include "ErrorController.h"
+#include "CollisionJudge.h"
 #include <cassert>
 
 using namespace std;
@@ -36,15 +37,19 @@ void Vehicle::run()
      */
     if (_laneShifter.isActive())
     {
+
         _error += _errorVelocity * TimeManager::unit();
 
         _laneShifter.proceedShift();
 
+        CollisionJudge::isSideCollid(this);
         // 十分に横に移動したら車線変更処理を終了する
         if (abs(_error) >= _section->laneWidth())
         {
             _laneShifter.endShift();
         }
+
+ 
     }
     else if (_laneShifter.canShift())
     {

@@ -191,10 +191,11 @@ bool LocalLaneRouter::_search(const Section* section,
     }
 
     // 目前の交差点がODNodeであれば車線変更は必要ない
+    /*
     if (dynamic_cast<ODNode*>(frontIntersection)!=NULL)
     {
         return straightFound;
-    }
+    }*/
 
     // 直接到達可能であっても，
     // 青信号にかかわらず先頭車両が交差点に進入できない場合には車線変更を試みる
@@ -206,7 +207,7 @@ bool LocalLaneRouter::_search(const Section* section,
     // 現在の位置の真横のレーンを取得
     if(_getSideLanes(&sideLanes, &sideLength, section, lane, length))
     {
-        where = sideLanes.begin();
+       where = sideLanes.begin();
         how = sideLength.begin();
       
 #ifdef DEBUG_LOCALROUTER
@@ -225,8 +226,9 @@ bool LocalLaneRouter::_search(const Section* section,
                                 objectiveDirection, objectiveDirection2, true);
 
             if (!resultLanes.empty()
-                && (result_lanes0->empty()
-                    || _isUncrowdedRoute(section, frontIntersection, (*where), lane)))
+//                && (result_lanes0->empty()
+//                    || _isUncrowdedRoute(section, frontIntersection, (*where), lane))
+               )
             {
                 // 候補が見つかった
                 assert(resultLanes.front() == *where);

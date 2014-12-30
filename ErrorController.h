@@ -51,6 +51,10 @@ class ErrorController{
     /// 右左折事故の処理
     void LRError(Vehicle* thatV,double thisTti,double thatTti) ; 
     void LRError(double thisTti,double thatTtp) ;  
+    /// shifterror wo keisan
+    bool shiftError();
+    /// shifterror wo keisan
+    void endShiftError();
     /// 正面衝突エラーが起きるかを計算
     bool headError();
     /// 正面衝突事故が起きている時に横ずれの速度を返す
@@ -126,6 +130,8 @@ class ErrorController{
     double _errorVelocity;
     /// 自車が最も右側にいる時の右側対向車線
     Lane* _onComingLane();
+    /// a 
+    double _objectPoint();
     /// エラーの種類
     string _type;
     ///

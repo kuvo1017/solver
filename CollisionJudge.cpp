@@ -3,16 +3,17 @@
 #include "Vehicle.h"
 #include "AmuVector.h"
 #include "ErrorController.h"
+#include "Lane.h"
+#include "RoadOccupant.h"
+
 
 //======================================================================
-bool CollisionJudge::isCollid(Vehicle* v1,Vehicle* v2){
-   if(v1->intersection() == NULL 
-      || v2->intersection() == NULL)
- 
-  /*
-  if(v1->errorController()->type() =="not_error" 
-      && v2->errorController()->type() =="not_error")
-      */
+bool CollisionJudge::isCollidInIntersection(Vehicle* v1,Vehicle* v2){
+  if(v1->intersection() == NULL 
+      || v2->intersection() == NULL
+      || v1->errorController()->type() == "not_error"
+      || v2->errorController()->type() == "not_error"
+    )
   {
     return false;
   }
@@ -35,7 +36,7 @@ bool CollisionJudge::isCollid(Vehicle* v1,Vehicle* v2){
   }
   AmuVector toEdgeOne[2][2] ={{direction[0],normalDirection[0]},{direction[1],normalDirection[1]}};
   AmuVector toEdge[2][2] ={{v1->bodyLength()*0.5*direction[0],v1->bodyWidth()*0.5*normalDirection[0]},{ v2->bodyLength()*0.5*direction[1],v2->bodyWidth()*0.5*normalDirection[1]}};
-double dist[4];
+  double dist[4];
 
   dist[0] = fabs(aToB->calcScalar(toEdgeOne[1][0]));
   dist[1] = fabs(aToB->calcScalar(toEdgeOne[1][1]));
@@ -49,6 +50,7 @@ double dist[4];
       &&_checkCross(toEdge[1][0],toEdge[1][1],toEdge[0][1],dist[3])
     )
   {
+    cout << "in Intersection Collid" <<endl;
     return true;
   }else
   {
@@ -58,31 +60,85 @@ double dist[4];
 
 //======================================================================
 bool CollisionJudge::_checkCross(AmuVector& ea1,AmuVector& ea2,AmuVector& eb1,double dist){
-  
+
   double rb = eb1.size();
   eb1.normalize();
- double ra = fabs(ea1.calcScalar(eb1)) + fabs(ea2.calcScalar(eb1));
- if(dist > ra + rb)
+  double ra = fabs(ea1.calcScalar(eb1)) + fabs(ea2.calcScalar(eb1));
+  if(dist > ra + rb)
   {
-//    cout << "false!!!!!" <<endl;
+    //    cout << "false!!!!!" <<endl;
     return false;
   }else
   {
-  /*
-    cout << "ea1 (" << ea1.x() << ", "  << ea1.y() << ")"<<endl; 
-    cout << "ea2 (" << ea2.x() << ", "   << ea2.y() << ")"<<endl; 
-    cout << "eb1 (" << eb1.x() << ", "   << eb1.y() << ")"<<endl; 
-    cout << "dist is " << dist << endl;
-    cout << "ra is " << ra << endl; 
-    cout << "rb is " << rb << endl;
-    cout << "normal rb is " << eb1.size() << endl;
-    cout << "true!!!!!" <<endl;
-    */
+    /*
+       cout << "ea1 (" << ea1.x() << ", "  << ea1.y() << ")"<<endl; 
+       cout << "ea2 (" << ea2.x() << ", "   << ea2.y() << ")"<<endl; 
+       cout << "eb1 (" << eb1.x() << ", "   << eb1.y() << ")"<<endl; 
+       cout << "dist is " << dist << endl;
+       cout << "ra is " << ra << endl; 
+       cout << "rb is " << rb << endl;
+       cout << "normal rb is " << eb1.size() << endl;
+       cout << "true!!!!!" <<endl;
+     */
     return true;
   }
 }
 
- 
+//======================================================================
+bool CollisionJudge::isFrontCollid(Vehicle* v1,Vehicle* v2){
+  double x,y;
+  double gap = 0.5;
+  x = v1->x() - v2->x();  
+  y = v1->y() - v2->y();
+  double distance = sqrt(x*x + y*y);
+  if(distance + 0.5< (v1->bodyLength() + v2->bodyLength())*0.5)
+  {
+    cout <<distance <<endl;
+    cout << (v1->bodyLength() + v2->bodyLength())*0.5 <<endl;
+    cout << "!!!!!!!!!!!!!!!!!!!!!!\n" <<
+      "front collid check\n" <<
+      "!!!!!!!!!!!!!!!!!!!!!!\n" <<endl; 
+    return true;
+  }else{
+    return false;
+  }
+}
+//======================================================================
+void CollisionJudge::isSideCollid(Vehicle* v1){
+  double x1 = v1->x();
+  double y1 = v1->y();
+  double bodyLength = v1->bodyLength();
+  double bodyWidth = v1->bodyWidth();
+  Lane* laneTo = v1->laneShifter().laneTo();
+  AmuVector direction = v1->directionVector();
+  direction.normalize();
+  AmuVector sideDirection = direction;
+  sideDirection.revoltXY(M_PI/2);
+  std::vector<RoadOccupant*>* agents = laneTo->agents();
+  for(int i=0;i<agents->size();i++)
+  {
+    Vehicle* v2 = dynamic_cast<Vehicle*>(agents->at(i));
+    double x = x1 - v2->x();  
+    double y = y1 - v2->y();
+    AmuVector* aToB = new AmuVector(x,y,0);
+    double rearDistance = fabs(direction.calcScalar(*aToB));
+    if(rearDistance < (bodyLength + v2 ->bodyLength())*0.5)
+    {
+      double sideDistance = fabs(sideDirection.calcScalar(*aToB));
+      if(sideDistance < (bodyWidth + v2->bodyWidth())*0.5)
+      {
+        if(v1->laneShifter().isActive())
+        {
+          v1->laneShifter().endShift();
+        }
+        v1->errorController()->accidentOccur();
+        v2->errorController()->accidentOccur();
+        v1->errorController()->endShiftError();
+        v2->errorController()->endShiftError();
+      }
+    }
+  }
+} 
 //======================================================================
 bool CollisionJudge::isHeadCollid(Vehicle* v1,Vehicle* v2){
   double x1,y1,x2,y2;
@@ -92,6 +148,7 @@ bool CollisionJudge::isHeadCollid(Vehicle* v1,Vehicle* v2){
   y2 = v2->y();
   if((fabs(y1-y2)<(v1->bodyLength()*0.5+v2->bodyWidth()*0.5))
       && (fabs(x1-x2)<(v2->bodyLength()*0.5+v1->bodyWidth()*0.5))){
+    cout << "Head Collid" <<endl;
     return true;
   }else{
     return false;

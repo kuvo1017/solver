@@ -7,6 +7,7 @@
 #include "FileManager.h"
 #include "AmuConverter.h"
 #include "AmuVector.h"
+#include "ErrorController.h"
 #include "Conf.h"
 #include <cstdio>
 #include <cstdlib>
@@ -351,7 +352,8 @@ bool VehicleIO::writeVehicleAccidentData(ulint time,Vehicle* vehicle) {
       << newCount << "," <<
       vehicle->id() << ","<<
       vehicle->x() << ","<<
-      vehicle->y() << ","<<
+      vehicle->y() << ","<< 
+      vehicle->errorController()->type() << ","<<
       vehicle->type() <<endl;
   return result;
 }
