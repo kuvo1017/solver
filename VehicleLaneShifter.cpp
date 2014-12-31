@@ -283,7 +283,6 @@ void VehicleLaneShifter::endShift()
     _vehicle->unnotify();;
     _isActive = false;
     _canShift = false;
-    _vehicle->errorController()->endShiftError();
 }
 
 //======================================================================

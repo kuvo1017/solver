@@ -66,14 +66,11 @@ VirtualLeader* ErrorController::rearError(VirtualLeader* resultLeader){
   RoadOccupant* front = _vehicle->lane()->frontAgent(dynamic_cast<RoadOccupant*>(_vehicle));
   if (front){
     Vehicle* frontVehicle = dynamic_cast<Vehicle *>(front);
-    if(CollisionJudge::isFrontCollid(_vehicle,frontVehicle)){
-      accidentOccur();
-      frontVehicle->errorController()->accidentOccur();
-    }
+    CollisionJudge::isFrontCollid(_vehicle,frontVehicle);
     //多くの対称を認知したときに先行者の速度等を認知するかわりに予測する処理
     //追突事故の再現用
     //rearErrorをonにする
-    if(!_rearError&&(_vehicle->velocity()>5.0/60.0/60.0)){
+    if(!_rearError&&(_vehicle->velocity() > 5.0/60.0/60.0)){
       if(_objectPoint()<GVManager::getNumeric("NOLOOK_REAR")){
         errorOccur("rear-end");
         _rearError=true;
@@ -210,7 +207,8 @@ bool ErrorController::headError(){
   if(_checkHeadAccident() 
       || !_isHeadOn 
       || (_onComingLane()==nullptr)
-      || _isAccident)
+      || _isAccident
+      || _vehicle->velocity() < 30.0/3600.0 )
   {
     return false;
   }
@@ -229,21 +227,26 @@ double ErrorController::errorVelocity()
   }
   double error = _vehicle->error();
   if(_isHeadError ){
-    if(error<-3.0 )
+    if(error < -3.0 )
     {
-      _errorVelocity =  3.0/60.0/60.0;
+       _errorVelocity =  5.0/60.0/60.0;
+    _headErrorTime+=TimeManager::unit();
     }
-    else if(error > 0)
+    else if(_headErrorTime > 100 && (error > 0))
     {
+      _vehicle->returnError();
       _errorVelocity =  0.0;
+      _headErrorTime = 0;
       _isHeadError = false;
       _errorEnd();
+   cout << "errorend" <<endl;
+ 
     }
     else if(_headErrorTime ==0)
     {
-      _errorVelocity = -3.0/60.0/60.0;
-    }
+      _errorVelocity = -5.0/60.0/60.0;
     _headErrorTime+=TimeManager::unit();
+    }
   }
   return _errorVelocity;
 }
@@ -256,9 +259,6 @@ bool ErrorController::_checkHeadAccident()
     Vehicle* frontSideVehicle = onComingLane->followingVehicle(_vehicle->lane()->length()-_vehicle->length());
     if(frontSideVehicle!=NULL){
       if(CollisionJudge::isHeadCollid(_vehicle,frontSideVehicle)){
-        accidentOccur();
-        frontSideVehicle->errorController()->accidentOccur();
-        //_velocity -> _errorVelocity=0.0;
         _isHeadError=false;
         return true;
       }
@@ -390,7 +390,7 @@ string ErrorController::type() const{
   return _type;
 }
 //======================================================================
-void ErrorController::accidentOccur(){
+void ErrorController::accidentOccur(std::string collidType){
 
   cout << "=================================" <<endl;
   cout << "Accident occured: car id is " <<  _vehicle->id() << endl;
@@ -399,7 +399,7 @@ void ErrorController::accidentOccur(){
   _rearError=false;
   _isPassingError = false;
   _vehicle->setBodyColor(0,0,0); 
-  VehicleIO::instance().writeVehicleAccidentData(TimeManager::time(),_vehicle);
+  VehicleIO::instance().writeVehicleAccidentData(TimeManager::time(),_vehicle,collidType);
 }
 //======================================================================
 void ErrorController::errorOccur(string type){
@@ -413,7 +413,7 @@ void ErrorController::errorOccur(string type){
 }
 //======================================================================
 void ErrorController::_errorEnd(){
-  VFAttribute* vfa
+ VFAttribute* vfa
     = VehicleFamilyManager::vehicleFamilyAttribute(_vehicle->type());
   if (!vfa)
   {
@@ -526,7 +526,7 @@ void ErrorController::checkStatData(){
       << "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
       << "==============================="<<endl; 
     writeStatData(totalP,totalT,time);
-    if(totalP+totalT> _maxTotal || _stopNAccident < GVManager::getNumeric("ACCIDENT_COUNT"))
+    if(totalP+totalT> _maxTotal || GVManager::getNumeric("MAX_ACCIDENT") < GVManager::getNumeric("ACCIDENT_COUNT"))
       _stopRun = true;
   }else
   {

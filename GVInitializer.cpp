@@ -152,13 +152,12 @@ void GVInitializer::init(const string& dataPath)
   GVManager::setNewString("RESULT_ACCIDENT_FILE",
       resultPath + "_accident.txt");
 #else
-   double rate = 0;//GVManager::getNumeric("ARROGANCE_LR");
    GVManager::setNewString("RESULT_ERROR_FILE",
-      "./_error_"+std::to_string(rate)+" .txt");
+      "./_error.txt");
   GVManager::setNewString("RESULT_ACCIDENT_FILE",
-       "./_accident"+std::to_string(rate)+".txt");
+       "./_accident.txt");
    GVManager::setNewString("RESULT_STAT_ACCIDENT_FILE",
-       "./_stat_accident"+std::to_string(rate)+" .txt");
+       "./_stat_accident.txt");
 #endif
 
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

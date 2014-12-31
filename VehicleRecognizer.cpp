@@ -1075,12 +1075,7 @@ void Vehicle::_searchPreferredAgentInIntersection(RelativeDirection turning)
 
       }
       // 衝突しているかのチェック（事故用）
-      if (CollisionJudge::isCollidInIntersection(this,clVehicle)&&!(_errorController->isAccident()))
-      {
-	_errorController->accidentOccur();
-	clVehicle->errorController()->accidentOccur();
-	}
-
+      CollisionJudge::isCollidInIntersection(this,clVehicle)&&!(_errorController->isAccident());
       int thatDir = clVehicle->directionFrom();
 
       if (_isYielding(_intersection, thisDir, thatDir,

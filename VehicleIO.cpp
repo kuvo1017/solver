@@ -338,7 +338,7 @@ bool VehicleIO::writeVehicleDistanceData(Vehicle* vehicle)
 }
 
 //======================================================================
-bool VehicleIO::writeVehicleAccidentData(ulint time,Vehicle* vehicle) {
+bool VehicleIO::writeVehicleAccidentData(ulint time,Vehicle* vehicle,std::string collidType) {
   bool result = false;
   // error.txtのオープン
   string file;
@@ -354,7 +354,8 @@ bool VehicleIO::writeVehicleAccidentData(ulint time,Vehicle* vehicle) {
       vehicle->x() << ","<<
       vehicle->y() << ","<< 
       vehicle->errorController()->type() << ","<<
-      vehicle->type() <<endl;
+      vehicle->type() <<  ","<<
+      collidType <<endl;
   return result;
 }
 //======================================================================

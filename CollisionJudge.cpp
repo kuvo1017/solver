@@ -51,6 +51,8 @@ bool CollisionJudge::isCollidInIntersection(Vehicle* v1,Vehicle* v2){
     )
   {
     cout << "in Intersection Collid" <<endl;
+    v1 ->errorController()->accidentOccur("intersection");
+    v2 ->errorController()->accidentOccur("intersection");
     return true;
   }else
   {
@@ -93,11 +95,16 @@ bool CollisionJudge::isFrontCollid(Vehicle* v1,Vehicle* v2){
   double distance = sqrt(x*x + y*y);
   if(distance + 0.5< (v1->bodyLength() + v2->bodyLength())*0.5)
   {
+    /*
     cout <<distance <<endl;
     cout << (v1->bodyLength() + v2->bodyLength())*0.5 <<endl;
     cout << "!!!!!!!!!!!!!!!!!!!!!!\n" <<
       "front collid check\n" <<
       "!!!!!!!!!!!!!!!!!!!!!!\n" <<endl; 
+*/
+    v1 ->errorController()->accidentOccur("front");
+    v2 ->errorController()->accidentOccur("front");
+ 
     return true;
   }else{
     return false;
@@ -105,53 +112,65 @@ bool CollisionJudge::isFrontCollid(Vehicle* v1,Vehicle* v2){
 }
 //======================================================================
 void CollisionJudge::isSideCollid(Vehicle* v1){
-  double x1 = v1->x();
-  double y1 = v1->y();
-  double bodyLength = v1->bodyLength();
-  double bodyWidth = v1->bodyWidth();
-  Lane* laneTo = v1->laneShifter().laneTo();
-  AmuVector direction = v1->directionVector();
-  direction.normalize();
-  AmuVector sideDirection = direction;
-  sideDirection.revoltXY(M_PI/2);
-  std::vector<RoadOccupant*>* agents = laneTo->agents();
-  for(int i=0;i<agents->size();i++)
+  if(v1->errorController()->type() == "shift")
   {
-    Vehicle* v2 = dynamic_cast<Vehicle*>(agents->at(i));
-    double x = x1 - v2->x();  
-    double y = y1 - v2->y();
-    AmuVector* aToB = new AmuVector(x,y,0);
-    double rearDistance = fabs(direction.calcScalar(*aToB));
-    if(rearDistance < (bodyLength + v2 ->bodyLength())*0.5)
+    double x1 = v1->x();
+    double y1 = v1->y();
+    double bodyLength = v1->bodyLength();
+    double bodyWidth = v1->bodyWidth();
+    Lane* laneTo = v1->laneShifter().laneTo();
+    AmuVector direction = v1->directionVector();
+    direction.normalize();
+    AmuVector sideDirection = direction;
+    sideDirection.revoltXY(M_PI/2);
+    std::vector<RoadOccupant*>* agents = laneTo->agents();
+    for(int i=0;i<agents->size();i++)
     {
-      double sideDistance = fabs(sideDirection.calcScalar(*aToB));
-      if(sideDistance < (bodyWidth + v2->bodyWidth())*0.5)
+      Vehicle* v2 = dynamic_cast<Vehicle*>(agents->at(i));
+      double x = x1 - v2->x();  
+      double y = y1 - v2->y();
+      AmuVector* aToB = new AmuVector(x,y,0);
+      double rearDistance = fabs(direction.calcScalar(*aToB));
+      if(rearDistance < (bodyLength + v2 ->bodyLength())*0.5)
       {
-        if(v1->laneShifter().isActive())
+        double sideDistance = fabs(sideDirection.calcScalar(*aToB));
+        if(sideDistance < (bodyWidth + v2->bodyWidth())*0.5)
         {
-          v1->laneShifter().endShift();
+          if(v1->laneShifter().isActive())
+          {
+            v1->laneShifter().endShift();
+          }
+    cout <<"id:" << v1->id() << "  type:" << v1->errorController()->type() <<endl;
+          v1->errorController()->accidentOccur("side");
+          v2->errorController()->accidentOccur("side");
+          v1->errorController()->endShiftError();
+          v2->errorController()->endShiftError();
         }
-        v1->errorController()->accidentOccur();
-        v2->errorController()->accidentOccur();
-        v1->errorController()->endShiftError();
-        v2->errorController()->endShiftError();
       }
     }
   }
 } 
 //======================================================================
 bool CollisionJudge::isHeadCollid(Vehicle* v1,Vehicle* v2){
-  double x1,y1,x2,y2;
-  x1 = v1->x();  
-  y1 = v1->y();
-  x2 = v2->x();
-  y2 = v2->y();
-  if((fabs(y1-y2)<(v1->bodyLength()*0.5+v2->bodyWidth()*0.5))
-      && (fabs(x1-x2)<(v2->bodyLength()*0.5+v1->bodyWidth()*0.5))){
-    cout << "Head Collid" <<endl;
-    return true;
-  }else{
-    return false;
+  if(v1->errorController()->isHeadError())
+  {
+    AmuVector direction = v1->directionVector();
+    direction.normalize();
+    AmuVector sideDirection = direction;
+    sideDirection.revoltXY(M_PI/2);
+    double x = v1->x() - v2->x();  
+    double y = v1->y() - v2->y();
+    AmuVector* aToB = new AmuVector(x,y,0);
+    double rearDistance = fabs(direction.calcScalar(*aToB));
+    if(rearDistance < (v1->bodyLength() + v2 ->bodyLength())*0.5)
+    {
+      double sideDistance = fabs(sideDirection.calcScalar(*aToB));
+      if(sideDistance < (v2->bodyWidth() + v2->bodyWidth())*0.5)
+      {
+        cout <<"id:" << v1->id() << "  type:" << v1->errorController()->type() <<endl;
+        v1->errorController()->accidentOccur("head");
+        v2->errorController()->accidentOccur("head");
+      }
+    }
   }
-
 }

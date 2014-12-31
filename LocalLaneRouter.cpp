@@ -191,11 +191,10 @@ bool LocalLaneRouter::_search(const Section* section,
     }
 
     // 目前の交差点がODNodeであれば車線変更は必要ない
-    /*
     if (dynamic_cast<ODNode*>(frontIntersection)!=NULL)
     {
         return straightFound;
-    }*/
+    }
 
     // 直接到達可能であっても，
     // 青信号にかかわらず先頭車両が交差点に進入できない場合には車線変更を試みる
@@ -226,8 +225,8 @@ bool LocalLaneRouter::_search(const Section* section,
                                 objectiveDirection, objectiveDirection2, true);
 
             if (!resultLanes.empty()
-//                && (result_lanes0->empty()
-//                    || _isUncrowdedRoute(section, frontIntersection, (*where), lane))
+                && (result_lanes0->empty()
+                    || _isUncrowdedRoute(section, frontIntersection, (*where), lane))
                )
             {
                 // 候補が見つかった

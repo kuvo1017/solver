@@ -592,10 +592,17 @@ const vector<Lane*>* Vehicle::lanesInIntersection() const
   return _localRoute.lanesInIntersection();
 }
 
- //====================================================================== 
+//====================================================================== 
+void Vehicle::returnError()
+{
+  _error = 0.0;
+  _errorVelocity = 0.0;
+}
+
+//====================================================================== 
 void Vehicle::stopByAccident()
 {
-_velocity = 0.0;
+  _velocity = 0.0;
 }
 //======================================================================
 void Vehicle::print() const
