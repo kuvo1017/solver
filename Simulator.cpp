@@ -196,7 +196,6 @@ bool Simulator::getReadyRoadsideUnit()
 
   // 感知器データ出力ファイルの準備
   vector<DetectorUnit*>* detectorUnits = ObjManager::detectorUnits();
-  cout << "kokomade" << endl;
   DetectorIO::getReadyOutputFiles(detectorUnits);
   if (GVManager::getFlag("FLAG_VERBOSE"))
   {
@@ -245,6 +244,7 @@ bool Simulator::run(ulint time)
   {
     TimeManager::startClock("TOTALRUN");
     while (time>TimeManager::time() && !ErrorController::stopRun())
+    //&& TimeManager::time() < 2*1000)
     {
       timeIncrement();
     }
@@ -461,6 +461,9 @@ void Simulator::deleteAccidentVehicle(){
       //vehicles->erase(it);
       //Vehicle* vehicle = dynamic_cast<Vehicle*>(*it);
       ObjManager::deleteVehicle(dynamic_cast<Vehicle*>(*it),true);
+    }else{
+    // errormo kokode tsuideni kesu
+    (*it)->errorController()->errorCheck();
     }
     it++;
   }

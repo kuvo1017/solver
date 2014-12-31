@@ -17,6 +17,13 @@ using namespace std;
 //======================================================================
 void Vehicle::recognize()
 {
+#ifdef ERROR_MODE
+  if (_errorController->isAccident())
+  {
+    return;
+  }
+#endif
+
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // 1ステップ前にセットされた仮想先行車のクリア
   for (unsigned int i=0; i<_leaders.size(); i++)
@@ -29,7 +36,6 @@ void Vehicle::recognize()
   // スリープ中は何もしない
   if (_sleepTime>0)
   {
-     std::cout<< _id <<": now I'm sleeping"<<endl; 
     return;
 
   }
@@ -1069,9 +1075,7 @@ void Vehicle::_searchPreferredAgentInIntersection(RelativeDirection turning)
 
       }
       // 衝突しているかのチェック（事故用）
-      if (CollisionJudge::isCollid(this,clVehicle)&&!(_errorController->isAccident()))
-	_errorController->accidentOccur();
-
+      CollisionJudge::isCollidInIntersection(this,clVehicle)&&!(_errorController->isAccident());
       int thatDir = clVehicle->directionFrom();
 
       if (_isYielding(_intersection, thisDir, thatDir,

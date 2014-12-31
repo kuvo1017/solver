@@ -60,7 +60,7 @@ class VehicleIO
     bool writeAllVehiclesDistanceData();
 
     /// 事故のデータ
-    bool writeVehicleAccidentData(ulint time, Vehicle* vehicle);
+    bool writeVehicleAccidentData(ulint time, Vehicle* vehicle, std::string collidType);
 
     /// errorのデータ
     bool writeVehicleErrorData(ulint time, Vehicle* vehicle);

@@ -14,10 +14,11 @@
 #include "GVManager.h"
 #include "picojson.h"
 #include "FileManager.h"
+#include "VehicleFamilyManager.h"
 
-bool ErrorController::_isRearOn = false;
+bool ErrorController::_isRearOn = true;
 bool ErrorController::_isPassingOn = false; 
-bool ErrorController::_isLROn = false;
+bool ErrorController::_isLROn = true;
 bool ErrorController::_isHeadOn = true; 
 int ErrorController::_stopNAccident = 100;
 int ErrorController::_maxTotal = 1000*1000*5/4.5;
@@ -60,61 +61,39 @@ ErrorController::ErrorController(Vehicle* vehicle){
 }
 //======================================================================
 VirtualLeader* ErrorController::rearError(VirtualLeader* resultLeader){
-  if(!_isRearOn)
+  if(!_isRearOn || _isAccident || _type != "rear" )
     return resultLeader;
   RoadOccupant* front = _vehicle->lane()->frontAgent(dynamic_cast<RoadOccupant*>(_vehicle));
   if (front){
     Vehicle* frontVehicle = dynamic_cast<Vehicle *>(front);
-    if(CollisionJudge::isCollid(_vehicle,frontVehicle)){
-      accidentOccur();
-      frontVehicle->errorController()->accidentOccur();
-    }
+    CollisionJudge::isFrontCollid(_vehicle,frontVehicle);
     //多くの対称を認知したときに先行者の速度等を認知するかわりに予測する処理
     //追突事故の再現用
     //rearErrorをonにする
-    if(!_rearError&&(_vehicle->velocity()>5.0/60.0/60.0)){
-      //確率をあげるポイント
-      int p=1;
-      const std::vector<VirtualLeader *>* leaders = _vehicle->virtualLeaders(); 
-      for(int i=0;i<leaders->size();i++){
-	string type = leaders->at(i)->getType();
-	if(type=="SHIFTFRONT_CAR")
-	  p+=5;
-	else if(type=="MERGE_CAR")
-	  p+=10;
-	else if(type=="RED_SIGNAL")
-	  p+=1;
-      }
-      int x = Random::uniform(0,10000);
-      if(x*p>9000){
-	/*
-	   cout <<"==============================" <<endl;
-	   cout << "Don't watch Error is occuring" <<endl;
-	   cout<<"==============================" << endl;
-	 */
-	errorOccur("rear-end");
-	_rearError=true;
+    if(!_rearError&&(_vehicle->velocity() > 5.0/60.0/60.0)){
+      if(_objectPoint()<GVManager::getNumeric("NOLOOK_REAR")){
+        errorOccur("rear-end");
+        _rearError=true;
       }
     }
-
     if(_rearError){
       //　予測エラーの処理
       if(_rearErrorTime==0){ 
-	_rearErrorLength=front->length()-front->bodyLength()/2-_vehicle->length()-_vehicle->bodyLength()/2;
-	_rearErrorVelocity=front->velocity();
+        _rearErrorLength=front->length()-front->bodyLength()/2-_vehicle->length()-_vehicle->bodyLength()/2;
+        _rearErrorVelocity=front->velocity();
       }
       if(_rearErrorTime<3000){
-	_rearErrorTime += TimeManager::unit();
+        _rearErrorTime += TimeManager::unit();
 #ifndef VL_DEBUG
-	resultLeader= new VirtualLeader(_rearErrorLength, _rearErrorVelocity);
+        resultLeader= new VirtualLeader(_rearErrorLength, _rearErrorVelocity);
 #else
-	resultLeader = new VirtualLeader(_rearErrorLength, _rearErrorVelocity, resultLeader->id());
+        resultLeader = new VirtualLeader(_rearErrorLength, _rearErrorVelocity, resultLeader->id());
 #endif
-
       }else{
-	_rearError=false;
-	_rearErrorLength=0;
-	_rearErrorVelocity=0;
+        _rearError=false;
+        _rearErrorLength=0;
+        _rearErrorVelocity=0;
+        _errorEnd();
       }
     }
   }
@@ -122,8 +101,18 @@ VirtualLeader* ErrorController::rearError(VirtualLeader* resultLeader){
 }
 //======================================================================
 void ErrorController::LRError(double thisTti,double thatTtp) {
-  if(!_isArrogance||_isLRError)
-    return;         
+  if(!_isArrogance)
+  {
+    return;
+  }else if(_isLRError)
+  {
+    if(_vehicle->intersection() != NULL)
+    {
+      _isLRError = false;
+      _errorEnd();
+    }
+    return;
+  }
   // 現在位置から交差点を通過仕切るまでの時間[秒]
   double thisTtp;
   // [msec]->[sec]
@@ -138,7 +127,7 @@ void ErrorController::LRError(double thisTti,double thatTtp) {
   {
 
     RelativeDirection turning = _vehicle->localRoute().turning(); 
-    std::cout << "thisTtp: "<< thisTtp << "[s] thatTtp: "<< thatTtp <<"[s]"<< " Turning is "<<turning <<endl;
+    //    std::cout << "thisTtp: "<< thisTtp << "[s] thatTtp: "<< thatTtp <<"[s]"<< " Turning is "<<turning <<endl;
     switch(turning){
     case 2:
       errorOccur("RightError");
@@ -152,7 +141,6 @@ void ErrorController::LRError(double thisTti,double thatTtp) {
     default:
       break;
     }
-
     _isLRError = true;
   }
   else
@@ -163,8 +151,20 @@ void ErrorController::LRError(double thisTti,double thatTtp) {
 
 //======================================================================
 void ErrorController::LRError(Vehicle* thatV,double thisTti,double thatTti) {
-  if(!_isArrogance||_isLRError)
-    return;         
+  if(!_isArrogance)
+  {
+    return;
+  }else if(_isLRError)
+  {
+    if(_vehicle->intersection() != NULL)
+    {
+      _isLRError = false;
+      _errorEnd();
+    }
+    return;
+  }
+  /*  if(!_isArrogance||_isLRError)
+      return;        */ 
   // 現在位置から交差点を通過仕切るまでの時間[秒]
   double thisTtp,thatTtp;
   // 現在いるレーンの次のレーン、つまり交差点内のレーン
@@ -180,7 +180,7 @@ void ErrorController::LRError(Vehicle* thatV,double thisTti,double thatTti) {
   {
 
     RelativeDirection turning = _vehicle->localRoute().turning(); 
-    std::cout << "thisTtp: "<< thisTtp << "[s] thatTtp: "<< thatTtp <<"[s]"<< " Turning is "<<turning <<endl;
+    //    std::cout << "thisTtp: "<< thisTtp << "[s] thatTtp: "<< thatTtp <<"[s]"<< " Turning is "<<turning <<endl;
     switch(turning){
     case 2:
       errorOccur("RightError");
@@ -204,53 +204,51 @@ void ErrorController::LRError(Vehicle* thatV,double thisTti,double thatTti) {
 //======================================================================
 bool ErrorController::headError(){
   //多くの対称を認知したときに先行者の速度等を認知するかわりに予測する処理
-  if(_checkHeadAccident() || !_isHeadOn || (_onComingLane()==nullptr))
+  if(_checkHeadAccident() 
+      || !_isHeadOn 
+      || (_onComingLane()==nullptr)
+      || _isAccident
+      || _vehicle->velocity() < 30.0/3600.0 )
   {
     return false;
   }
-  double p=100;
-  const std::vector<VirtualLeader *>* leaders = _vehicle->virtualLeaders(); 
-  for(int i=0;i<leaders->size();i++){
-    string type = leaders->at(i)->getType();
-    if(type=="SHIFTFRONT_CAR")
-      p-=40;
-    else if(type=="MERGE_CAR")
-      p-=40;
-    else if(type=="RED_SIGNAL")
-      p-=10;
-    double x = Random::uniform();
-    if(x*p<GVManager::getNumeric("NOLOOK_HEAD")){
-      errorOccur("head");
-      _isHeadError=true;
-    }
+  if(_objectPoint()<GVManager::getNumeric("NOLOOK_HEAD")){
+    errorOccur("head");
+    _isHeadError=true;
   }
   return _isHeadError;
 }
 //======================================================================
 double ErrorController::errorVelocity() 
 {
-    if(_isAccident)
-    {
+  if(_isAccident)
+  {
     return 0.0;
+  }
+  double error = _vehicle->error();
+  if(_isHeadError ){
+    if(error < -3.0 )
+    {
+       _errorVelocity =  5.0/60.0/60.0;
+    _headErrorTime+=TimeManager::unit();
     }
-    double error = _vehicle->error();
-    if(_isHeadError ){
-      if(error<-3.0 )
-      {
-	_errorVelocity =  3.0/60.0/60.0;
-      }
-      else if(error > 0)
-      {
-	_errorVelocity =  0.0;
-	_isHeadError = false;
-      }
-      else if(_headErrorTime ==0)
-      {
-	_errorVelocity = -3.0/60.0/60.0;
-      }
-      _headErrorTime+=TimeManager::unit();
+    else if(_headErrorTime > 100 && (error > 0))
+    {
+      _vehicle->returnError();
+      _errorVelocity =  0.0;
+      _headErrorTime = 0;
+      _isHeadError = false;
+      _errorEnd();
+   cout << "errorend" <<endl;
+ 
     }
-    return _errorVelocity;
+    else if(_headErrorTime ==0)
+    {
+      _errorVelocity = -5.0/60.0/60.0;
+    _headErrorTime+=TimeManager::unit();
+    }
+  }
+  return _errorVelocity;
 }
 
 //======================================================================
@@ -260,12 +258,9 @@ bool ErrorController::_checkHeadAccident()
   if(onComingLane!=NULL){
     Vehicle* frontSideVehicle = onComingLane->followingVehicle(_vehicle->lane()->length()-_vehicle->length());
     if(frontSideVehicle!=NULL){
-      if(CollisionJudge::isCollid(_vehicle,frontSideVehicle)){
-	accidentOccur();
-	frontSideVehicle->errorController()->accidentOccur();
-	//_velocity -> _errorVelocity=0.0;
-	_isHeadError=false;
-	return true;
+      if(CollisionJudge::isHeadCollid(_vehicle,frontSideVehicle)){
+        _isHeadError=false;
+        return true;
       }
     }
   }
@@ -295,20 +290,59 @@ Lane* ErrorController::_onComingLane()
     while (ite != lanes->end()) {
       Lane* lane = ite->second;
       if(section->isUp(lane)!=myDirection){
-	// 右車線
-	Lane* rl = NULL;
-	// 右車線の長さ
-	double rll;
-	section->getRightSideLane(lane,lane->length(),&rl,&rll);
-	if(rl==NULL){
-	  onComingLane = lane;
-	}
+        // 右車線
+        Lane* rl = NULL;
+        // 右車線の長さ
+        double rll;
+        section->getRightSideLane(lane,lane->length(),&rl,&rll);
+        if(rl==NULL){
+          onComingLane = lane;
+        }
       }
       ite++;
     }
   } 
   return onComingLane;
 }
+//======================================================================
+double ErrorController::_objectPoint() 
+{
+  double point = 1;
+  double x = Random::uniform();
+  const std::vector<VirtualLeader *>* leaders = _vehicle->virtualLeaders(); 
+  for(int i=0;i<leaders->size();i++){
+    string type = leaders->at(i)->getType();
+    if(type=="SHIFTFRONT_CAR")
+      point+=5.0;
+    else if(type=="MERGE_CAR")
+      point+=10.0;
+    else if(type=="RED_SIGNAL")
+      point+=1.0;
+  }
+  return point*x;
+}
+//====================================================================== 
+bool ErrorController::shiftError()
+{
+  if(_objectPoint() < GVManager::getNumeric("NOLOOK_SHIFT"))
+  {
+    errorOccur("shift");
+    _isShiftError = true;
+    return true;
+  }else{
+    return false;
+  }
+}
+//====================================================================== 
+void ErrorController::endShiftError()
+{
+  if(_isShiftError)
+  {
+  _isShiftError = false;
+  _errorEnd();
+  }
+}
+
 //======================================================================
 bool ErrorController::isRearError() const{
   return _rearError;
@@ -356,18 +390,16 @@ string ErrorController::type() const{
   return _type;
 }
 //======================================================================
-void ErrorController::accidentOccur(){
+void ErrorController::accidentOccur(std::string collidType){
 
   cout << "=================================" <<endl;
   cout << "Accident occured: car id is " <<  _vehicle->id() << endl;
   cout << "=================================" <<endl;
-
   _isAccident = true;
   _rearError=false;
   _isPassingError = false;
   _vehicle->setBodyColor(0,0,0); 
-  //writeAccident();
-  VehicleIO::instance().writeVehicleAccidentData(TimeManager::time(),_vehicle);
+  VehicleIO::instance().writeVehicleAccidentData(TimeManager::time(),_vehicle,collidType);
 }
 //======================================================================
 void ErrorController::errorOccur(string type){
@@ -379,11 +411,43 @@ void ErrorController::errorOccur(string type){
   _vehicle->setBodyColor(0.8,0.8,0);
   VehicleIO::instance().writeVehicleErrorData(TimeManager::time(),_vehicle);
 }
+//======================================================================
+void ErrorController::_errorEnd(){
+ VFAttribute* vfa
+    = VehicleFamilyManager::vehicleFamilyAttribute(_vehicle->type());
+  if (!vfa)
+  {
+    if (VehicleFamily::isTruck(_vehicle->type()))
+    {
+      vfa = VehicleFamilyManager::vehicleFamilyAttribute
+        (VehicleFamily::truck());
+    }
+    else
+    {
+      vfa = VehicleFamilyManager::vehicleFamilyAttribute
+        (VehicleFamily::passenger());
+    }
+  }
+  double r,g,b;
+  vfa->getBodyColor(&r, &g, &b);
+  _vehicle->setBodyColor(r,g,b);
+  _type = "not_error";
+}
 
 //======================================================================
 void ErrorController::recogWall(){
   _isWall = true;
 }
+//====================================================================== 
+void ErrorController::errorCheck(){
+  if(_isLRError){
+    if(_vehicle->intersection()!=NULL){
+      _isLRError = false;
+      _errorEnd();
+    }
+  }
+}
+
 //====================================================================== 
 bool ErrorController::accidentCheck(){
   if(_isAccident){
@@ -396,65 +460,13 @@ bool ErrorController::accidentCheck(){
   }else{
     return true;
   }
-}    
-//======================================================================  
-bool ErrorController::initErrorParams(){
-  // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
-  //ファイルパスの取得
-  GVManager::setNewNumeric("NOLOOK_REAR",0.0);
-  GVManager::setNewNumeric("ARROGANCE_PASSING",0.0);
-  GVManager::setNewNumeric("NOLOOK_SHIFT",0.0);
-  GVManager::setNewNumeric("NOLOOK_HEAD",0.5);
-  return "../simulations/LRError/";
-  string s1,s2;
-  string path = "./_input.json";
-
-  // ファイルオープン
-  ifstream inputStream;
-  string thisLine;
-  inputStream.open(path);
-  if (!inputStream.is_open())
-  {
-    cerr << "cannot open file!" << endl;
-    exit(1);
-  }
-
-  stringstream sstream;
-  while (getline(inputStream, thisLine))
-  {
-    sstream << thisLine;
-  }
-  inputStream.close();
-  cout << "finish opening file!" << endl;
-
-  // CCLOG("sstream:%s", sstream.str().c_str());
-
-  // JSONのパース
-  picojson::value v; 
-  picojson::parse(v, sstream);
-
-  picojson::object& all = v.get<picojson::object>();
-  /*
-     picojson::array& array = all["hoge"].get<picojson::array>();
-     for (picojson::array::iterator it = array.begin(); it != array.end(); it++)
-     {
-     picojson::object& all = it->get<picojson::object>();
-   */
-  /*
-     GVManager::setNewNumeric("NOLOOK_REAR",all["nolook_rear"].get<double>());
-     GVManager::setNewNumeric("ARROGANCE_PASSING",all["arrogance_passing"].get<double>());
-     GVManager::setNewNumeric("ARROGANCE_LR",all["arrogance_LR"].get<double>());
-     GVManager::setNewNumeric("NOLOOK_SHIFT",all["nolook_shift"].get<double>());
-     GVManager::setNewNumeric("NOLOOK_HEAD",all["nolook_head"].get<double>());
-   */
-  // CCLOG("x:%d, y:%d, z:%d", x, y, z);
-  //}
-} 
+}
 //======================================================================   
 std::string ErrorController::setDataPath(){
   // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
   //ファイルパスの取得
-  return "../simulations/headError/";
+  return "../simulations/LRError/";
+  //return "../simulations/headError/";
   const char* path = "./_input.json";
 
   // ファイルオープン
@@ -489,11 +501,13 @@ std::string ErrorController::setDataPath(){
 //======================================================================    
 void ErrorController::checkStatData(){
   vector<DetectorUnit*>* detectors = ObjManager::detectorUnits();
-  cout << detectors->size() << endl;
   if(detectors->size() > 0)
   {
     int totalP =0;
     int totalT =0;
+    time_t now = time(NULL);
+    struct tm *pnow = localtime(&now);
+    string time = to_string(pnow->tm_hour) + ":"+ to_string(pnow->tm_min) + ":"+ to_string(pnow->tm_sec);  
     for(int i=0;i<detectors->size();i++)
     {
       DetectorUnit* detector = detectors->at(i);
@@ -502,19 +516,17 @@ void ErrorController::checkStatData(){
       totalP+=svd.totalAllPassengers;
       totalT+=svd.totalAllTrucks; 
     }
-    time_t now = time(NULL);
-    struct tm *pnow = localtime(&now);
-    std::string time = to_string(pnow->tm_hour) + ":"+ to_string(pnow->tm_min) + ":" +to_string(pnow->tm_sec);  
+
     cout << "===============================\n"
       << "statitic accident data\n" 
-      << "エラー率：" << GVManager::getNumeric("NOLOOK_HEAD") << "\n"  
-      << "計算時間:" <<time<<"\n"
+      << "エラー率：" << GVManager::getNumeric("ARROGANCE_LR") << "\n"  
+      << "計算時間:" <<time <<"\n"
       << "発生小型車両台数:" << totalP<< "\n"
       << "発生大型車両台数:" << totalT<< "\n" 
       << "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
       << "==============================="<<endl; 
     writeStatData(totalP,totalT,time);
-    if(totalP+totalT> _maxTotal || _stopNAccident < GVManager::getNumeric("ACCIDENT_COUNT"))
+   if(totalP+totalT> _maxTotal || GVManager::getNumeric("MAX_ACCIDENT") < GVManager::getNumeric("ACCIDENT_COUNT"))
       _stopRun = true;
   }else
   {
@@ -522,7 +534,7 @@ void ErrorController::checkStatData(){
   }   
 }
 //======================================================================
-void ErrorController::writeStatData(int totalP,int totalT,std::string time){
+void ErrorController::writeStatData(int totalP,int totalT,string time){
   // error.txtのオープン
   string file;
   GVManager::getVariable("RESULT_STAT_ACCIDENT_FILE", &file);

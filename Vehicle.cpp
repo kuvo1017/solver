@@ -22,6 +22,7 @@
 #include <cassert>
 #include <cmath>
 #include <algorithm>
+#include <math.h>
 
 using namespace std;
 
@@ -31,6 +32,7 @@ Vehicle::Vehicle():_id()
 
   _bodyLength = 4.400;
   _bodyWidth  = 1.830;
+  _bodyDiagnoalXY = sqrt(_bodyLength * _bodyLength + _bodyWidth * _bodyWidth);
   _bodyHeight = 1.315;
   _bodyColorR = 1.0;
   _bodyColorG = 0.0;
@@ -127,7 +129,12 @@ double Vehicle::bodyLength() const
 {
   return _bodyLength;
 }
-
+//======================================================================
+double Vehicle::bodyDiagnoalXY() const
+{
+  return _bodyDiagnoalXY;
+}
+ 
 //======================================================================
 double Vehicle::bodyHeight() const
 {
@@ -585,10 +592,17 @@ const vector<Lane*>* Vehicle::lanesInIntersection() const
   return _localRoute.lanesInIntersection();
 }
 
- //====================================================================== 
+//====================================================================== 
+void Vehicle::returnError()
+{
+  _error = 0.0;
+  _errorVelocity = 0.0;
+}
+
+//====================================================================== 
 void Vehicle::stopByAccident()
 {
-_velocity = 0.0;
+  _velocity = 0.0;
 }
 //======================================================================
 void Vehicle::print() const

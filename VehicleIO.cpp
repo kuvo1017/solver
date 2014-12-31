@@ -7,6 +7,7 @@
 #include "FileManager.h"
 #include "AmuConverter.h"
 #include "AmuVector.h"
+#include "ErrorController.h"
 #include "Conf.h"
 #include <cstdio>
 #include <cstdlib>
@@ -337,7 +338,7 @@ bool VehicleIO::writeVehicleDistanceData(Vehicle* vehicle)
 }
 
 //======================================================================
-bool VehicleIO::writeVehicleAccidentData(ulint time,Vehicle* vehicle) {
+bool VehicleIO::writeVehicleAccidentData(ulint time,Vehicle* vehicle,std::string collidType) {
   bool result = false;
   // error.txtのオープン
   string file;
@@ -351,8 +352,10 @@ bool VehicleIO::writeVehicleAccidentData(ulint time,Vehicle* vehicle) {
       << newCount << "," <<
       vehicle->id() << ","<<
       vehicle->x() << ","<<
-      vehicle->y() << ","<<
-      vehicle->type() <<endl;
+      vehicle->y() << ","<< 
+      vehicle->errorController()->type() << ","<<
+      vehicle->type() <<  ","<<
+      collidType <<endl;
   return result;
 }
 //======================================================================

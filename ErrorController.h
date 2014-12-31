@@ -39,10 +39,10 @@ class ErrorController{
     /// エラーが起きたときに外部ファイルに記入する
     void writeError();
     /// 事故が起こった時の処理
-    void accidentOccur();
+    void accidentOccur(std::string collidType);
     /// エラーが起こった時の処理
     void errorOccur(string type);
-    ///　交障害物を認識している状態にする。
+   ///　交障害物を認識している状態にする。
     void recogWall();
     /// 横ずれエラーが起きている時間
     int headErrorTime();
@@ -51,11 +51,17 @@ class ErrorController{
     /// 右左折事故の処理
     void LRError(Vehicle* thatV,double thisTti,double thatTti) ; 
     void LRError(double thisTti,double thatTtp) ;  
+    /// shifterror wo keisan
+    bool shiftError();
+    /// shifterror wo keisan
+    void endShiftError();
     /// 正面衝突エラーが起きるかを計算
     bool headError();
     /// 正面衝突事故が起きている時に横ずれの速度を返す
     double errorVelocity();
-   /// 事故状態かどうかをチェックして、事故状態ならエージェント消去
+   /// error状態かどうかをチェックして、事故状態ならエージェント消去
+    void errorCheck();
+    /// 事故状態かどうかをチェックして、事故状態ならエージェント消去
     bool accidentCheck();
     /// エラーの種類を返す
     string type() const;
@@ -69,7 +75,7 @@ class ErrorController{
     /// 
     static void checkStatData(); 
     /// 
-    static void writeStatData(int totalP,int totalT,std::string time);
+   static void writeStatData(int totalP,int totalT,string time);
     ///
     static void endRun();
   protected: 
@@ -84,6 +90,8 @@ class ErrorController{
     double _rearErrorVelocity;
     ///　予測エラー継続時間
     int _rearErrorTime;
+  /// error ga 
+ void _errorEnd();
     /// 横ずれエラー時間
     int _headErrorTime;
     ///　障害物エラーか
@@ -122,6 +130,8 @@ class ErrorController{
     double _errorVelocity;
     /// 自車が最も右側にいる時の右側対向車線
     Lane* _onComingLane();
+    /// a 
+    double _objectPoint();
     /// エラーの種類
     string _type;
     ///
