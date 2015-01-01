@@ -61,7 +61,7 @@ Simulator::~Simulator()
   TimeManager::deleteAllClockers();
   FileManager::deleteAllOFStreams();
   ObjManager::deleteAll();
-
+ 
   if (_roadMap!=NULL)
   {
     delete _roadMap;
@@ -84,6 +84,7 @@ bool Simulator::hasInit() const
 //======================================================================
 bool Simulator::getReadyRoadMap()
 {
+
   RoadMapBuilder builder;
 
   // 道路ネットワークの作成
@@ -117,7 +118,6 @@ bool Simulator::getReadyRoadMap()
   {
     _roadMap->dispIntersections();
   }
-
   // signal_count.txtの出力
   string fSignalCount;
   GVManager::getVariable("RESULT_SIGNAL_COUNT_FILE", &fSignalCount);
@@ -136,6 +136,9 @@ bool Simulator::getReadyRoadMap()
   ofs << _roadMap->intersections()->size() << "\n" // 交差点の総数
     << totalNumberOfSignals;		     // 信号機の総数
 
+#ifdef BARRIER
+  _roadMap->setBarriers();
+#endif
   return _roadMap;
 }
 
@@ -160,7 +163,7 @@ bool Simulator::getReadySampleScenario(double xmin, double xmax,
   // 車両発生に関する設定
   getReadyVehicles();
 
-  
+
   // 車両配置
   if (numVehicles)
   {
@@ -240,7 +243,8 @@ bool Simulator::run(ulint time)
   if (time>TimeManager::time())
   {
     TimeManager::startClock("TOTALRUN");
-    while (time>TimeManager::time())
+    while (time>TimeManager::time() && !ErrorController::stopRun())
+    //&& TimeManager::time() < 2*1000)
     {
       timeIncrement();
     }
@@ -264,8 +268,10 @@ bool Simulator::timeIncrement()
     {
       cout << "Time: "
 	<< TimeManager::time()/1000 << "[sec]" << endl;
+
     }
   }
+
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // エージェント列の更新
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -288,13 +294,18 @@ bool Simulator::timeIncrement()
     DetectorIO::writeTrafficData(detectorUnits);
   }
 
+#ifdef ERROR_MODE
+  // 事故の記録
+  if(TimeManager::time() % 100000 == 0)
+    ErrorController::checkStatData();
+#endif
+
   // エージェントの消去
   TimeManager::startClock("DELETE_AGENT");
   deleteAccidentVehicle();
   _roadMap->deleteArrivedAgents();
   TimeManager::stopClock("DELETE_AGENT");
 
-  // 事故エージェントの消去
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // エージェントの発生
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -310,7 +321,6 @@ bool Simulator::timeIncrement()
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #ifndef EXCLUDE_VEHICLES
   vector<Vehicle*>* vehicles = ObjManager::vehicles();
-
 #ifndef _OPENMP
   TimeManager::startClock("RECOGNIZE");
   for_each(vehicles->begin(), vehicles->end(),
@@ -445,15 +455,17 @@ GenerateVehicleController* Simulator::generateVehicleController()
 void Simulator::deleteAccidentVehicle(){
   std::vector<Vehicle*>* vehicles = ObjManager::vehicles();
   std::vector<Vehicle*>::iterator it = vehicles->begin();
-  
   while(it != vehicles->end()){
     if(!((*it)->errorController()->accidentCheck())){
       //std::cout << "!" << endl;
       //vehicles->erase(it);
       //Vehicle* vehicle = dynamic_cast<Vehicle*>(*it);
       ObjManager::deleteVehicle(dynamic_cast<Vehicle*>(*it),true);
-      }
-   it++;
+    }else{
+    // errormo kokode tsuideni kesu
+    (*it)->errorController()->errorCheck();
+    }
+    it++;
   }
-  
+
 }

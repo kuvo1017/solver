@@ -79,6 +79,10 @@ class GLColor
     static void setAccidentVehicle(); 
     static void setVehicleId();
 
+    //====================================================================
+    // 障害物
+    static void setBarrier();
+
   private:
     GLColor();
     ~GLColor();

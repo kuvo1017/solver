@@ -3,6 +3,8 @@
 #include "Section.h"
 #include "Intersection.h"
 #include "GVManager.h"
+#include "ErrorController.h"
+#include "CollisionJudge.h"
 #include <cassert>
 
 using namespace std;
@@ -35,20 +37,34 @@ void Vehicle::run()
      */
     if (_laneShifter.isActive())
     {
+
         _error += _errorVelocity * TimeManager::unit();
 
         _laneShifter.proceedShift();
 
+        CollisionJudge::isSideCollid(this);
         // 十分に横に移動したら車線変更処理を終了する
         if (abs(_error) >= _section->laneWidth())
         {
             _laneShifter.endShift();
         }
+
+ 
     }
     else if (_laneShifter.canShift())
     {
         _laneShifter.beginShift();
     }
+#ifdef ERROR_MODE
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // 正面衝突のエラーが起きている時
+    if(_errorController->isHeadError())
+    {
+       _errorVelocity = _errorController->errorVelocity();
+      _error += _errorVelocity * TimeManager::unit();
+    }
+#endif
+ 
     
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // レーンへの登録処理

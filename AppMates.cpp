@@ -5,6 +5,7 @@
 #include "Random.h"
 #include "Simulator.h"
 #include "ErrorController.h"
+#include "OacisIO.h"
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -25,11 +26,11 @@ using namespace std;
 //======================================================================
 AppMates::AppMates() :  _simulator(), _dataPath(), _key()
 {
-#ifdef ERROR_MODE
-_dataPath = ErrorController::setDataPath();
+#ifdef OACIS
+  _dataPath = OacisIO::inputParams();
 #else
-  //_dataPathと_keyのデフォルト値を設定
-_dataPath = "./";
+ //_dataPathと_keyのデフォルト値を設定
+  _dataPath = "./";
 #endif 
 
 #ifdef MATES_NDEBUG
@@ -37,6 +38,7 @@ _dataPath = "./";
 #else
   _key = 2;
 #endif
+  cout << "kiteruyo2"<<endl;
 }
 
 //======================================================================
@@ -110,6 +112,7 @@ void AppMates::init(int argc, char** argv, bool output)
 
   // シミュレータの準備
   // RoadMapの作成
+  cout << "kiteruyo2" << endl;
   bool isReady = getReadySimulator();
   if (!isReady)
   {
@@ -142,12 +145,15 @@ struct option AppMates::longOptions[] =
   {"no-output-monitor-d", 0, 0, 20},
   {"no-output-monitor-s", 0, 0, 21},
   {"no-generate-random-vehicle", 0, 0, 40},
+  {"auto-start",0,0,50},
+  {"lr",0,0,60},
   {0, 0, 0, 0}
 };
 
 //======================================================================
 void AppMates::parseArgument(int argc, char** argv)
 {
+ std::string str;
   int opt;
 #ifdef USE_MINGW
   while ((opt = getopt(argc, argv,
@@ -168,6 +174,12 @@ void AppMates::parseArgument(int argc, char** argv)
       case 'D':
       case 'd': // データディレクトリを指定する
 	_initDataPath(optarg);
+        //double rate = (double) *optarg;
+	/*
+	str = optarg;
+	cout << "optarg is " << std::stof(str) <<endl;
+	GVManager::setNewNumeric("ARROGANCE_LR",(double) std::stof(str));  
+	*/
 	break;
       case 'R':
       case 'r': // 乱数の種を指定する
@@ -179,6 +191,11 @@ void AppMates::parseArgument(int argc, char** argv)
       case 'q': // 情報表示をoffに
 	GVManager::resetFlag("FLAG_VERBOSE", false);
 	break;
+      case 'a': // 情報表示をoffに
+ 	cout << "optarg is " << optarg <<endl;
+	GVManager::setNewNumeric("ARROGANCE_LR",(double) *optarg); 
+	break;
+ 
 #ifndef USE_MINGW
       case 30:  // 入力をoffに
 	GVManager::resetFlag("FLAG_INPUT_MAP", false);
@@ -197,6 +214,9 @@ void AppMates::parseArgument(int argc, char** argv)
       case 40:
 	GVManager::setNewFlag("FLAG_GEN_RAND_VEHICLE", false);
 	break;
+      case 50:
+	GVManager::setNewFlag("FLAG_AUTO_START", true);
+       break; 
 #endif //USE_MINGW
       default:
 	break;
@@ -321,18 +341,3 @@ bool AppMates::_initRandomSeed(string arg)
     return false;
   }
 }
-/*
-//======================================================================
-bool AppMates::_initErrorPath(string arg)
-{
-  if (!arg.empty())
-  {
-
-    if (arg[arg.length()-1] != '/')
-    {
-      arg += '/';
-    } 
-    _errorPath =  arg; 
-  }
-} 
-*/

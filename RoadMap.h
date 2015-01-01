@@ -12,6 +12,7 @@ class ODNode;
 class Section;
 class Lane;
 class RoadEntity;
+class Barrier;
 
 // 型の別名を定義する
 typedef std::map<std::string,
@@ -44,6 +45,16 @@ typedef std::map<std::string,
                  Signal*,
                  std::less<std::string> >::const_iterator CITRMAPSI;
 
+typedef std::map<std::string,
+                 Barrier*,
+                 std::less<std::string> > RMAPB;
+typedef std::map<std::string,
+                 Barrier*,
+                 std::less<std::string> >::iterator ITRMAPB;
+typedef std::map<std::string,
+                 Barrier*,
+                 std::less<std::string> >::const_iterator CITRMAPB;
+ 
 /**
  * @addtogroup RoadEnvironment
  * @brief 道路環境を定義するモジュール
@@ -64,13 +75,15 @@ class RoadMap
 public:
     RoadMap();
     ~RoadMap();
-
 private:
     /// 交差点のメインメインコンテナ
     RMAPI _intersections;
 
     /// 単路のメインコンテナ
     RMAPS _sections;
+
+    /// 障害物のメインコンテナ
+    RMAPB _barriers;
 
     /// レーン束のサブコンテナ
     /**
@@ -118,6 +131,12 @@ public:
     /// 交差点レーンチェック
     bool checkIntersectionLane();
 
+/// つながっている他の交差点をチェック
+void setBarriers();
+
+ /// 障害物をセット
+void addBarriers();
+ 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // Section関係
 
@@ -176,6 +195,7 @@ void deleteAccidentAgents();
 
     /// intersectionの情報を表示する
     void dispIntersections() const;
+   
 };
 
 #endif //__ROADMAP_H__

@@ -147,7 +147,8 @@ private:
 
     /// 信号情報の入出力を担当するオブジェクト
     SignalIO* _signalIO;
-    //@}
+
+   //@}
 };
 
 #endif //__SIMULATOR_H__

@@ -65,6 +65,7 @@ int Visualizer::_isSubnetwork      = 0;
 int Visualizer::_isSubsectionId    = 0;
 int Visualizer::_surfaceMode       = 0;
 int Visualizer::_isSignals         = 1;
+int Visualizer::_isBarriers         = 1; 
 int Visualizer::_isRoadsideUnits   = 0;
 int Visualizer::_connectorIdMode   = 0;
 
@@ -121,7 +122,7 @@ Visualizer::Visualizer()
                              (double)_surfaceMode);
     GVManager::setNewFlag("VIS_SIGNAL",
                           (_isSignals==1));
-    GVManager::setNewFlag("VIS_ROADSIDE_UNIT",
+   GVManager::setNewFlag("VIS_ROADSIDE_UNIT",
                           (_isRoadsideUnits==1));
     GVManager::setNewNumeric("VIS_CONNECTOR_ID_MODE",
                              (double)_connectorIdMode);
@@ -130,6 +131,15 @@ Visualizer::Visualizer()
                           (_isVehicleId==1));
     GVManager::setNewNumeric("VIS_VEHICLE_COLOR_MODE",
                              (double)_vehicleColorMode);
+#ifdef BARRIER
+    GVManager::setNewFlag("VIS_BARRIER",
+                          (_isBarriers==1));
+#else
+     GVManager::setNewFlag("VIS_BARRIER",
+                          (_isBarriers==0));
+#endif
+			  
+ 
 }
 
 //======================================================================
@@ -254,15 +264,20 @@ void Visualizer::drawVehicles()
 }
 
 //======================================================================
+void Visualizer::autoStart()
+{
+  autoIncrementButtonCallback();
+}
+//======================================================================
 void Visualizer::timeIncrement()
 {
     // シミュレータの出力フラグを更新
     GVManager::resetFlag("FLAG_OUTPUT_TIMELINE",
                          (_outputTimeline==1));
     GVManager::resetFlag("FLAG_OUTPUT_MONITOR_D",
-                         (_outputInstrumentD==1));
+                         (_outputInstrumentD==0));
     GVManager::resetFlag("FLAG_OUTPUT_MONITOR_S",
-                         (_outputInstrumentS==1));
+                         (_outputInstrumentS==0));
     GVManager::resetFlag("FLAG_OUTPUT_GEN_COUNTER",
                          (_outputGenCounter==1));
     GVManager::resetFlag("FLAG_OUTPUT_TRIP_INFO",
@@ -666,6 +681,12 @@ void Visualizer::visualize()
     AutoGL_AddBoolean(&_isSignals, "_isSignals");
     AutoGL_SetLabel("Show");
 
+    AutoGL_AddComment();
+    AutoGL_AddComment();
+    AutoGL_SetLabel("Barrier");
+    AutoGL_AddBoolean(&_isBarriers, "_isBarriers");
+    AutoGL_SetLabel("Show");
+ 
     AutoGL_AddComment();
     AutoGL_AddComment();
     AutoGL_SetLabel("Roadside Unit");

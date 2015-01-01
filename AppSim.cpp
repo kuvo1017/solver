@@ -13,8 +13,8 @@ void AppSim::init(int argc, char** argv, bool output)
     // 出力の抑制
     GVManager::resetFlag("FLAG_OUTPUT_TIMELINE", false);
     GVManager::resetFlag("FLAG_OUTPUT_TRIP_INFO", false);
-    GVManager::resetFlag("FLAG_OUTPUT_MONITOR_D", false);
-    GVManager::resetFlag("FLAG_OUTPUT_MONITOR_S", false);
+    GVManager::resetFlag("FLAG_OUTPUT_MONITOR_D", true);
+    GVManager::resetFlag("FLAG_OUTPUT_MONITOR_S", true);
     GVManager::resetFlag("FLAG_OUTPUT_GEN_COUNTER", false);
     
     assert(_simulator);
@@ -47,6 +47,8 @@ int AppSim::run()
     {
         _vis->setSimulator(_simulator);
         _vis->visualize();
+	if(GVManager::getFlag("FLAG_AUTO_START"))
+	    _vis->autoStart(); 
         return EXIT_SUCCESS;
     }
     else

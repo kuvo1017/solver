@@ -131,6 +131,17 @@ bool RoadMap::checkIntersectionLane()
   return result;
 }
 
+void RoadMap::setBarriers(){
+  
+  ITRMAPI iti = _intersections.begin();
+  while(iti!=_intersections.end())
+  {
+    Intersection* is = dynamic_cast<Intersection*>((*iti).second);
+    is->setBarrier();
+   
+    iti++;
+  }
+}
 //======================================================================
 const RMAPS* RoadMap::sections() const
 {
@@ -271,43 +282,11 @@ void RoadMap::deleteArrivedAgents()
 //======================================================================
 void RoadMap::deleteAccidentAgents()
 {
-  /*
-     for(unsigned int i=0; i<_bundles.size(); i++){
-  // ODノードのレーン上のエージェントを消去する
-  const std::map<std::string,
-  Lane*,
-  std::less<std::string> >* lanes = _bundles[i]->lanes();
-  std::map<std::string,
-  Lane*,
-  std::less<std::string> >::const_iterator it = lanes->begin();
-  while(it != lanes->end())
-  {
-  std::vector<RoadOccupant* >* agents = (*it).second->agents();
-  if(agents!=NULL){
-  //  std::cout << "agents size is "<<agents->size() <<endl; 
-  for(unsigned int j=0; j<agents->size(); j++){
-  RoadOccupant* agent =  (*agents)[j];
-  if(agent!=NULL){
-  //if(dynamic_cast<Vehicle*>(agent))
-  Vehicle* vehicle = reinterpret_cast<Vehicle*>(agent);
-  if(!(vehicle->errorController()->accidentCheck()))
-  ObjManager::deleteVehicle(vehicle);
-  //std::cout << "check" << endl;
-  }
-  }
-  it++;
-  }
-  }
-
-  //std::cout << "type is " << typeid(lanes->begin()) << endl;
-  }
-   */
-  std::vector<Vehicle*>* vehicles = ObjManager::vehicles();
+ std::vector<Vehicle*>* vehicles = ObjManager::vehicles();
   for(unsigned int i =0;i<vehicles->size();i++){
     Vehicle* vehicle = vehicles->at(i);
     if(!vehicle->errorController()->accidentCheck())
       std::cout << "!!"<<endl;
-      //ObjManager::deleteVehicle(vehicle);
   }
 }
 //======================================================================
@@ -439,3 +418,17 @@ void RoadMap::dispIntersections() const
   }
   cout << endl;
 }
+//======================================================================
+void RoadMap::addBarriers()
+{
+  ITRMAPI iti = _intersections.begin();
+  if (iti == _intersections.end())
+  {
+  std::vector<Barrier*> barriers = iti->second->barriers();
+  for(int i=0;i<barriers.size();i++)
+  {
+  _barriers[iti->second->id()+std::to_string(i)]= barriers.at(i);
+  }
+  }
+}
+ 

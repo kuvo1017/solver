@@ -7,6 +7,7 @@
 #include "FileManager.h"
 #include "AmuConverter.h"
 #include "AmuVector.h"
+#include "ErrorController.h"
 #include "Conf.h"
 #include <cstdio>
 #include <cstdlib>
@@ -337,46 +338,45 @@ bool VehicleIO::writeVehicleDistanceData(Vehicle* vehicle)
 }
 
 //======================================================================
-bool VehicleIO::writeVehicleAccidentData(ulint time,Vehicle* vehicle) {
+bool VehicleIO::writeVehicleAccidentData(ulint time,Vehicle* vehicle,std::string collidType) {
   bool result = false;
-  // accident.txtのオープン
-  string fAccident[2];
-  GVManager::getVariable("RESULT_ACCIDENT_FILE", &fAccident[0]);
-  //GVManager::getVariable("RESULT_ACCIDENT_FILE_QUVO", &fAccident[1]);
-  GVManager::setNewNumeric("ACCIDENT_COUNT",GVManager::getNumeric("ACCIDENT_COUNT")+1);
+  // error.txtのオープン
+  string file;
+  GVManager::getVariable("RESULT_ACCIDENT_FILE", &file);
+  int newCount = GVManager::getNumeric("ACCIDENT_COUNT") + 1;
+  GVManager::resetNumeric("ACCIDENT_COUNT",newCount);
 
-  for(int i=0;i<1;i++){
-    ofstream& ofsGD1 = FileManager::getOFStream(fAccident[i]); // オープンに失敗した場合は関数内で落ちるはず。
+    ofstream& ofsGD1 = FileManager::getOFStream(file); // オープンに失敗した場合は関数内で落ちるはず。
     // 車両台数等の動的グローバル情報の書き出し
     ofsGD1 << time/1000 << ","
-      <<GVManager::getNumeric("ACCIDENT_COUNT") << "," <<
+      << newCount << "," <<
       vehicle->id() << ","<<
       vehicle->x() << ","<<
-      vehicle->y() << ","<< endl;
-  }
+      vehicle->y() << ","<< 
+      vehicle->errorController()->type() << ","<<
+      vehicle->type() <<  ","<<
+      collidType <<endl;
   return result;
 }
 //======================================================================
-bool VehicleIO::writeVehicleErrorData(ulint time, Vehicle* vehicle,string type) {
+bool VehicleIO::writeVehicleErrorData(ulint time, Vehicle* vehicle) {
   bool result = false;
-  // accident.txtのオープン
-  string fError[2];
-  GVManager::getVariable("RESULT_ERROR_FILE", &fError[0]);
-  //GVManager::getVariable("RESULT_ERROR_FILE_QUVO", &fError[1]);
-  GVManager::setNewNumeric("ACCIDENT_COUNT",GVManager::getNumeric("ACCIDENT_COUNT")+1); 
-  for(int i=0;i<1;i++){
-    ofstream& ofsGD1 = FileManager::getOFStream(fError[i]); // オープンに失敗した場合は関数内で落ちるはず。
+  // error.txtのオープン
+  string file;
+  GVManager::getVariable("RESULT_ERROR_FILE", &file);
+  int newCount = GVManager::getNumeric("ERROR_COUNT") + 1; 
+  GVManager::resetNumeric("ERROR_COUNT",newCount); 
+    ofstream& ofsGD1 = FileManager::getOFStream(file); // オープンに失敗した場合は関数内で落ちるはず。
     // 車両台数等の動的グローバル情報の書き出し
     ofsGD1 <<time/1000 << ","
-      <<GVManager::getNumeric("ACCIDENT_COUNT") << "," << 
+      <<newCount << "," << 
       vehicle->id() << ","<<
       vehicle->x() << ","<<
       vehicle->y() << ","<<
-      type << endl;
-  }
+      vehicle->type() << endl;
   return result;
 }
- 
+
 //======================================================================
 bool VehicleIO::writeAllVehiclesDistanceData()
 {

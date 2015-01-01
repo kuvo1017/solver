@@ -12,21 +12,41 @@ using namespace std;
 //======================================================================
 void Vehicle::determineAcceleration()
 {
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    // 車線変更時は車線に対して垂直方向(error方向)の速度を生じさせる
-    // これはスリープ判定より前でなければならない．
-    if (_laneShifter.isActive())
+
+  //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // 車線変更時は車線に対して垂直方向(error方向)の速度を生じさせる
+  // これはスリープ判定より前でなければならない．
+
+  if (_laneShifter.isActive())
+  {
+#ifdef ERROR_MODE
+    if(_errorController->isAccident()){
+      _errorVelocity =0.0;
+    }else{
+     _errorVelocity = _laneShifter.activeErrorVelocity();
+    }
+#else
+      _errorVelocity = _laneShifter.activeErrorVelocity(); 
+#endif
+  }
+  else
+  {
+#ifdef ERROR_MODE
+    if(_errorController->headError())
     {
-        _errorVelocity = _laneShifter.activeErrorVelocity();
+      _errorVelocity = _errorController->errorVelocity();
     }
     else
     {
-        _errorVelocity = 0.0;
+      _errorVelocity = 0.0;
+#else
+      _errorVelocity = 0.0;
+#endif
     }
 
     if (_sleepTime>0)
     {
-        return;
+      return;
     }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -52,7 +72,7 @@ void Vehicle::determineAcceleration()
     double ra1 = 98.78;    //[m]
     double da  =  1.38;    //[m]      <- 最小車間距離
     double tt  =
-        GVManager::getNumeric("REACTION_TIME_VEHICLE")*1000.0;
+      GVManager::getNumeric("REACTION_TIME_VEHICLE")*1000.0;
     //[sec]->[msec]   <- 反応遅れ時間
 
     // 自由走行（前方の状況を考慮しない）
@@ -62,66 +82,67 @@ void Vehicle::determineAcceleration()
     // 前方の状況に応じた最適な加速度の決定
     for (unsigned int i=0; i<_leaders.size(); i++)
     {
-        ta2 = ta1
-            * exp((_leaders[i]->distance()
-                   - (da+tt*_velocity))/ra1);
-        if (_velocity > _leaders[i]->velocity())
-        {
-            vOpt = ( ta2
-                     * _vMax * (1-exp(-(_leaders[i]->distance()
-                                        -(da+tt*_velocity))/ra0))
-                     + ta0 * _leaders[i]->velocity() ) / (ta0+ta2);
-            aOpt = (vOpt-_velocity) * (1/ta0+1/ta2);
-        }
-        else
-        {
-            vOpt = _vMax*(1-exp(-(_leaders[i]->distance()
-                                 -(da+tt*_velocity))/ra0));
-            aOpt = (vOpt-_velocity) * (1/ta0);
-        }
-        accelCandidates.push_back(aOpt);
+      ta2 = ta1
+	* exp((_leaders[i]->distance()
+	      - (da+tt*_velocity))/ra1);
+      if (_velocity > _leaders[i]->velocity())
+      {
+	vOpt = ( ta2
+	    * _vMax * (1-exp(-(_leaders[i]->distance()
+		  -(da+tt*_velocity))/ra0))
+	    + ta0 * _leaders[i]->velocity() ) / (ta0+ta2);
+	aOpt = (vOpt-_velocity) * (1/ta0+1/ta2);
+      }
+      else
+      {
+	vOpt = _vMax*(1-exp(-(_leaders[i]->distance()
+		-(da+tt*_velocity))/ra0));
+	aOpt = (vOpt-_velocity) * (1/ta0);
+      }
+      accelCandidates.push_back(aOpt);
     }
 
     // 最も遅い候補を選ぶ
     // 効用を考えたければ速度と効用のpairを使う？
     assert(!accelCandidates.empty());
     accel = *min_element(accelCandidates.begin(),
-                         accelCandidates.end());
-    
+	accelCandidates.end());
+
     // 最大加速度，最大減速度を越えた場合の処理
     if (accel>_maxAcceleration)
     {
-        accel = _maxAcceleration;
+      accel = _maxAcceleration;
     }
     else if (accel<_maxDeceleration)
     {
-        accel = _maxDeceleration;
+      accel = _maxDeceleration;
     }
 
     // _vehicleの速度，加速度を更新する．
     _accel = accel;
 
     _velocity
-        = _velocity+accel*TimeManager::unit();
+      = _velocity+accel*TimeManager::unit();
 
     if (_velocity < 1.0e-5)
     {
-        _velocity = 0.0;
+      _velocity = 0.0;
     }
-    
+
     if (_errorController->isAccident())
-    	_velocity = 0.0;
+      _velocity = 0.0;
     // _vehicleの保存
     if (GVManager::getFlag("VEHICLE_VELOCITY_HISTORY_RECORD")
-        && (TimeManager::step() - startStep())
-        % (int)GVManager::getNumeric("VEHICLE_VELOCITY_HISTORY_INTERVAL")
-        == 0)
+	&& (TimeManager::step() - startStep())
+	% (int)GVManager::getNumeric("VEHICLE_VELOCITY_HISTORY_INTERVAL")
+	== 0)
     {
-        _velocityHistory.push_back(_velocity / _vMax);
-        if (_velocityHistory.size()
-            > GVManager::getNumeric("VEHICLE_VELOCITY_HISTORY_SIZE"))
-        {
-            _velocityHistory.pop_front();
-        }
+      _velocityHistory.push_back(_velocity / _vMax);
+      if (_velocityHistory.size()
+	  > GVManager::getNumeric("VEHICLE_VELOCITY_HISTORY_SIZE"))
+      {
+	_velocityHistory.pop_front();
+      }
     }
+  }
 }

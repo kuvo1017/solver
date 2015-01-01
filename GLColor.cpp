@@ -233,4 +233,8 @@ void GLColor::setAccidentVehicle()
 void GLColor::setVehicleId(){
   AutoGL_SetColor(0, 0, 0);
 }
-
+//######################################################################
+void GLColor::setBarrier()
+{
+  AutoGL_SetColor(0, 0, 0);
+}

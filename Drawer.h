@@ -7,6 +7,7 @@ class Signal;
 class Intersection;
 class Section;
 class RoadMap;
+class Barrier;
 
 class DetectorUnit;
 class Vehicle;
@@ -108,14 +109,32 @@ protected:
 
     /// 信号を描画する
     virtual void drawSignals(const Intersection& inter) const;
+    /// 障害物を描画する
+    virtual void drawBarriers(const Intersection& inter) const;
     /// IDを表示する
     virtual void drawId(const Intersection& inter) const;
 };
 
 //######################################################################
-/// Sectionを描画するクラス
+/// Barrierを描画するクラス
 /**
  * @ingroup Drawing
+ */
+class BarrierDrawer
+{
+public:
+  static BarrierDrawer& instance();
+  virtual void draw(const Intersection& inter) const;
+protected:
+  BarrierDrawer(){};
+  BarrierDrawer(const BarrierDrawer&){};
+  virtual ~BarrierDrawer(){};
+};
+ 
+//######################################################################
+/// sectionを描画するクラス
+/**
+ * @ingroup drawing
  */
 class SectionDrawer
 {
