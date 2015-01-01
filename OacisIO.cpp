@@ -42,7 +42,7 @@ std::string OacisIO::inputParams(){
   double volume = all["small_traffic_volume"].get<double>();
   GVManager::setNewNumeric("SMALL_TRAFFIC_VOLUME",volume);
   GVManager::setNewNumeric("LARGE_TRAFFIC_VOLUME",volume * 0.3);
-  GVManager::setNewNumeric("MAX_TIME",all["max_time"].get<double>());
+  GVManager::setNewNumeric("MAX_TIME",1000*all["max_time"].get<double>());
   GVManager::setNewNumeric("MAX_ACCIDENT",all["max_accident"].get<double>());
 //  GVManager::setNewNumeric("LARGE_TRAFFIC_VOLUME",all["large_traffic_volume"].get<double>());
   std::string dataPath =  all["data_path"].get<std::string>(); 
