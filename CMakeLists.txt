@@ -180,7 +180,7 @@ if(NOT USE_AUTOGL_CONFIG AND BUILD_MATES_SIM)
     endif(NOT GTK2_FOUND)
 
     # stof
-    add_definitions("-std=c++11")  
+    add_definitions("-std=c++0x")  
   endif(${PLATFORM} STREQUAL "linux")
 
   #********************************************************************
@@ -384,6 +384,7 @@ set(MATES_COMMON_SRCS
   DetectorIO.cpp
   DetectorUnit.cpp
   ErrorController.cpp
+  OacisIO.cpp
   OD.cpp
   GeneratingTable.cpp
   GenerateVehicleController.cpp

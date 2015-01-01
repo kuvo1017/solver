@@ -144,7 +144,10 @@ Barrier::Barrier(Intersection* i0,
   }
   _diagnoal[0] = new AmuVector(*_vertices[0] ,*_vertices[2]);
   _diagnoal[1] = new AmuVector(*_vertices[1],*_vertices[3]);
-
+  // 見通しが悪い情報を単路に登録
+  s1->setBadView();
+  s2->setBadView();
+  cout << "set bad view" << endl;
 } 
 //======================================================================
 std::string Barrier::id()

@@ -79,6 +79,18 @@ double Section::downWidth() const
 }
 
 //======================================================================
+bool Section::isBadView() const
+{
+  return _isBadView;
+}
+
+//======================================================================
+void Section::setBadView()
+{
+  _isBadView = true;
+}
+
+//======================================================================
 LaneBundle* Section::nextBundle(Lane* lane) const
 {
     return nextIntersection(lane);

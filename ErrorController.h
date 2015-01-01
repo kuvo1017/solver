@@ -33,6 +33,8 @@ class ErrorController{
     ///  エラー時間↲
     int rearErrorTime() const;
     /// 障害物で認知できていない車両の集合を返す
+    void passingError();
+     /// 障害物で認知できていない車両の集合を返す
     const std::vector<Vehicle*>* invisibleVehicles() const;
     /// 認知できていない車両でを追加
     void setInvisibleVehicle(Vehicle* vehicle);
@@ -45,10 +47,10 @@ class ErrorController{
     /// エラーが起きたときに外部ファイルに記入する
     void writeError();
     /// 事故が起こった時の処理
-    void accidentOccur();
+    void accidentOccur(std::string collidType);
     /// エラーが起こった時の処理
     void errorOccur(string type);
-    ///　交障害物を認識している状態にする。
+   ///　交障害物を認識している状態にする。
     void recogWall();
     /// 横ずれエラーが起きている時間
     int headErrorTime();
@@ -57,11 +59,17 @@ class ErrorController{
     /// 右左折事故の処理
     void LRError(Vehicle* thatV,double thisTti,double thatTti) ; 
     void LRError(double thisTti,double thatTtp) ;  
+   /// shifterror wo keisan
+    bool shiftError();
+    /// shifterror wo keisan
+    void endShiftError();
     /// 正面衝突エラーが起きるかを計算
     bool headError();
     /// 正面衝突事故が起きている時に横ずれの速度を返す
     double errorVelocity();
-   /// 事故状態かどうかをチェックして、事故状態ならエージェント消去
+   /// error状態かどうかをチェックして、事故状態ならエージェント消去
+    void errorCheck();
+    /// 事故状態かどうかをチェックして、事故状態ならエージェント消去
     bool accidentCheck();
     /// エラーの種類を返す
     string type() const;
@@ -75,21 +83,25 @@ class ErrorController{
     /// 
     static void checkStatData(); 
     /// 
-    static void writeStatData(int totalP,int totalT,string time);
+   static void writeStatData(int totalP,int totalT,string time);
     ///
     static void endRun();
-  protected: 
+   protected: 
     /// 車両オブジェクト
     Vehicle* _vehicle;
     int _errortime;
     /// 予測エラーか
-    bool _rearError;
+    bool _isRearError;
     /// 予測エラー時の前方車との間隔
     double _rearErrorLength;
     ///　予測エラー時の前方車の速度
     double _rearErrorVelocity;
     ///　予測エラー継続時間
     int _rearErrorTime;
+  /// error ga 
+ void _errorEnd();
+     /// 交差点にいるか
+    bool _isInIntersection;
     /// 横ずれエラー時間
     int _headErrorTime;
     ///　障害物エラーか
@@ -130,6 +142,8 @@ class ErrorController{
     double _errorVelocity;
     /// 自車が最も右側にいる時の右側対向車線
     Lane* _onComingLane();
+    /// a 
+    double _objectPoint();
     /// エラーの種類
     string _type;
     ///
@@ -138,17 +152,6 @@ class ErrorController{
     static int _maxTotal;
     /// シミュレーションを終わらせるか
     static bool _stopRun;
-    /// シミュレーションで追突事故が起きる設定か
-    static bool _isRearOn;
-    /// シミュレーションで追突事故が起きる設定か
-    static bool _isPassingOn;
-    /// シミュレーションで追突事故が起きる設定か
-    static bool _isLROn;
-    /// シミュレーションで追突事故が起きる設定か
-    static bool _isSlideOn;
-    /// シミュレーションで追突事故が起きる設定か
-    static bool _isHeadOn;
-
 }; 
 #endif //__ERRORCONTROLLER_H_
 

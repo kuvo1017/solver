@@ -19,7 +19,15 @@ void Vehicle::determineAcceleration()
 
   if (_laneShifter.isActive())
   {
-    _errorVelocity = _laneShifter.activeErrorVelocity();
+#ifdef ERROR_MODE
+    if(_errorController->isAccident()){
+      _errorVelocity =0.0;
+    }else{
+     _errorVelocity = _laneShifter.activeErrorVelocity();
+    }
+#else
+      _errorVelocity = _laneShifter.activeErrorVelocity(); 
+#endif
   }
   else
   {

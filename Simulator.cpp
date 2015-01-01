@@ -460,13 +460,14 @@ void Simulator::deleteAccidentVehicle(){
   std::vector<Vehicle*>* vehicles = ObjManager::vehicles();
   std::vector<Vehicle*>::iterator it = vehicles->begin();
   while(it != vehicles->end()){
-    if(!((*it)->errorController()->accidentCheck())){
-      //std::cout << "!" << endl;
-      //vehicles->erase(it);
-      //Vehicle* vehicle = dynamic_cast<Vehicle*>(*it);
-      ObjManager::deleteVehicle(dynamic_cast<Vehicle*>(*it),true);
+    if(!((*it)->errorController()->accidentCheck()))
+    {
+     ObjManager::deleteVehicle(dynamic_cast<Vehicle*>(*it),true);
+    }
+    else
+    {
+      (*it)->errorController()->errorCheck();
     }
     it++;
   }
-
 }

@@ -206,7 +206,7 @@ bool LocalLaneRouter::_search(const Section* section,
     // 現在の位置の真横のレーンを取得
     if(_getSideLanes(&sideLanes, &sideLength, section, lane, length))
     {
-        where = sideLanes.begin();
+       where = sideLanes.begin();
         how = sideLength.begin();
       
 #ifdef DEBUG_LOCALROUTER
@@ -226,7 +226,8 @@ bool LocalLaneRouter::_search(const Section* section,
 
             if (!resultLanes.empty()
                 && (result_lanes0->empty()
-                    || _isUncrowdedRoute(section, frontIntersection, (*where), lane)))
+                    || _isUncrowdedRoute(section, frontIntersection, (*where), lane))
+               )
             {
                 // 候補が見つかった
                 assert(resultLanes.front() == *where);
