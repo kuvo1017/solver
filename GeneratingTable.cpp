@@ -318,7 +318,11 @@ bool GeneratingTable::init(const std::string& fileName)
 
       // 発生開始、終了時刻
       begin = atoi(tokens[0].c_str());
+#ifdef OACIS
+      end = GVManager::getNumeric("MAX_TIME");
+#else
       end = atoi(tokens[1].c_str());
+#endif
 
       // 出発地、目的地
       ostringstream ost0, ost1;
@@ -335,6 +339,8 @@ bool GeneratingTable::init(const std::string& fileName)
       // 車種ID
       vehicleType = atoi(tokens[5].c_str());
 #ifdef OACIS
+      if(volume > 0)
+      {
       cout << "vehicleType is " << vehicleType << endl;
       if(vehicleType >=20 && vehicleType < 30)
       {
@@ -346,6 +352,7 @@ bool GeneratingTable::init(const std::string& fileName)
         cout << "large!!" << endl;
         volume = GVManager::getNumeric("SMALL_TRAFFIC_VOLUME")*0.3;
         cout  << "volume is " << volume <<endl;
+      }
       }
 #endif
       // 経由地

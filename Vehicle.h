@@ -131,6 +131,9 @@ class Vehicle : public RoadOccupant
   bool _isStoppedByMinHeadway(Intersection* nextInter,
       RelativeDirection turning);
 
+  /// 見通しが悪い交差点に差し掛かった時に直前で停止する
+  bool _isStoppedByBadView();
+ 
   /// 右左折前に事前に減速する
   /**
    * @note 単路を走行している車両が呼び出す
@@ -260,7 +263,7 @@ class Vehicle : public RoadOccupant
   void getBodyColor(double* result_r,
       double* result_g,
       double* result_b) const;
-
+  /// ずれを返す
   double error() const;
 
   double errorVelocity() const;  
@@ -528,7 +531,7 @@ class Vehicle : public RoadOccupant
   /// 発生時刻
   ulint _startTime;
 
-  //@}
+ //@}
 
   //====================================================================
   /** @name 動きに関する変数 */

@@ -225,6 +225,7 @@ double Vehicle::x() const
   return x;
 }
 
+
 //======================================================================
 double Vehicle::y() const
 {

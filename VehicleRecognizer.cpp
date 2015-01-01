@@ -22,6 +22,7 @@ void Vehicle::recognize()
   {
     return;
   }
+  _errorController->resetInvisibleVehicles();
 #endif
 
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -37,7 +38,6 @@ void Vehicle::recognize()
   if (_sleepTime>0)
   {
     return;
-
   }
 
   // 単路中で交差点との境界に近く，レーンの先頭で，速度0の場合，
@@ -258,6 +258,23 @@ void Vehicle::recognize()
       TimeManager::stopClock("VEHICLE_MIN_HEADWAY");
 #endif //_OPENMP
     }
+/*
+#ifdef BARRIER
+     //--------------------------------------------------------------
+    // 見通しが悪い場合
+    if (isNextInterEnterable)
+    {
+#ifndef _OPENMP
+      TimeManager::startClock("VEHICLE_BAD_VIEW");
+#endif //_OPENMP
+      isNextInterEnterable
+	= !(_isStoppedByBadView());
+#ifndef _OPENMP
+      TimeManager::stopClock("VEHICLE_BAD_VIEW");
+#endif //_OPENMP
+    }
+#endif //BARRIER
+*/
 
     //--------------------------------------------------------------
     // 転回時事前減速
@@ -721,9 +738,9 @@ bool Vehicle::_isStoppedByCollisionInIntersection(
 		clAgent->length())
 	    / clAgent->velocity();
 	}
-	_errorController->LRError(thisTti,thatTtp);
+	//_errorController->LRError(thisTti,thatTtp);
 	// thisTti < thatTtpであれば交錯の可能性がある
-	if (thisTti < thatTtp || _errorController->isLRError())
+	if (thisTti < thatTtp /*|| _errorController->isLRError()*/)
 	{
 #ifndef VL_DEBUG
 	  VirtualLeader* leader =
@@ -804,9 +821,19 @@ bool Vehicle::_isStoppedByCollisionInSection(
 
     // 交錯する可能性のあるエージェント
     Vehicle* headVehicle = (*clSection)[i]->headVehicle();
+#ifdef BARRIER
+    const std::vector<Vehicle*>* invisibleVehicles = _errorController->invisibleVehicles();
+    vector<Vehicle*>::const_iterator itv 
+      = find(invisibleVehicles->begin(),invisibleVehicles->end(),headVehicle);
+#endif
     if (!headVehicle
 	|| headVehicle==this
-	/* || !(_isVisible(headVehicle)) */ )
+ #ifdef BARRIER
+	|| itv!=invisibleVehicles->end()
+	//|| !(_isVisible(headVehicle)) 
+ #endif
+       )
+ 
       // この時点で見通しを考慮するならコメントを外す
     {
       continue;
@@ -890,6 +917,8 @@ bool Vehicle::_isStoppedByCollisionInSection(
 	isStopped = true;
 	break;
       }
+    }else{
+      _isStoppedByBadView();
     }
   }
   return isStopped;
@@ -941,7 +970,7 @@ bool Vehicle::_isStoppedByMinHeadway(Intersection* nextInter,
 {
   assert(_section);
 
-  if ((turning==RD_LEFT || turning==RD_RIGHT)
+  if((turning==RD_LEFT || turning==RD_RIGHT)
       && _velocity>1.0e-6
       && TimeManager::time()
       +_section->lengthToNext(_lane, _length)/_velocity
@@ -966,6 +995,43 @@ bool Vehicle::_isStoppedByMinHeadway(Intersection* nextInter,
   return false;
 }
 
+//======================================================================
+bool Vehicle::_isStoppedByBadView()
+{                          
+if(GVManager::getNumeric("ARROGANCE_PASSING") == 0)
+{
+return false;
+}
+//return false;
+  // 直前に通過した，あるいは現在通過中の交差点
+  if(!_errorController->isPassingError())
+  {
+    if(_section)
+    {
+      if(_section->isBadView())
+      {
+	if(_velocity < 15.0/3600)
+	{
+	  return true;
+	}
+
+	double ltn = _section->lengthToNext(_lane,_length);
+#ifndef VL_DEBUG
+	VirtualLeader* leader =
+	  new VirtualLeader(ltn-_bodyLength/2, 0);
+#else
+	VirtualLeader* leader =
+	  new VirtualLeader(ltn-_bodyLength/2, 0,
+	      "BADVIEW:"+_section->id());
+#endif
+	_leaders.push_back(leader);
+	return true;
+      }
+    }
+  }
+}
+
+ 
 //======================================================================
 void Vehicle::_determineTurningVelocity(RelativeDirection turning)
 {

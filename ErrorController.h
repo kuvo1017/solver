@@ -32,6 +32,14 @@ class ErrorController{
     bool isAccident() const;
     ///  エラー時間↲
     int rearErrorTime() const;
+    /// 障害物で認知できていない車両の集合を返す
+    void passingError();
+     /// 障害物で認知できていない車両の集合を返す
+    const std::vector<Vehicle*>* invisibleVehicles() const;
+    /// 認知できていない車両でを追加
+    void setInvisibleVehicle(Vehicle* vehicle);
+    // 認知できてない車両を消去
+    void resetInvisibleVehicles();
     ///　事故時間↲
     int accidentTime() const;
     /// 事故が起きたときに外部ファイルに記入する
@@ -51,7 +59,7 @@ class ErrorController{
     /// 右左折事故の処理
     void LRError(Vehicle* thatV,double thisTti,double thatTti) ; 
     void LRError(double thisTti,double thatTtp) ;  
-    /// shifterror wo keisan
+   /// shifterror wo keisan
     bool shiftError();
     /// shifterror wo keisan
     void endShiftError();
@@ -78,12 +86,12 @@ class ErrorController{
    static void writeStatData(int totalP,int totalT,string time);
     ///
     static void endRun();
-  protected: 
+   protected: 
     /// 車両オブジェクト
     Vehicle* _vehicle;
     int _errortime;
     /// 予測エラーか
-    bool _rearError;
+    bool _isRearError;
     /// 予測エラー時の前方車との間隔
     double _rearErrorLength;
     ///　予測エラー時の前方車の速度
@@ -92,6 +100,8 @@ class ErrorController{
     int _rearErrorTime;
   /// error ga 
  void _errorEnd();
+     /// 交差点にいるか
+    bool _isInIntersection;
     /// 横ずれエラー時間
     int _headErrorTime;
     ///　障害物エラーか
@@ -114,6 +124,8 @@ class ErrorController{
     double _velocityDifference;
     ///  先行者のid
     string _rearId;
+    /// 認知できていない車両の配列
+    std::vector<Vehicle*> _invisibleVehicles;
     /// 正面衝突事故が起きてるかどうかをチェック
     bool _checkHeadAccident();
     ///  事故が起こった瞬間か
@@ -140,17 +152,6 @@ class ErrorController{
     static int _maxTotal;
     /// シミュレーションを終わらせるか
     static bool _stopRun;
-    /// シミュレーションで追突事故が起きる設定か
-    static bool _isRearOn;
-    /// シミュレーションで追突事故が起きる設定か
-    static bool _isPassingOn;
-    /// シミュレーションで追突事故が起きる設定か
-    static bool _isLROn;
-    /// シミュレーションで追突事故が起きる設定か
-    static bool _isSlideOn;
-    /// シミュレーションで追突事故が起きる設定か
-    static bool _isHeadOn;
-
 }; 
 #endif //__ERRORCONTROLLER_H_
 

@@ -18,7 +18,11 @@ using namespace std;
 AppCalc::AppCalc()
 {
     cout << "appcalc now" <<endl;
+#ifdef OACIS
+  _maxTime = GVManager::getNumeric("MAX_TIME");
+#else
     _maxTime = DEFAULT_MAX_TIME;
+#endif
 }
 
 //======================================================================

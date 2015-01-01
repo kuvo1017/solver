@@ -212,6 +212,12 @@ void Vehicle::_runIntersection2Section()
     _localRouter.clear();
     _localRouter.localReroute(_section, _lane, _length);
     _decideNextLane(_section, _lane);
+#ifdef ERROR_MODE
+// 出合い頭における判断エラー
+//（見通しがわるくても次の交差点に進むか)
+// を計算
+    _errorController->passingError();
+#endif
 }
 
 //======================================================================

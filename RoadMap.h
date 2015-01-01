@@ -13,48 +13,49 @@ class Section;
 class Lane;
 class RoadEntity;
 class Barrier;
+class Vehicle;
 
 // 型の別名を定義する
 typedef std::map<std::string,
-                 Intersection*,
-                 std::less<std::string> > RMAPI;
+	Intersection*,
+	std::less<std::string> > RMAPI;
 typedef std::map<std::string,
-                 Intersection*,
-                 std::less<std::string> >::iterator ITRMAPI;
+	Intersection*,
+	std::less<std::string> >::iterator ITRMAPI;
 typedef std::map<std::string,
-                 Intersection*,
-                 std::less<std::string> >::const_iterator CITRMAPI;
+	Intersection*,
+	std::less<std::string> >::const_iterator CITRMAPI;
 
 typedef std::map<std::string,
-                 Section*,
-                 std::less<std::string> > RMAPS;
+	Section*,
+	std::less<std::string> > RMAPS;
 typedef std::map<std::string,
-                 Section*,
-                 std::less<std::string> >::iterator ITRMAPS;
+	Section*,
+	std::less<std::string> >::iterator ITRMAPS;
 typedef std::map<std::string,
-                 Section*,
-                 std::less<std::string> >::const_iterator CITRMAPS;
+	Section*,
+	std::less<std::string> >::const_iterator CITRMAPS;
 
 typedef std::map<std::string,
-                 Signal*,
-                 std::less<std::string> > RMAPSI;
+	Signal*,
+	std::less<std::string> > RMAPSI;
 typedef std::map<std::string,
-                 Signal*,
-                 std::less<std::string> >::iterator ITRMAPSI;
+	Signal*,
+	std::less<std::string> >::iterator ITRMAPSI;
 typedef std::map<std::string,
-                 Signal*,
-                 std::less<std::string> >::const_iterator CITRMAPSI;
+	Signal*,
+	std::less<std::string> >::const_iterator CITRMAPSI;
 
 typedef std::map<std::string,
-                 Barrier*,
-                 std::less<std::string> > RMAPB;
+	Barrier*,
+	std::less<std::string> > RMAPB;
 typedef std::map<std::string,
-                 Barrier*,
-                 std::less<std::string> >::iterator ITRMAPB;
+	Barrier*,
+	std::less<std::string> >::iterator ITRMAPB;
 typedef std::map<std::string,
-                 Barrier*,
-                 std::less<std::string> >::const_iterator CITRMAPB;
- 
+	Barrier*,
+	std::less<std::string> >::const_iterator CITRMAPB;
+
 /**
  * @addtogroup RoadEnvironment
  * @brief 道路環境を定義するモジュール
@@ -72,10 +73,10 @@ typedef std::map<std::string,
  */
 class RoadMap
 {
-public:
+  public:
     RoadMap();
     ~RoadMap();
-private:
+  private:
     /// 交差点のメインメインコンテナ
     RMAPI _intersections;
 
@@ -108,7 +109,7 @@ private:
     /// 信号のメインコンテナ
     RMAPSI _signals;
 
-public:
+  public:
     //====================================================================
     /** @name 道路構造に関するもの */
     /// @{
@@ -131,12 +132,12 @@ public:
     /// 交差点レーンチェック
     bool checkIntersectionLane();
 
-/// つながっている他の交差点をチェック
-void setBarriers();
+    /// 障害物をセット
+    void setBarriers();
+    /// 全ての障害物の周囲の車両に対して
+    /// 認知の判定を行う
+    void checkVisible(std::vector<Vehicle*>* vehicles);
 
- /// 障害物をセット
-void addBarriers();
- 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // Section関係
 
@@ -182,8 +183,8 @@ void addBarriers();
     /// 目的地に到達したエージェントを消去する
     void deleteArrivedAgents();
 
-/// 事故が発生したエージェントを消去する
-void deleteAccidentAgents();
+    /// 事故が発生したエージェントを消去する
+    void deleteAccidentAgents();
     /// @}
 
     //====================================================================
@@ -195,7 +196,7 @@ void deleteAccidentAgents();
 
     /// intersectionの情報を表示する
     void dispIntersections() const;
-   
+
 };
 
 #endif //__ROADMAP_H__

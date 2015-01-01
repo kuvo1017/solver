@@ -321,6 +321,10 @@ bool Simulator::timeIncrement()
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #ifndef EXCLUDE_VEHICLES
   vector<Vehicle*>* vehicles = ObjManager::vehicles();
+#ifdef BARRIER
+  _roadMap->checkVisible(vehicles);
+#endif //BARRIER
+
 #ifndef _OPENMP
   TimeManager::startClock("RECOGNIZE");
   for_each(vehicles->begin(), vehicles->end(),
@@ -456,16 +460,14 @@ void Simulator::deleteAccidentVehicle(){
   std::vector<Vehicle*>* vehicles = ObjManager::vehicles();
   std::vector<Vehicle*>::iterator it = vehicles->begin();
   while(it != vehicles->end()){
-    if(!((*it)->errorController()->accidentCheck())){
-      //std::cout << "!" << endl;
-      //vehicles->erase(it);
-      //Vehicle* vehicle = dynamic_cast<Vehicle*>(*it);
-      ObjManager::deleteVehicle(dynamic_cast<Vehicle*>(*it),true);
-    }else{
-    // errormo kokode tsuideni kesu
-    (*it)->errorController()->errorCheck();
+    if(!((*it)->errorController()->accidentCheck()))
+    {
+     ObjManager::deleteVehicle(dynamic_cast<Vehicle*>(*it),true);
+    }
+    else
+    {
+      (*it)->errorController()->errorCheck();
     }
     it++;
   }
-
 }

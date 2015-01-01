@@ -383,7 +383,6 @@ void IntersectionDrawer::draw(const Intersection& inter) const
   if (GVManager::getFlag("VIS_BARRIER"))
   {
     drawBarriers(inter); 
-    cout << "お絵かき完了?" << endl; 
   } 
 }
 //----------------------------------------------------------------------
@@ -533,24 +532,26 @@ BarrierDrawer& BarrierDrawer::instance()
 void BarrierDrawer::draw(const Intersection& inter) const
 {
   std::vector<Barrier*> barriers = inter.barriers();
+  if(barriers.size()==0)
+  {
+    return;
+  }
   if(&barriers != NULL)
   {
-    for(int i=0;i<1;i++)
+    for(int i=0;i<barriers.size();i++)
     {
-
       Barrier* barrier = barriers[i];
       if (barrier!=NULL)
       {
 	GLColor::setBarrier();
 	// 上半分の描画
-	AutoGL_DrawTriangle(barrier->x(0), barrier->y(0), barrier->z(0),
-	    barrier->x(1), barrier->y(1), barrier->z(1),
-	    barrier->x(2), barrier->y(2), barrier->z(2));
-	std::cout << "上半分" <<endl;    
+	AutoGL_DrawTriangle(barrier->vertices(0)->x(), barrier->vertices(0)->y(), barrier->vertices(0)->z(),
+	    barrier->vertices(1)->x(), barrier->vertices(1)->y(), barrier->vertices(1)->z(),
+	    barrier->vertices(2)->x(), barrier->vertices(2)->y(), barrier->vertices(2)->z());
 	// 下半分の描画
-	AutoGL_DrawTriangle(barrier->x(2), barrier->y(2), barrier->z(2),
-	    barrier->x(3), barrier->y(3), barrier->z(3),
-	    barrier->x(0), barrier->y(0), barrier->z(0));
+	AutoGL_DrawTriangle(barrier->vertices(2)->x(), barrier->vertices(2)->y(), barrier->vertices(2)->z(),
+	    barrier->vertices(3)->x(), barrier->vertices(3)->y(), barrier->vertices(3)->z(),
+	    barrier->vertices(0)->x(), barrier->vertices(0)->y(), barrier->vertices(0)->z());
       }
     }
   }
