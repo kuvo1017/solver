@@ -4,10 +4,10 @@
 "arrogance_LR":0.0,
 "nolook_shift":0.0,
 "nolook_head":0,
-"data_path":"../simulations/shift_error/",
-"max_accident":1,
+"data_path":"../simulations/lr_error/",
+"max_accident":100,
 "max_time":259200,
 "small_traffic_volume":500,
 "no_input_signal":true,
-"param_name":"NOLOOK_REAR"
+"param_name":"ARROGANCE_LR"
 }
