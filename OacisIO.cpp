@@ -1,4 +1,4 @@
-#include <vector>
+#include <vector>                               
 #include <sstream>
 #include "OacisIO.h"
 #include "GVManager.h"
@@ -46,6 +46,7 @@ std::string OacisIO::inputParams(){
   GVManager::setNewNumeric("MAX_ACCIDENT",all["max_accident"].get<double>());
 //  GVManager::setNewNumeric("LARGE_TRAFFIC_VOLUME",all["large_traffic_volume"].get<double>());
   std::string dataPath =  all["data_path"].get<std::string>(); 
+  GVManager::setNewString("PARAM_NAME",all["param_name"].get<std::string>()); 
   if(all["no_input_signal"].get<bool>())
   {
   GVManager::resetFlag("FLAG_INPUT_SIGNAL",false);

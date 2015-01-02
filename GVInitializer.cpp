@@ -152,12 +152,13 @@ void GVInitializer::init(const string& dataPath)
   GVManager::setNewString("RESULT_ACCIDENT_FILE",
       resultPath + "_accident.txt");
 #else
+   string paramName = GVManager::getString("PARAM_NAME");
    GVManager::setNewString("RESULT_ERROR_FILE",
-      "./_error.txt");
-  GVManager::setNewString("RESULT_ACCIDENT_FILE",
-       "./_accident.txt");
+      "./_error_" + paramName + ".txt");
+   GVManager::setNewString("RESULT_ACCIDENT_FILE",
+       "./_accident_" + paramName + ".txt");
    GVManager::setNewString("RESULT_STAT_ACCIDENT_FILE",
-       "./_stat_accident.txt");
+       "./_stat_accident_" + paramName + ".txt");
 #endif
 
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
