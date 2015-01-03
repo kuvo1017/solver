@@ -181,6 +181,7 @@ void Barrier::checkVehiclesVisible()
 	     {
 	       vehicle1->errorController()->setInvisibleVehicle(vehicle2);
 	       vehicle2->errorController()->setInvisibleVehicle(vehicle1); 
+	       //cout << "v1:" << vehicle1->id() << "  v2:" << vehicle2->id() <<endl;
 	     }
 	   }
 	 }

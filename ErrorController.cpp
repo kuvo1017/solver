@@ -118,6 +118,7 @@ void ErrorController::passingError()
 //======================================================================
 void ErrorController::setInvisibleVehicle(Vehicle* vehicle)
 {
+//  cout << "set" <<endl;
   _invisibleVehicles.push_back(vehicle);
 }
 
