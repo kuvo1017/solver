@@ -12,3 +12,5 @@ _e*
 _r*
  
 old-solver/
+input.json
+sim.sh
