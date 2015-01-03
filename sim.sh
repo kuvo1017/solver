@@ -1,5 +1,5 @@
 #!/bin/sh
-for i in "0.01" "0.02" "0.05" "0.1" "0.2" "0.3" "0.5"
+for i in "1e-4" "3e-4" "5e-4" "1e-3" "2e-3" "5e-3" "1e-2"
 do
  ./advmates-calc -d $i
 done
