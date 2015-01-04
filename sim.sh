@@ -6,6 +6,7 @@ do
   do
     ./advmates-calc -d $i
   done
-  mkdir $n
+  cd $n
+  rm *
   cp _stat* _accident* _error* ./$n
 done
