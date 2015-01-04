@@ -22,7 +22,6 @@ void Vehicle::recognize()
   {
     return;
   }
-  _errorController->resetInvisibleVehicles();
 #endif
 
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -258,7 +257,6 @@ void Vehicle::recognize()
       TimeManager::stopClock("VEHICLE_MIN_HEADWAY");
 #endif //_OPENMP
     }
-/*
 #ifdef BARRIER
      //--------------------------------------------------------------
     // 見通しが悪い場合
@@ -274,7 +272,6 @@ void Vehicle::recognize()
 #endif //_OPENMP
     }
 #endif //BARRIER
-*/
 
     //--------------------------------------------------------------
     // 転回時事前減速
@@ -343,6 +340,11 @@ void Vehicle::recognize()
 #ifndef _OPENMP
     TimeManager::stopClock("VEHICLE_FRONTAGENT_LOCALREROUTE");
 #endif //_OPENMP
+
+#ifdef ERROR_MODE
+// 認知できていない車両の配列のリセット
+  _errorController->resetInvisibleVehicles();
+#endif
   }
 }
 
@@ -896,7 +898,9 @@ bool Vehicle::_isStoppedByCollisionInSection(
       {
 	thatTti = 50.0*1000;
       }
+      #ifdef ERROR_MODE
       _errorController->LRError(headVehicle,thisTti,thatTti);
+      #endif
       /*
        * 自分が交差点に到達するまでの時間と
        * 相手が交差点に到達する時間の差がgap以下なら道を譲る
@@ -917,8 +921,6 @@ bool Vehicle::_isStoppedByCollisionInSection(
 	isStopped = true;
 	break;
       }
-    }else{
-      _isStoppedByBadView();
     }
   }
   return isStopped;

@@ -12,17 +12,19 @@
 bool CollisionJudge::isCollidInIntersection(Vehicle* v1,Vehicle* v2){
   if(v1->intersection() == NULL 
       || v2->intersection() == NULL
-      || v1->errorController()->type() == "not_error"
-      || v2->errorController()->type() == "not_error"
+      || (v1->errorController()->type() == "not_error"
+      && v2->errorController()->type() == "not_error")
     )
   {
     return false;
   }
+  cout << "v1:"<< v1->id()<< "  v2:"<< v2->id()  <<endl;
   /// Refference URL
   /// http://marupeke296.com/COL_3D_No13_OBBvsOBB.html
   AmuPoint* center[] = {new AmuPoint(v1->x(),v1->y(),0),new AmuPoint(v2->x(),v2->y(),0)};
   AmuVector* aToB = new AmuVector(*center[0],*center[1]);
-  // toosugitara ridatsu
+  // 車両同士の距離が離れすぎていたら、ループ離脱
+  // お互いの距離 > 車体の対角線の合計値のとき
   if(aToB->size()*2 > v1->bodyDiagnoalXY() + v2->bodyDiagnoalXY())
   {
     return false;
