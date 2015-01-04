@@ -6,7 +6,7 @@
 "nolook_head":0,
 "data_path":"../simulations/passing_error/",
 "max_accident":100,
-"max_time":300,
+"max_time":259200,
 "small_traffic_volume":500,
 "no_input_signal":true,
 "param_name":"ARROGANCE_PASSING"
