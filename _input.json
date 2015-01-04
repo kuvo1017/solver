@@ -9,5 +9,5 @@
 "max_time":259200,
 "small_traffic_volume":500,
 "no_input_signal":false,
-"param_name":"ARROGANCE_SHIFT"
+"param_name":"NOLOOK_SHIFT"
 }
