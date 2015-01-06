@@ -1,5 +1,5 @@
 #-*- encoding:utf-8 -*-
-require 'csv'
+equire 'csv'
 
 
 def files( path )
@@ -20,6 +20,7 @@ end
 dirs = ["result-rear","result-passing","result-lr" ,"result-shift" ,"result-head"] 
 
 dirs.each do |d|
+<<<<<<< HEAD
   csv = CSV.open("_whole_" + d + ".csv", "w") 
    csv << ["calc-time,sim-time,traffic-volume(small),traffic-volume(large),num-accident,error-rate\n"]
   files = files("./" + d )
@@ -54,3 +55,31 @@ dirs.each do |d|
     end
   end   
 end
+=======
+csv = CSV.open("_result_whole_" + d + ".csv" ,"w") 
+ 
+files = files("./" + d + "/")
+
+files.each do |f|
+  file = open(f)
+  count = 0
+  file.each do |line|
+    count+=1
+  end
+  nLine = count
+  p "==============="
+  p "nLine:" + nLine.to_s
+  p "==============="   
+  count = 0
+
+  file2 = open(f) 
+  file2.each do |line|
+    count+=1
+    p count
+    if count == nLine 
+      new_line = [line.gsub(",\n","") + "," + f]
+      csv << new_line 
+    end
+  end
+end   
+>>>>>>> shift-script
