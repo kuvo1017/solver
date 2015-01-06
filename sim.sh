@@ -10,4 +10,5 @@ do
   cd $n
   rm *
   cp ../_stat* ../_accident* ../_error* ./
+  cd ../
 done
