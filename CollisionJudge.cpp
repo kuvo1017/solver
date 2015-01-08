@@ -18,7 +18,6 @@ bool CollisionJudge::isCollidInIntersection(Vehicle* v1,Vehicle* v2){
   {
     return false;
   }
-  cout << "v1:"<< v1->id()<< "  v2:"<< v2->id()  <<endl;
   /// Refference URL
   /// http://marupeke296.com/COL_3D_No13_OBBvsOBB.html
   AmuPoint* center[] = {new AmuPoint(v1->x(),v1->y(),0),new AmuPoint(v2->x(),v2->y(),0)};
