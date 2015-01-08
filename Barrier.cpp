@@ -164,29 +164,29 @@ void Barrier::checkVehiclesVisible()
   {
     if(_section[0]->nextBundle(itl1->second)->id() == _intersection->id()) 
     {
-     CITRMAPLAN itl2;
-     for (itl2=lanes2->begin(); itl2!=lanes2->end(); itl2++)
-     {
-       if(_section[1]->nextBundle(itl2->second)->id() == _intersection->id()) 
-       {
-         std::vector<RoadOccupant*>* agents1 = itl1->second->agents();
-	 std::vector<RoadOccupant*>* agents2 = itl2->second->agents();
-	 for(int i=0;i<agents1->size();i++)
-	 {
-           Vehicle* vehicle1 =  reinterpret_cast<Vehicle*>(agents1->at(i)); 
-	   for(int j=0;j<agents2->size();j++)
-	   {
-             Vehicle* vehicle2 =  reinterpret_cast<Vehicle*>(agents2->at(j)); 
-	     if(_isVisible(vehicle1,vehicle2))
-	     {
-	       vehicle1->errorController()->setInvisibleVehicle(vehicle2);
-	       vehicle2->errorController()->setInvisibleVehicle(vehicle1); 
-	       //cout << "v1:" << vehicle1->id() << "  v2:" << vehicle2->id() <<endl;
-	     }
-	   }
-	 }
-       }
-     }
+      CITRMAPLAN itl2;
+      for (itl2=lanes2->begin(); itl2!=lanes2->end(); itl2++)
+      {
+	if(_section[1]->nextBundle(itl2->second)->id() == _intersection->id()) 
+	{
+	  std::vector<RoadOccupant*>* agents1 = itl1->second->agents();
+	  std::vector<RoadOccupant*>* agents2 = itl2->second->agents();
+	  for(int i=0;i<agents1->size();i++)
+	  {
+	    Vehicle* vehicle1 =  reinterpret_cast<Vehicle*>(agents1->at(i)); 
+	    for(int j=0;j<agents2->size();j++)
+	    {
+	      Vehicle* vehicle2 =  reinterpret_cast<Vehicle*>(agents2->at(j)); 
+	      if(_isVisible(vehicle1,vehicle2))
+	      {
+		vehicle1->errorController()->setInvisibleVehicle(vehicle2);
+		vehicle2->errorController()->setInvisibleVehicle(vehicle1); 
+		//cout << "v1:" << vehicle1->id() << "  v2:" << vehicle2->id() <<endl;
+	      }
+	    }
+	  }
+	}
+      }
     }
   }
 }
@@ -201,26 +201,27 @@ bool Barrier::_isVisible(Vehicle* v1,Vehicle* v2)
   {
     AmuVector* vehicleVector = &vehicleVectors[i];
     Vehicle* vehicle = vehicles[i];
-   vehicleVector->normalize();
+    vehicleVector->normalize();
     points[i] = new AmuPoint(vehicle->x()+vehicleVector->x()*vehicle->bodyLength()/2,
 	vehicle->y()+vehicleVector->y()*vehicle->bodyLength()/2,0); 
-    for(int i=0;i<2;i++)
+  }
+  for(int i=0;i<2;i++)
+  {
+    // 外積計算のための三つのベクトル
+    AmuVector* calcVectors[] = {new AmuVector(*_vertices[i],*_vertices[i+2]),
+      new AmuVector(*_vertices[i],*points[0]), 
+      new AmuVector(*_vertices[i],*points[1]),
+      new AmuVector(*points[0],*points[1]),
+      new AmuVector(*points[0],*_vertices[i]), 
+      new AmuVector(*points[0],*_vertices[i+2])};
+    //２つの外積の積が正であれば交差せず
+    //負であれば交差する
+    if(calcVectors[0]->calcCrossProduct(*calcVectors[1])*calcVectors[0]->calcCrossProduct(*calcVectors[2]) < 0 && (calcVectors[3]->calcCrossProduct(*calcVectors[4])*calcVectors[3]->calcCrossProduct(*calcVectors[5]) < 0))
     {
-      // 外積計算のための三つのベクトル
-      AmuVector* calcVectors[] = {new AmuVector(*_vertices[i],*_vertices[i+2]),
-	new AmuVector(*_vertices[i],*points[0]), 
-	new AmuVector(*_vertices[i],*points[1])};
-      //２つの外積の積が正であれば交差せず
-      //負であれば交差する
-      if(calcVectors[0]->calcCrossProduct(*calcVectors[1])*calcVectors[0]->calcCrossProduct(*calcVectors[2]) > 0)
-      {
-	return true;
-      }else
-      {
-	return false;
-      }
+      return false;
     }
   }
+return true;
 }
 //====================================================================== 
 AmuPoint* Barrier::vertices(int i)

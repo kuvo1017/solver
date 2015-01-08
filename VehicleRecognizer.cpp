@@ -340,11 +340,6 @@ void Vehicle::recognize()
 #ifndef _OPENMP
     TimeManager::stopClock("VEHICLE_FRONTAGENT_LOCALREROUTE");
 #endif //_OPENMP
-
-#ifdef ERROR_MODE
-// 認知できていない車両の配列のリセット
-  _errorController->resetInvisibleVehicles();
-#endif
   }
 }
 
