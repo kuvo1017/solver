@@ -3,7 +3,7 @@
 for n in "res1" "res2" "res3"  
 do
   rm   _stat* _accident* _error* 
-  for i in "0.005" "0.01" "0.03"  "0.05" "0.075" "0.1" "0.3" "0.5"
+  for i in "200" "400" "600"  "800" "1000" "1200" "1400" "1600"
   do
     ./advmates-calc -d $i
   done
