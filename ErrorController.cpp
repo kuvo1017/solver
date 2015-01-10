@@ -19,6 +19,7 @@
 int ErrorController::_stopNAccident = 100;
 int ErrorController::_maxTotal = 1000*1000*5/4.5;
 bool ErrorController::_stopRun = false;
+bool ErrorController::_initWrite = true;
 
 using namespace std;
 ErrorController::ErrorController(Vehicle* vehicle){
@@ -572,12 +573,29 @@ void ErrorController::writeStatData(int totalP,int totalT,string time){
   ofstream& ofsGD1 = FileManager::getOFStream(file);
   // オープンに失敗した場合は関数内で落ちるはず。
   // 車両台数等の動的グローバル情報の書き出し
+  if(!_initWrite)
+  {
   ofsGD1 << time<<"," 
     << TimeManager::time()/1000 << ","
     <<  totalP<< ","
     <<  totalT<< ","
     << GVManager::getNumeric("ACCIDENT_COUNT") << ","
     << endl;
+    }else
+    {
+   ofsGD1 << "#rear:" << GVManager::getNumeric("NOLOOK_REAR")
+     << " passing:" << GVManager::getNumeric("ARROGANCE_PASSING")
+     << " lr:" << GVManager::getNumeric("ARROGANCE_LR") 
+     << " shift:" << GVManager::getNumeric("NOLOOK_SHIFT") 
+     << " head:" << GVManager::getNumeric("NOLOOK_HEAD") << "\n"
+     << time<<"," 
+     << TimeManager::time()/1000 << ","
+     <<  totalP<< ","
+    <<  totalT<< ","
+    << GVManager::getNumeric("ACCIDENT_COUNT") << ","
+    << endl;
+    _initWrite = false;
+    }
 }
 //====================================================================== 
 bool ErrorController::stopRun(){

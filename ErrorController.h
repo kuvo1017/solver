@@ -146,12 +146,15 @@ class ErrorController{
     double _objectPoint();
     /// エラーの種類
     string _type;
+    /// statファイルへの書き込みが初回か
+    static bool _initWrite;
     ///
     static int _stopNAccident;
     ///
     static int _maxTotal;
     /// シミュレーションを終わらせるか
     static bool _stopRun;
+
 }; 
 #endif //__ERRORCONTROLLER_H_
 
