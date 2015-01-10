@@ -154,6 +154,8 @@ void AppMates::parseArgument(int argc, char** argv)
   std::string str;
   int opt;
   std::string paramName =  GVManager::getString("PARAM_NAME"); 
+  int small_volume;
+  int large_volume; 
 #ifdef USE_MINGW
   while ((opt = getopt(argc, argv,
 	  AppMates::shortOptions.c_str())) != -1)
@@ -172,12 +174,25 @@ void AppMates::parseArgument(int argc, char** argv)
 	break;
       case 'D':
       case 'd': // データディレクトリを指定する
+#ifdef ERROR_PARAM
 	str = optarg;
 	cout << "optarg is " << std::stof(str) <<endl;
 	cout << "paramName " << paramName <<endl;
-	GVManager::resetNumeric(paramName,(double) std::stof(str));  
+	GVManager::resetNumeric(paramName,(int) std::stoi(str));  
 	GVManager::resetString("PARAM_NAME", paramName + "_"+ str);
 	cout << "likalika!  " << GVManager::getString("PARAM_NAME") <<endl;
+#elif defined TRAFIC_VOLUME_PARAM
+	str = optarg;
+	cout << "optarg is " << std::stof(str) <<endl;
+	small_volume = (int) std::stoi(str);
+	large_volume = small_volume * 0.3;
+	cout << "large_volume is " << large_volume <<endl;
+	GVManager::resetNumeric("SMALL_TRAFFIC_VOLUME",small_volume);  
+	GVManager::resetNumeric("LARGE_TRAFFIC_VOLUME",large_volume); 
+#else
+ 	str = optarg;
+	cout << "damedesu" << endl;
+#endif
 	break;
       case 'R':
       case 'r': // 乱数の種を指定する
