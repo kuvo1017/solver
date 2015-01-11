@@ -8,6 +8,8 @@
 #include "LaneBundle.h"
 #include "GVManager.h"
 #include "Conf.h"
+#include "Random.h"
+#include "ErrorController.h"
 #include <algorithm>
 #include <cmath>
 #include <list>
@@ -62,6 +64,8 @@ void VehicleLaneShifter::checkLaneSpace()
     // 車線変更は単路内のみ
     assert(_vehicle->_section);
 
+    if(Random::uniform()>0.01)
+      return;
     // 隣のレーンと位置を取得する
     Lane* laneTo = NULL;
     double lengthTo;
@@ -123,18 +127,20 @@ void VehicleLaneShifter::checkLaneSpace()
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // 後続車との車間距離による判定
-    RoadOccupant* nextFollower = NULL;
-    laneTo->getFollowingAgentFar(lengthTo, 30, &nextFollower, &diff);
-    if (nextFollower)
+    if(!_vehicle->errorController()->shiftError())
     {
+      RoadOccupant* nextFollower = NULL;
+      laneTo->getFollowingAgentFar(lengthTo, 30, &nextFollower, &diff);
+      if (nextFollower)
+      {
         diff -= (_vehicle->_bodyLength/2 + nextFollower->bodyLength()/2);
-    }
+      }
 
-    // 車間距離による判定
-    if (nextFollower
-        && (diff < (nextFollower->velocity()-_vehicle->_velocity)*2000
+      // 車間距離による判定
+      if (nextFollower
+          && (diff < (nextFollower->velocity()-_vehicle->_velocity)*2000
             || diff < _vehicle->_bodyLength/2))
-    {
+      {
         // nextFollowerに2000msec以内に追いつかれるようであれば
         // 現時点で車線変更不可
 
@@ -142,8 +148,9 @@ void VehicleLaneShifter::checkLaneSpace()
         /**
          * 複数の選択肢から最小の加速度を選択するため，加速はできない
          */
-        
+
         return;
+      }
     }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

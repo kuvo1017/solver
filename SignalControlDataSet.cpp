@@ -63,6 +63,7 @@ const SignalControlData& SignalControlDataSet::aspectData(ulint time) const
             }
             assert((*_index).end() > time);
         }
+	cout << "begin:" << (*_index).begin() << endl;
         if((*_index).begin() > time) 
         {
             cerr << "aspectData: index time is too small! : time = " << time << endl;

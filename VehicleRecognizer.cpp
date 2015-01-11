@@ -17,6 +17,13 @@ using namespace std;
 //======================================================================
 void Vehicle::recognize()
 {
+#ifdef ERROR_MODE
+  if (_errorController->isAccident())
+  {
+    return;
+  }
+#endif
+
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   // 1ステップ前にセットされた仮想先行車のクリア
   for (unsigned int i=0; i<_leaders.size(); i++)
@@ -29,9 +36,7 @@ void Vehicle::recognize()
   // スリープ中は何もしない
   if (_sleepTime>0)
   {
-     std::cout<< _id <<": now I'm sleeping"<<endl; 
     return;
-
   }
 
   // 単路中で交差点との境界に近く，レーンの先頭で，速度0の場合，
@@ -252,6 +257,21 @@ void Vehicle::recognize()
       TimeManager::stopClock("VEHICLE_MIN_HEADWAY");
 #endif //_OPENMP
     }
+#ifdef BARRIER
+     //--------------------------------------------------------------
+    // 見通しが悪い場合
+    if (isNextInterEnterable)
+    {
+#ifndef _OPENMP
+      TimeManager::startClock("VEHICLE_BAD_VIEW");
+#endif //_OPENMP
+      isNextInterEnterable
+	= !(_isStoppedByBadView());
+#ifndef _OPENMP
+      TimeManager::stopClock("VEHICLE_BAD_VIEW");
+#endif //_OPENMP
+    }
+#endif //BARRIER
 
     //--------------------------------------------------------------
     // 転回時事前減速
@@ -715,9 +735,9 @@ bool Vehicle::_isStoppedByCollisionInIntersection(
 		clAgent->length())
 	    / clAgent->velocity();
 	}
-	_errorController->LRError(thisTti,thatTtp);
+	//_errorController->LRError(thisTti,thatTtp);
 	// thisTti < thatTtpであれば交錯の可能性がある
-	if (thisTti < thatTtp || _errorController->isLRError())
+	if (thisTti < thatTtp /*|| _errorController->isLRError()*/)
 	{
 #ifndef VL_DEBUG
 	  VirtualLeader* leader =
@@ -798,9 +818,19 @@ bool Vehicle::_isStoppedByCollisionInSection(
 
     // 交錯する可能性のあるエージェント
     Vehicle* headVehicle = (*clSection)[i]->headVehicle();
+#ifdef BARRIER
+    const std::vector<Vehicle*>* invisibleVehicles = _errorController->invisibleVehicles();
+    vector<Vehicle*>::const_iterator itv 
+      = find(invisibleVehicles->begin(),invisibleVehicles->end(),headVehicle);
+#endif
     if (!headVehicle
 	|| headVehicle==this
-	/* || !(_isVisible(headVehicle)) */ )
+ #ifdef BARRIER
+	|| itv!=invisibleVehicles->end()
+	//|| !(_isVisible(headVehicle)) 
+ #endif
+       )
+ 
       // この時点で見通しを考慮するならコメントを外す
     {
       continue;
@@ -863,7 +893,9 @@ bool Vehicle::_isStoppedByCollisionInSection(
       {
 	thatTti = 50.0*1000;
       }
+      #ifdef ERROR_MODE
       _errorController->LRError(headVehicle,thisTti,thatTti);
+      #endif
       /*
        * 自分が交差点に到達するまでの時間と
        * 相手が交差点に到達する時間の差がgap以下なら道を譲る
@@ -935,7 +967,7 @@ bool Vehicle::_isStoppedByMinHeadway(Intersection* nextInter,
 {
   assert(_section);
 
-  if ((turning==RD_LEFT || turning==RD_RIGHT)
+  if((turning==RD_LEFT || turning==RD_RIGHT)
       && _velocity>1.0e-6
       && TimeManager::time()
       +_section->lengthToNext(_lane, _length)/_velocity
@@ -960,6 +992,43 @@ bool Vehicle::_isStoppedByMinHeadway(Intersection* nextInter,
   return false;
 }
 
+//======================================================================
+bool Vehicle::_isStoppedByBadView()
+{                          
+if(GVManager::getNumeric("ARROGANCE_PASSING") == 0)
+{
+return false;
+}
+//return false;
+  // 直前に通過した，あるいは現在通過中の交差点
+  if(!_errorController->isPassingError())
+  {
+    if(_section)
+    {
+      if(_section->isBadView())
+      {
+	if(_velocity < 15.0/3600)
+	{
+	  return true;
+	}
+
+	double ltn = _section->lengthToNext(_lane,_length);
+#ifndef VL_DEBUG
+	VirtualLeader* leader =
+	  new VirtualLeader(ltn-_bodyLength/2, 0);
+#else
+	VirtualLeader* leader =
+	  new VirtualLeader(ltn-_bodyLength/2, 0,
+	      "BADVIEW:"+_section->id());
+#endif
+	_leaders.push_back(leader);
+	return true;
+      }
+    }
+  }
+}
+
+ 
 //======================================================================
 void Vehicle::_determineTurningVelocity(RelativeDirection turning)
 {
@@ -1069,9 +1138,7 @@ void Vehicle::_searchPreferredAgentInIntersection(RelativeDirection turning)
 
       }
       // 衝突しているかのチェック（事故用）
-      if (CollisionJudge::isCollid(this,clVehicle)&&!(_errorController->isAccident()))
-	_errorController->accidentOccur();
-
+      CollisionJudge::isCollidInIntersection(this,clVehicle)&&!(_errorController->isAccident());
       int thatDir = clVehicle->directionFrom();
 
       if (_isYielding(_intersection, thisDir, thatDir,

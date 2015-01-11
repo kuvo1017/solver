@@ -149,8 +149,9 @@ endif(ZLIB_FOUND)
 
 add_definitions("-DERROR_MODE") 
 add_definitions("-DOACIS")
-#add_definitions("-DBARRIER")
-#**********************************************************************
+add_definitions("-DBARRIER")
+add_definitions("-DTRAFIC_VOLUME_PARAM")
+##**********************************************************************
 if(NOT USE_AUTOGL_CONFIG AND BUILD_MATES_SIM)
 
   #********************************************************************

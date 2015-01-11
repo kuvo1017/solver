@@ -4,6 +4,7 @@
 #include "Intersection.h"
 #include "GVManager.h"
 #include "ErrorController.h"
+#include "CollisionJudge.h"
 #include <cassert>
 
 using namespace std;
@@ -36,15 +37,19 @@ void Vehicle::run()
      */
     if (_laneShifter.isActive())
     {
+
         _error += _errorVelocity * TimeManager::unit();
 
         _laneShifter.proceedShift();
 
+        CollisionJudge::isSideCollid(this);
         // 十分に横に移動したら車線変更処理を終了する
         if (abs(_error) >= _section->laneWidth())
         {
             _laneShifter.endShift();
         }
+
+ 
     }
     else if (_laneShifter.canShift())
     {
@@ -207,6 +212,12 @@ void Vehicle::_runIntersection2Section()
     _localRouter.clear();
     _localRouter.localReroute(_section, _lane, _length);
     _decideNextLane(_section, _lane);
+#ifdef ERROR_MODE
+// 出合い頭における判断エラー
+//（見通しがわるくても次の交差点に進むか)
+// を計算
+    _errorController->passingError();
+#endif
 }
 
 //======================================================================

@@ -241,21 +241,32 @@ void Intersection::setNext(Intersection* ptInter)
 void Intersection::setBarrier()
 {
   int numNext = _next.size();
+  if(numNext < 2)
+  {
+    return;
+  }
+  
   for(int i=0;i<numNext;i++)
   {
     Section* nexts[2];
+    AmuPoint centers[2];
     for(int j=0;j<2;j++){
       if(i+j<numNext)
+	{
 	nexts[j] = nextSection(_next[i+j]);
+	}
       else
+      {
 	nexts[j] = nextSection(_next[0]);
+	}
+      centers[j] = nexts[j]->center();
     }
-    if(nexts[0]->id()!=nexts[1]->id())
+    AmuVector* vectors[2] = {new AmuVector(_center,centers[0]), new AmuVector(_center,centers[1])}; 
+    double angle = vectors[0]->calcAngle(*vectors[1]);
+    if(nexts[0]->id()!=nexts[1]->id() && (angle < 0))
     {
-      cout << "!!!!!!!!enter!!!!!!!!!!!!"<<endl;
-      cout << _barriers.size()<<endl;
-      _barriers.push_back(new Barrier(this,nexts[0],nexts[1]));
-      cout << "!!!!!!!!push_backed!!!!!!!!!!!!"<<endl; 
+      std::string id = _id+std::to_string(i);
+      _barriers.push_back(new Barrier(this,nexts[0],nexts[1],id));
     }
   }
 }
