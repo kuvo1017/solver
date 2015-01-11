@@ -217,6 +217,9 @@ void Visualizer::viewRedrawCallback()
     // 自動車の描画
     drawVehicles();
 
+    // accidentの描画 
+    drawAccidents();
+
     // 時刻の描画
     AutoGL_SetColor(0,0,0);
     ulint presentTime = TimeManager::time()/1000;
@@ -236,6 +239,63 @@ void Visualizer::drawRoadsideUnits()
     {
         detectorDrawer->draw(*(*detectorUnits)[i]);
     }
+}
+
+//======================================================================
+void Visualizer::drawAccidents()
+{
+  AccidentDrawer* accidentDrawer = &AccidentDrawer::instance();
+  string fAccident;
+  GVManager::getVariable("ACCIDENT_INPUT_FILE", &fAccident);
+
+  ifstream inAccidentFile(fAccident.c_str(), ios::in);
+  if (!inAccidentFile.good())
+  {
+    cout << "no accident file: " 
+      << fAccident << endl;
+    return;
+  }
+   
+  string str;
+  while (inAccidentFile.good())
+  {
+    getline(inAccidentFile, str);
+    AmuStringOperator::getAdjustString(&str);
+    if (!str.empty())
+    {
+      vector<string> tokens;
+      double x0,y0;
+      std::string typeName;
+      int type;
+      AmuStringOperator::getTokens(&tokens, str, ',');
+      assert(tokens.size()==8);
+
+      // 3番目のカラムは終点となる交差点の識別番号
+      x0 = atof(tokens[3].c_str());
+      // 4番目のカラムは始点からの距離
+      // マイナス値は終点からの距離
+      y0 = atof(tokens[3].c_str());
+      // 5番目のカラムは時間間隔
+      // 0なら統計情報を出力しない
+      typeName = tokens[4];
+      if(typeName == "rear")
+      {
+        type = 1;
+      }else if(typeName == "passing"){
+        type = 2;
+      }else if(typeName == "shift"){
+        type = 4;
+      }else if(typeName == "head"){
+        type = 5;
+      }else if(typeName == "not-error"){
+        type = 0;
+      }else
+      {
+        type = 3;
+      }
+      accidentDrawer->draw(x0, y0, type);
+    }
+  }
 }
 
 //======================================================================

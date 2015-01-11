@@ -212,4 +212,19 @@ protected:
     virtual ~VehicleDrawer(){};
 };
 
+//######################################################################
+/// Accidentを描画するクラス
+/**
+ * @ingroup Drawing
+ */
+class AccidentDrawer
+{
+public:
+    static AccidentDrawer& instance();
+    virtual void draw(double x0, double y0, int type) const;
+protected:
+    AccidentDrawer(){};
+    virtual ~AccidentDrawer(){};
+};
+         
 #endif //__DRAWER_H__

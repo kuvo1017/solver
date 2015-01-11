@@ -36,6 +36,9 @@ public:
     /// 路側器を描画する
     static void drawRoadsideUnits();
 
+    /// 路側器を描画する
+    static void drawAccidents();
+ 
     /// 自動車を描画する
     static void drawVehicles();
 
