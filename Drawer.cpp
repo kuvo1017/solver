@@ -383,7 +383,6 @@ void IntersectionDrawer::draw(const Intersection& inter) const
   if (GVManager::getFlag("VIS_BARRIER"))
   {
     drawBarriers(inter); 
-    cout << "お絵かき完了?" << endl; 
   } 
 }
 //----------------------------------------------------------------------
