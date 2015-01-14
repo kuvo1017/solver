@@ -200,7 +200,7 @@ void GLColor::setLeftRightSignal()
 //######################################################################
 void GLColor::setVehicle()
 {
-  AutoGL_SetColor(1, 0, 0);
+  AutoGL_SetColor(0, 0, 1);
 }
 //----------------------------------------------------------------------
 void GLColor::setSleepingVehicle()

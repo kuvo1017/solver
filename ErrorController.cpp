@@ -426,7 +426,7 @@ void ErrorController::errorOccur(string type){
   cout << "Error occured: car id is " <<  _vehicle->id() << endl;
   cout << "error type:"<<type <<endl; 
   cout << "=================================" <<endl;
-  _vehicle->setBodyColor(0.8,0.8,0);
+  _vehicle->setBodyColor(1.0,0.0,0);
   VehicleIO::instance().writeVehicleErrorData(TimeManager::time(),_vehicle);
 }
 //======================================================================

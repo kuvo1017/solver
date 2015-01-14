@@ -94,9 +94,9 @@ bool GenerateVehicleController::getReadyGeneration()
   height = GVManager::getNumeric("VEHICLE_HEIGHT_PASSENGER");
   accel  = GVManager::getNumeric("MAX_ACCELERATION_PASSENGER");
   decel  = GVManager::getNumeric("MAX_DECELERATION_PASSENGER");
-  r = 1.0;
+  r = 0.0;
   g = 0.0;
-  b = 0.0;
+  b = 1.0;
   VFAttribute passenger(VehicleFamily::passenger(),
       length, width, height, weight,
       accel, decel, r, g, b);
@@ -890,6 +890,10 @@ void GenerateVehicleController::_generateVehicleRandom()
 
       vehicle->setBodySize(length, width, height);
       vehicle->setPerformance(accel, decel);
+      r = 0.0;
+       g = 0.0;
+       b = 1.0;
+       
       vehicle->setBodyColor(r, g, b);
     }
 
