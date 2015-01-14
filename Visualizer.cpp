@@ -244,6 +244,7 @@ void Visualizer::drawRoadsideUnits()
 //======================================================================
 void Visualizer::drawAccidents()
 {
+  cout << "drawAccident" <<endl;
   AccidentDrawer* accidentDrawer = &AccidentDrawer::instance();
   string fAccident;
   GVManager::getVariable("ACCIDENT_INPUT_FILE", &fAccident);
@@ -263,21 +264,22 @@ void Visualizer::drawAccidents()
     AmuStringOperator::getAdjustString(&str);
     if (!str.empty())
     {
+      cout << "read" <<endl;
       vector<string> tokens;
       double x0,y0;
       std::string typeName;
       int type;
       AmuStringOperator::getTokens(&tokens, str, ',');
       assert(tokens.size()==8);
-
       // 3番目のカラムは終点となる交差点の識別番号
       x0 = atof(tokens[3].c_str());
       // 4番目のカラムは始点からの距離
       // マイナス値は終点からの距離
-      y0 = atof(tokens[3].c_str());
+      y0 = atof(tokens[4].c_str());
       // 5番目のカラムは時間間隔
       // 0なら統計情報を出力しない
-      typeName = tokens[4];
+      typeName = tokens[5];
+      cout << "errortype:" << typeName <<endl;
       if(typeName == "rear")
       {
         type = 1;
@@ -287,7 +289,7 @@ void Visualizer::drawAccidents()
         type = 4;
       }else if(typeName == "head"){
         type = 5;
-      }else if(typeName == "not-error"){
+      }else if(typeName == "not_error"){
         type = 0;
       }else
       {

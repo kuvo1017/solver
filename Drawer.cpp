@@ -555,11 +555,8 @@ void BarrierDrawer::draw(const Intersection& inter) const
       }
     }
   }
-  AutoGL_DrawCircle2D(0,0,5.0);
   GLColor::setBarrier();
-  AutoGL_DrawCircle3D(0,0,0,
-      0, 0, 1, 10, 3);
- 
+
 }
 
 //######################################################################
@@ -900,6 +897,7 @@ AccidentDrawer& AccidentDrawer::instance()
 //----------------------------------------------------------------------
 void AccidentDrawer::draw(double x0,double y0,int type) const
 {
+  cout << "x:" <<x0 << " y:" <<y0 << " type:"<< type <<endl;
   double r,g,b;
   switch(type)
   {
@@ -936,6 +934,6 @@ void AccidentDrawer::draw(double x0,double y0,int type) const
   }
  
   AutoGL_SetColor(r,g,b);
-  AutoGL_DrawCircle3D(x0,y0,0,
+  AutoGL_DrawCircle3D(x0,y0,10,
       0, 0, 1, 2, 3);
 }

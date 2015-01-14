@@ -241,7 +241,7 @@ void Intersection::setNext(Intersection* ptInter)
 void Intersection::setBarrier()
 {
   int numNext = _next.size();
-  if(numNext < 2)
+  if(numNext < 3)
   {
     return;
   }
@@ -252,13 +252,13 @@ void Intersection::setBarrier()
     AmuPoint centers[2];
     for(int j=0;j<2;j++){
       if(i+j<numNext)
-	{
-	nexts[j] = nextSection(_next[i+j]);
-	}
+      {
+        nexts[j] = nextSection(_next[i+j]);
+      }
       else
       {
-	nexts[j] = nextSection(_next[0]);
-	}
+        nexts[j] = nextSection(_next[0]);
+      }
       centers[j] = nexts[j]->center();
     }
     AmuVector* vectors[2] = {new AmuVector(_center,centers[0]), new AmuVector(_center,centers[1])}; 
