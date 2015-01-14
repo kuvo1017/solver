@@ -1,0 +1,2 @@
+#section:009699009851, isUP:1, length:-1, detectors:2
+#time, lane, vehicle_id, vehicle_type, origin, destination, velocity
