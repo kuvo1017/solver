@@ -217,8 +217,10 @@ void Visualizer::viewRedrawCallback()
     // 自動車の描画
     drawVehicles();
 
+#ifdef VIS_ACCIDENT
     // accidentの描画 
     drawAccidents();
+#endif
 
     // 時刻の描画
     AutoGL_SetColor(0,0,0);
@@ -261,7 +263,6 @@ void Visualizer::drawAccidents()
     AmuStringOperator::getAdjustString(&str);
     if (!str.empty())
     {
-      cout << "read" <<endl;
       vector<string> tokens;
       double x0,y0;
       std::string typeName;
@@ -276,7 +277,6 @@ void Visualizer::drawAccidents()
       // 5番目のカラムは時間間隔
       // 0なら統計情報を出力しない
       typeName = tokens[5];
-      cout << "errortype:" << typeName <<endl;
       if(typeName == "rear")
       {
         type = 1;

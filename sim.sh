@@ -2,8 +2,9 @@
 
 for n in "res1" "res2" "res3"  
 do
+  mkdir $n
   rm   _stat* _accident* _error* 
-  for i in "200" "400" "600"  "800" "1000" "1200" "1400" "1600"
+  for i in "200" 
   do
     ./advmates-calc -d $i
   done
