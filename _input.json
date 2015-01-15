@@ -1,13 +1,13 @@
 {
-"nolook_rear":0.0 ,
-"arrogance_passing":0.0,
-"arrogance_LR":0.0,
-"nolook_shift":0.0,
-"nolook_head":0,
+"nolook_rear":0.1 ,
+"arrogance_passing":0.1,
+"arrogance_LR":0.1,
+"nolook_shift":0.1,
+"nolook_head":0.1,
 "data_path":"../simulations/279/",
 "max_accident":100,
 "max_time":259200,
-"small_traffic_volume":500,
+"small_traffic_volume":50,
 "no_input_signal":true,
 "param_name":"ARROGANCE_LR"
 }

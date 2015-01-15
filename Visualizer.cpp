@@ -244,7 +244,6 @@ void Visualizer::drawRoadsideUnits()
 //======================================================================
 void Visualizer::drawAccidents()
 {
-  cout << "drawAccident" <<endl;
   AccidentDrawer* accidentDrawer = &AccidentDrawer::instance();
   string fAccident;
   GVManager::getVariable("ACCIDENT_INPUT_FILE", &fAccident);
@@ -252,9 +251,7 @@ void Visualizer::drawAccidents()
   ifstream inAccidentFile(fAccident.c_str(), ios::in);
   if (!inAccidentFile.good())
   {
-    cout << "no accident file: " 
-      << fAccident << endl;
-    return;
+   return;
   }
    
   string str;

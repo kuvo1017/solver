@@ -263,7 +263,13 @@ void Intersection::setBarrier()
     }
     AmuVector* vectors[2] = {new AmuVector(_center,centers[0]), new AmuVector(_center,centers[1])}; 
     double angle = vectors[0]->calcAngle(*vectors[1]);
-    if(nexts[0]->id()!=nexts[1]->id() && (angle < 0))
+    if(angle > 0)
+    {
+    cout << "unko" <<endl;
+    }
+    cout << "inter:" << _id << " sec1:" << nexts[0]->id()<< " sec2:" << nexts[1]->id()<<endl; 
+    cout << "angle:" << angle << endl;
+    if(nexts[0]->id()!=nexts[1]->id() && (angle < 0)&& (angle > - M_PI *5.0/6.0))
     {
       std::string id = _id+std::to_string(i);
       _barriers.push_back(new Barrier(this,nexts[0],nexts[1],id));

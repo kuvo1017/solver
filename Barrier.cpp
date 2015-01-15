@@ -161,13 +161,25 @@ void Barrier::checkVehiclesVisible()
   const RMAPLAN* lanes2 = _section[1]->lanes(); 
   CITRMAPLAN itl1;
   for (itl1=lanes1->begin(); itl1!=lanes1->end(); itl1++)
-  {
-    if(_section[0]->nextBundle(itl1->second)->id() == _intersection->id()) 
+  {            
+//    cout << "interid:" << _intersection->id() << " lane1:" << itl1->second->id() << endl;
+//    cout << "sec1:" << _section[0]->id() << " sec2:" << _section[1]->id() << endl;
+    LaneBundle* nextBundle = _section[0]->nextBundle(itl1->second);
+    if(nextBundle == NULL)
     {
-      CITRMAPLAN itl2;
+      continue;
+    }
+    if(nextBundle->id() == _intersection->id()) 
+    {
+   CITRMAPLAN itl2;
       for (itl2=lanes2->begin(); itl2!=lanes2->end(); itl2++)
       {
-	if(_section[1]->nextBundle(itl2->second)->id() == _intersection->id()) 
+     nextBundle = _section[1]->nextBundle(itl2->second);
+      if(nextBundle == NULL)
+    {
+      continue;
+    }
+       if(nextBundle->id() == _intersection->id()) 
 	{
 	  std::vector<RoadOccupant*>* agents1 = itl1->second->agents();
 	  std::vector<RoadOccupant*>* agents2 = itl2->second->agents();
