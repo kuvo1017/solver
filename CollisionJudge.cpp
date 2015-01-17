@@ -214,15 +214,18 @@ bool CollisionJudge::isHeadCollid(Vehicle* v1,Vehicle* v2){
     double y = v1->y() - v2->y();
     AmuVector* aToB = new AmuVector(x,y,0);
     double rearDistance = fabs(direction.calcScalar(*aToB));
+    cout << "v1:" << v1->id() << " v2:" << v2->id()<<" rear:" << rearDistance<<endl;
     if(rearDistance < (v1->bodyLength() + v2 ->bodyLength())*0.5)
     {
       double sideDistance = fabs(sideDirection.calcScalar(*aToB));
-      if(sideDistance < (v2->bodyWidth() + v2->bodyWidth())*0.5)
+      if(sideDistance < (v1->bodyWidth() + v2->bodyWidth())*0.5)
       {
         cout <<"id:" << v1->id() << "  type:" << v1->errorController()->type() <<endl;
         v1->errorController()->accidentOccur("head");
         v2->errorController()->accidentOccur("head");
+	return true;
       }
     }
   }
+  return false;
 }

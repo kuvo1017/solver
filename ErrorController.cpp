@@ -217,8 +217,16 @@ void ErrorController::LRError(Vehicle* thatV,double thisTti,double thatTti) {
 //======================================================================
 bool ErrorController::headError(){
   //多くの対称を認知したときに先行者の速度等を認知するかわりに予測する処理
-  if(_checkHeadAccident() 
-      ||  GVManager::getNumeric("NOLOOK_HEAD") == 0
+  if(_isHeadError)
+  {   
+    if(_checkHeadAccident()){
+      cout << "unko kusai" << endl;
+      return false;
+    }
+    return true;
+  }
+  if(
+       GVManager::getNumeric("NOLOOK_HEAD") == 0
       || (_onComingLane()==nullptr)
       || _isAccident
       || _vehicle->velocity() < 30.0/3600.0 )
@@ -240,7 +248,7 @@ double ErrorController::errorVelocity()
   }
   double error = _vehicle->error();
   if(_isHeadError ){
-    if(error < -3.0 )
+    if(error < -5.0 )
     {
        _errorVelocity =  5.0/60.0/60.0;
     _headErrorTime+=TimeManager::unit();
@@ -252,13 +260,12 @@ double ErrorController::errorVelocity()
       _headErrorTime = 0;
       _isHeadError = false;
       _errorEnd();
-   cout << "errorend" <<endl;
- 
+
     }
     else if(_headErrorTime ==0)
     {
       _errorVelocity = -5.0/60.0/60.0;
-    _headErrorTime+=TimeManager::unit();
+      _headErrorTime+=TimeManager::unit();
     }
   }
   return _errorVelocity;
@@ -422,10 +429,12 @@ void ErrorController::accidentOccur(std::string collidType){
 //======================================================================
 void ErrorController::errorOccur(string type){
   _type = type;
+/*
   cout << "=================================" <<endl;
   cout << "Error occured: car id is " <<  _vehicle->id() << endl;
   cout << "error type:"<<type <<endl; 
   cout << "=================================" <<endl;
+  */
   _vehicle->setBodyColor(1.0,0.0,0);
   VehicleIO::instance().writeVehicleErrorData(TimeManager::time(),_vehicle);
 }

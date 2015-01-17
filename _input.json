@@ -1,13 +1,13 @@
 {
-"nolook_rear":0.0 ,
+"nolook_rear":0.00 ,
 "arrogance_passing":0.0,
 "arrogance_LR":0.0,
 "nolook_shift":0.0,
-"nolook_head":0,
-"data_path":"../simulations/279/",
+"nolook_head":5e-4,
+"data_path":"../simulations/movie_head/",
 "max_accident":100,
 "max_time":259200,
 "small_traffic_volume":500,
 "no_input_signal":false,
-"param_name":"NOLOOK_REAR"
+"param_name":"NOLOOK_HEAD"
 }
