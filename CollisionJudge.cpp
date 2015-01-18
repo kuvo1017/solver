@@ -52,7 +52,6 @@ bool CollisionJudge::isCollidInIntersection(Vehicle* v1,Vehicle* v2){
       &&_checkCross(toEdge[1][0],toEdge[1][1],toEdge[0][1],dist[3])
     )
   {
-    cout << "in Intersection Collid" <<endl;
     v1 ->errorController()->accidentOccur("intersection");
     v2 ->errorController()->accidentOccur("intersection");
     return true;
@@ -70,7 +69,6 @@ bool CollisionJudge::_checkCross(AmuVector& ea1,AmuVector& ea2,AmuVector& eb1,do
   double ra = fabs(ea1.calcScalar(eb1)) + fabs(ea2.calcScalar(eb1));
   if(dist > ra + rb)
   {
-    //    cout << "false!!!!!" <<endl;
     return false;
   }else
   {
@@ -128,7 +126,6 @@ bool CollisionJudge::isCollidStrict(Vehicle* v1,Vehicle* v2)
       if(i ==0)
       {
 	calcVector[0][j] = new AmuVector(*vertice[0][j],*vertice[1][j]);
-	cout << "自車["<<j<<"] ("<< vertice[0][j]->x()<<","<<vertice[0][j]->y()<<") "<<endl;
        if(edge[0][j]->calcCrossProduct(*calcVector[1][j]) > 0)
 	{
 	  return false;
@@ -192,7 +189,6 @@ void CollisionJudge::isSideCollid(Vehicle* v1){
           {
             v1->laneShifter().endShift();
           }
-    cout <<"id:" << v1->id() << "  type:" << v1->errorController()->type() <<endl;
           v1->errorController()->accidentOccur("side");
           v2->errorController()->accidentOccur("side");
           v1->errorController()->endShiftError();
@@ -217,12 +213,13 @@ bool CollisionJudge::isHeadCollid(Vehicle* v1,Vehicle* v2){
     if(rearDistance < (v1->bodyLength() + v2 ->bodyLength())*0.5)
     {
       double sideDistance = fabs(sideDirection.calcScalar(*aToB));
-      if(sideDistance < (v2->bodyWidth() + v2->bodyWidth())*0.5)
+      if(sideDistance < (v1->bodyWidth() + v2->bodyWidth())*0.5)
       {
-        cout <<"id:" << v1->id() << "  type:" << v1->errorController()->type() <<endl;
         v1->errorController()->accidentOccur("head");
         v2->errorController()->accidentOccur("head");
+	return true;
       }
     }
   }
+  return false;
 }

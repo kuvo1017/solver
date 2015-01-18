@@ -34,9 +34,9 @@ Vehicle::Vehicle():_id()
   _bodyWidth  = 1.830;
   _bodyDiagnoalXY = sqrt(_bodyLength * _bodyLength + _bodyWidth * _bodyWidth);
   _bodyHeight = 1.315;
-  _bodyColorR = 1.0;
+  _bodyColorR = 0.0;
   _bodyColorG = 0.0;
-  _bodyColorB = 0.0;
+  _bodyColorB = 1.0;
 
   _roadMap      = NULL;
   _intersection = NULL;

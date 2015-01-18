@@ -253,6 +253,7 @@ void ODNode::deleteAgent()
             {
                 if (GVManager::getFlag("FLAG_OUTPUT_TRIP_INFO"))
                 {
+		    cout << "output trip" << endl;
                     // 消去する前にトリップ長の出力
                     VehicleIO::instance().writeVehicleDistanceData
                         (dynamic_cast<Vehicle*>((*agentsOfLane)[i]));

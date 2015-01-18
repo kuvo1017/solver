@@ -16,10 +16,12 @@ Barrier::Barrier(Intersection* i0,
     std::string id)
 {
   _id = id;
-  //cout << "enter into Barrier.cpp!!!!!"<<endl;
-  cout << "Intersection id: " <<i0->id()<<endl;
-  cout << "Section1 id: " <<s1->id()<<endl; 
-  cout << "Section2 id: " <<s2->id()<<endl; 
+  /*
+     cout << "enter into Barrier.cpp!!!!!"<<endl;
+     cout << "Intersection id: " <<i0->id()<<endl;
+     cout << "Section1 id: " <<s1->id()<<endl; 
+     cout << "Section2 id: " <<s2->id()<<endl; 
+   */
   // IntersectionとSectionの4つの交点
   AmuPoint* rawVertices[4];
   // Barrierの4つの交点
@@ -36,19 +38,13 @@ Barrier::Barrier(Intersection* i0,
   for(int i=0;i<iAmuPoints.size();i++)
   {
     AmuPoint iAmuPoint = iAmuPoints[i];
-    //     cout << "=======" << i << "番目の頂点========"<<endl;
-    //     cout << "ipx:" << iAmuPoint.x()  << " ipy:" << iAmuPoint.y() <<endl;
     for(int j=0;j<sAmuPoints1.size();j++){
       AmuPoint sAmuPoint1 = sAmuPoints1[j];
-
-      //       cout << "ipx:" << iAmuPoint.x() << " sp1x:" <<sAmuPoint1.x()<<endl;
-      //       cout << "ipy:" << iAmuPoint.y() << " sp1y:" <<sAmuPoint1.y()<<endl;
       if(iAmuPoint.x()==sAmuPoint1.x()
 	  && ( iAmuPoint.y()==sAmuPoint1.y()))
       {
 	if(once1)
 	{
-	  //	  cout << "spx1:" << sAmuPoint1.x()  << " spy1:" << sAmuPoint1.y() <<endl; 
 	  rawVertices[0] = new AmuPoint(iAmuPoint.x(),iAmuPoint.y(),0);
 	  once1 = false;
 	}
@@ -60,14 +56,11 @@ Barrier::Barrier(Intersection* i0,
     }
     for(int j=0;j<sAmuPoints2.size();j++){
       AmuPoint sAmuPoint2 = sAmuPoints2[j];
-      //       cout << "ipx:" << iAmuPoint.x() << " sp2x:" <<sAmuPoint2.x()<<endl;
-      //       cout << "ipy:" << iAmuPoint.y() << " sp2y:" <<sAmuPoint2.y()<<endl;
       if(iAmuPoint.x()==sAmuPoint2.x()
 	  && ( iAmuPoint.y()==sAmuPoint2.y()))
       {
 	if(once2)
 	{
-	  //       cout << "spx2:" << sAmuPoint2.x()  << " spy2:" << sAmuPoint2.y() <<endl; 
 	  rawVertices[1] = new AmuPoint(iAmuPoint.x(),iAmuPoint.y(),0);
 	  once2 = false;
 	}
@@ -82,7 +75,6 @@ Barrier::Barrier(Intersection* i0,
     if(sap->x()==rawVertices[0]->x()
 	&& ( sap->y()==rawVertices[0]->y())) 
     {
-      //      cout << "sapx1:" << sap->x() << " sapy1" << sap->y()<<endl;
       if(i < sAmuPoints1.size()-1)
 	rawVertices[3]=&sAmuPoints1[i+1];
       else
@@ -95,7 +87,6 @@ Barrier::Barrier(Intersection* i0,
     if(sap->x()==rawVertices[1]->x()
 	&& ( sap->y()==rawVertices[1]->y())) 
     {
-      //       cout << "sapx2:" << sap->x() << " sapy2" << sap->y()<<endl; 
       if(i>0)
 	rawVertices[2]=&sAmuPoints2[i-1];
       else
@@ -103,7 +94,6 @@ Barrier::Barrier(Intersection* i0,
     }
   } 
 
-  std::cout << "rawVertices"<<endl;
   for(int i=0;i<4;i++){
     std::cout <<"("<< rawVertices[i]->x() <<","<<rawVertices[i]->y()<<")" <<std::endl;
   }
@@ -118,8 +108,6 @@ Barrier::Barrier(Intersection* i0,
   double intercept2 = rawVertices[1]->y()-grad2*rawVertices[1]->x();
   center->setX(-(intercept1-intercept2)/(grad1-grad2));
   center->setY(-grad1*(intercept1-intercept2)/(grad1-grad2)+intercept1); 
-  //std::cout << "傾きとかの計算終了" << endl;
-  cout << "centerX:"<<center->x() << " centerY:" << center->y() <<endl;
   for(int i=0;i<4;i++)
   {
     //std::cout << "ループ処理開始" << endl; 
@@ -128,7 +116,6 @@ Barrier::Barrier(Intersection* i0,
     // 道路の端からどれくらい離すか
     double separate = 1.0; //[m]
     double length = sqrt(pow(rawVertices[i]->x()-center->x(),2)+pow(rawVertices[i]->y()-center->y(),2));
-    cout << "length" <<i<<":" <<length << endl;
     double t = 1-separate/length;
     //std::cout <<i<< "kokoha?" <<center->x()<< endl;  
     v->setX((1-t)*center->x() + t*(rawVertices[i]->x()));
@@ -137,17 +124,12 @@ Barrier::Barrier(Intersection* i0,
     _vertices.push_back(v);
   }
   //std::cout << "ループ処理終了" << endl;  
-  std::cout << "vertices"<<endl;
-  for(int i=0;i<4;i++){
-    if(_vertices[i]!=NULL)
-      std::cout <<"("<< _vertices[i]->x() <<","<<_vertices[i]->y()<<")" <<std::endl;
-  }
+
   _diagnoal[0] = new AmuVector(*_vertices[0] ,*_vertices[2]);
   _diagnoal[1] = new AmuVector(*_vertices[1],*_vertices[3]);
   // 見通しが悪い情報を単路に登録
   s1->setBadView();
   s2->setBadView();
-  cout << "set bad view" << endl;
 } 
 //======================================================================
 std::string Barrier::id()
@@ -162,8 +144,6 @@ void Barrier::checkVehiclesVisible()
   CITRMAPLAN itl1;
   for (itl1=lanes1->begin(); itl1!=lanes1->end(); itl1++)
   {            
-//    cout << "interid:" << _intersection->id() << " lane1:" << itl1->second->id() << endl;
-//    cout << "sec1:" << _section[0]->id() << " sec2:" << _section[1]->id() << endl;
     LaneBundle* nextBundle = _section[0]->nextBundle(itl1->second);
     if(nextBundle == NULL)
     {
@@ -171,15 +151,15 @@ void Barrier::checkVehiclesVisible()
     }
     if(nextBundle->id() == _intersection->id()) 
     {
-   CITRMAPLAN itl2;
+      CITRMAPLAN itl2;
       for (itl2=lanes2->begin(); itl2!=lanes2->end(); itl2++)
       {
-     nextBundle = _section[1]->nextBundle(itl2->second);
-      if(nextBundle == NULL)
-    {
-      continue;
-    }
-       if(nextBundle->id() == _intersection->id()) 
+	nextBundle = _section[1]->nextBundle(itl2->second);
+	if(nextBundle == NULL)
+	{
+	  continue;
+	}
+	if(nextBundle->id() == _intersection->id()) 
 	{
 	  std::vector<RoadOccupant*>* agents1 = itl1->second->agents();
 	  std::vector<RoadOccupant*>* agents2 = itl2->second->agents();
@@ -193,7 +173,6 @@ void Barrier::checkVehiclesVisible()
 	      {
 		vehicle1->errorController()->setInvisibleVehicle(vehicle2);
 		vehicle2->errorController()->setInvisibleVehicle(vehicle1); 
-		//cout << "v1:" << vehicle1->id() << "  v2:" << vehicle2->id() <<endl;
 	      }
 	    }
 	  }
@@ -233,7 +212,7 @@ bool Barrier::_isVisible(Vehicle* v1,Vehicle* v2)
       return false;
     }
   }
-return true;
+  return true;
 }
 //====================================================================== 
 AmuPoint* Barrier::vertices(int i)

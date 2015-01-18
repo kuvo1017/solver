@@ -341,17 +341,16 @@ bool GeneratingTable::init(const std::string& fileName)
 #ifdef OACIS
       if(volume > 0)
       {
-      cout << "vehicleType is " << vehicleType << endl;
       if(vehicleType >=20 && vehicleType < 30)
       {
+	/*
         cout << "small!!" << endl;
         volume = GVManager::getNumeric("SMALL_TRAFFIC_VOLUME");
          cout  << "volume is " << volume <<endl;
+	 */
       }else if(vehicleType >=50 && vehicleType < 60) 
       {
-        cout << "large!!" << endl;
         volume = GVManager::getNumeric("SMALL_TRAFFIC_VOLUME")*0.3;
-        cout  << "volume is " << volume <<endl;
       }
       }
 #endif
