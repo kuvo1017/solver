@@ -461,7 +461,10 @@ void ErrorController::_errorEnd(){
   }
   double r,g,b;
   vfa->getBodyColor(&r, &g, &b);
+  if(!_isAccident)
+  {
   _vehicle->setBodyColor(r,g,b);
+  }
   _type = "not_error";
 }
 
