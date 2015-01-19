@@ -344,6 +344,10 @@ double ErrorController::_objectPoint()
 //====================================================================== 
 bool ErrorController::shiftError()
 {
+  if(_vehicle->velocity() < 20.0/60.0/60.0)
+  {
+    return false;
+  }
   if(_objectPoint() < GVManager::getNumeric("NOLOOK_SHIFT"))
   {
     errorOccur("shift");
@@ -358,8 +362,8 @@ void ErrorController::endShiftError()
 {
   if(_isShiftError)
   {
-  _isShiftError = false;
-  _errorEnd();
+    _isShiftError = false;
+    _errorEnd();
   }
 }
 
