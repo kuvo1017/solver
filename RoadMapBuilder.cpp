@@ -356,6 +356,11 @@ void RoadMapBuilder::buildGridRoadMap(double xmin, double xmax,
         cerr << "Error: internal structure of intersections not created.";
     }
 
+    // 交差点が信号を持たない場合に設定設定する
+    if (!checkSignals())
+    {
+        cerr << "Error: internal structure of intersections not created.";
+    } 
     // 単路の内部構造を設定する
     _isSectionStructureCreated = createSectionStructure();
     if (!_isSectionStructureCreated)
@@ -712,6 +717,49 @@ bool RoadMapBuilder::createIntersectionStructure()
 }
 
 //======================================================================
+bool RoadMapBuilder::checkSignals()
+{                         
+  string fNoSignal;
+ 
+  GVManager::getVariable("NOSIGNAL_FILE", &fNoSignal);
+
+  ifstream inNoSignalFile(fNoSignal.c_str(), ios::in);
+  if (!inNoSignalFile.good())
+  {
+   return false;
+  }
+   
+  string str;
+  while (inNoSignalFile.good())
+  {
+    getline(inNoSignalFile, str);
+    AmuStringOperator::getAdjustString(&str);
+    if (!str.empty())
+    {
+      vector<string> tokens;
+      AmuStringOperator::getTokens(&tokens, str, ',');
+      assert(tokens.size()==1);
+      // 3番目のカラムは終点となる交差点の識別番号
+      std::string id = tokens[0].c_str();
+      CITRMAPI iti = _currentRoadMap->intersections()->begin();
+        while (iti != _currentRoadMap->intersections()->end())
+        {
+            // 各Intersectionのcreate関数を呼び出す
+            if((*iti).second->id() == id )
+	    {
+	      cout << "intersection " << (*iti).second->id()
+		<< " has no signal" << endl;
+	      (*iti).second-> noSignal();
+	      return false;
+	    }
+	    iti++;
+	}
+    }
+  }
+  return true;
+}
+ 
+//======================================================================
 bool RoadMapBuilder::buildSections()
 {
     // 単路の生成
@@ -1036,11 +1084,12 @@ bool RoadMapBuilder::buildSignals()
 
     while (iti!=_currentRoadMap->intersections()->end())
     {
-        if ((*iti).second->numNext()!=1)
+        if ((*iti).second->numNext()!=1
+    || (*iti).second->hasSignal())
         {
             // 接続数1の交差点（ODノード）には信号を設置しない
             Signal* signal = new Signal();
-
+	    cout << (*iti).second->id() <<"の信号ができています" << endl;
             // 信号の設定ファイルを読み込む
             int sideNum = (*iti).second->numNext();
             aspect = io.aspect((*iti).first, sideNum);

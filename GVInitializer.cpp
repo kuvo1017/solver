@@ -109,7 +109,9 @@ void GVInitializer::init(const string& dataPath)
       dataPath + "intersectionStruct.txt");
   GVManager::setNewString("SECTION_STRUCT_FILE",
       dataPath + "sectionStruct.txt");
-
+  GVManager::setNewString("NOSIGNAL_FILE",
+      dataPath + "noSignal.txt");
+ 
   // accidentに関するファイル
   GVManager::setNewString("ACCIDENT_INPUT_FILE",
       dataPath + "accident.txt");
