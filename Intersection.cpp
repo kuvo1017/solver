@@ -63,6 +63,7 @@ Intersection::Intersection(const std::string& id,
 
   _signal = NULL;
   _hasStructInfo = false;
+  _hasSignal = true;
 }
 
 //======================================================================
@@ -1172,6 +1173,16 @@ Signal::SignalPermission Intersection::permission(int from,
 }
 
 //======================================================================
+bool Intersection::hasSignal() const
+{
+  return _hasSignal;
+}
+ //======================================================================
+void Intersection::noSignal() 
+{
+  _hasSignal = false;
+}
+ //======================================================================
 std::vector<Barrier*> Intersection::barriers() const
 {
   return _barriers;
@@ -1334,3 +1345,4 @@ void Intersection::printDetail(bool odNode) const
 
   cout << endl;
 }
+

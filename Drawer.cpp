@@ -907,9 +907,9 @@ void AccidentDrawer::draw(double x0,double y0,int type) const
     b = 0;
     break;
     case 2:
-    r = 51;
+    r = 255;
     g = 0;
-    b = 255;
+    b = 102;
     break;
     case 3:
     r = 253;
@@ -917,9 +917,9 @@ void AccidentDrawer::draw(double x0,double y0,int type) const
     b = 0;
     break;
     case 4:
-    r = 255;
+    r = 0;
     g = 0;
-    b = 102;
+    b = 255;
     break;
      case 5:
     r = 153;
@@ -927,13 +927,13 @@ void AccidentDrawer::draw(double x0,double y0,int type) const
     b = 0;
     break;
     default:
-    r=0;
-    g=0;
-    b=0;
     break;
   }
  
+  if(type != 0)
+  {
   AutoGL_SetColor(r,g,b);
   AutoGL_DrawCircle3D(x0,y0,10,
       0, 0, 1, 2, 3);
+      }
 }

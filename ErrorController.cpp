@@ -344,6 +344,10 @@ double ErrorController::_objectPoint()
 //====================================================================== 
 bool ErrorController::shiftError()
 {
+  if(_vehicle->velocity() < 20.0/60.0/60.0)
+  {
+    return false;
+  }
   if(_objectPoint() < GVManager::getNumeric("NOLOOK_SHIFT"))
   {
     errorOccur("shift");
@@ -358,8 +362,8 @@ void ErrorController::endShiftError()
 {
   if(_isShiftError)
   {
-  _isShiftError = false;
-  _errorEnd();
+    _isShiftError = false;
+    _errorEnd();
   }
 }
 
@@ -549,6 +553,7 @@ void ErrorController::checkStatData(){
     time_t now = time(NULL);
     struct tm *pnow = localtime(&now);
     string time = to_string(pnow->tm_hour) + ":"+ to_string(pnow->tm_min) + ":"+ to_string(pnow->tm_sec);  
+    
     for(int i=0;i<detectors->size();i++)
     {
       DetectorUnit* detector = detectors->at(i);
@@ -566,9 +571,14 @@ void ErrorController::checkStatData(){
       << "発生大型車両台数:" << totalT<< "\n" 
       << "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
       << "==============================="<<endl; 
-    writeStatData(totalP,totalT,time);
    if(totalP+totalT> _maxTotal || GVManager::getNumeric("MAX_ACCIDENT") < GVManager::getNumeric("ACCIDENT_COUNT"))
-      _stopRun = true;
+      {
+	_stopRun = true;
+	TimeManager::stopClock("ERROR_MODE");
+	time = std::to_string(TimeManager::getTime("ERROR_MODE")); 
+      }
+      cout << "error_mode"<<time <<endl;
+    writeStatData(totalP,totalT,time);
   }else
   {
     cerr << "no detector file" <<endl;

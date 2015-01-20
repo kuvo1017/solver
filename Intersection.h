@@ -218,6 +218,12 @@ class Intersection : public LaneBundle
 	RelativeDirection turning,
 	Vehicle* vehicle) const;
 
+    /// 信号がない交差点かを返す
+    bool hasSignal() const;
+
+     /// 信号がない設定を追加
+    void noSignal();
+
     /// 障害物
     std::vector<Barrier*> barriers() const;
 
@@ -307,6 +313,9 @@ class Intersection : public LaneBundle
 
     /// 入力したレーン開始終了位置
     std::vector<std::string> _laneBegEnd;
+     
+    /// 信号がついているか
+    bool _hasSignal;
 
     /// 障害物
     std::vector<Barrier*> _barriers;

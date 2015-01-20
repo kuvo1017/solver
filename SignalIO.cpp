@@ -62,6 +62,7 @@ vector<SignalAspect> SignalIO::aspect(const string& id,
      * colNum == 18: 六叉路
      */
 
+cout <<"colnum:" << colNum <<endl;
     assert(colNum%3==0 && colNum/3>=2 && colNum/3<=10);
     string defaultPath, aspectExtension;
     string defaultAspectPrefix;
