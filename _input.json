@@ -3,7 +3,7 @@
 "arrogance_LR":7.78e-2,
 "nolook_shift":1.82e-3,
 "nolook_head":1.08e-3,        	
-"data_path":"../simulations/279/",
+"data_path":"../simulations/okayama-kubo/",
 "max_accident":1000,
 "max_time":259200,
 "small_traffic_volume":50,

@@ -13,4 +13,5 @@ do
   rm *
   cp ../_stat* ../_accident* ../_error* ./
   cd ../
+  cp ../simulations/okayama-kubo/result/vehicleTrip.txt ./$n"/vehicleTrip_"$i".txt"
 done

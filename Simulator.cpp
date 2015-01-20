@@ -242,6 +242,7 @@ bool Simulator::run(ulint time)
   }
   if (time>TimeManager::time())
   {
+    TimeManager::startClock("ERROR_MODE");
     TimeManager::startClock("TOTALRUN");
     while (time>TimeManager::time() && !ErrorController::stopRun())
     //&& TimeManager::time() < 2*1000)

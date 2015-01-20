@@ -148,7 +148,7 @@ void GVInitializer::init(const string& dataPath)
 
   GVManager::setNewString("RESULT_VEHICLE_ATTRIBUTE_FILE",
       resultPath + "vehicleAttribute.txt");
-  GVManager::setNewString("RESULT_VEHICLE_TRIP_FILE",
+   GVManager::setNewString("RESULT_VEHICLE_TRIP_FILE",
       resultPath + "vehicleTrip.txt");
   GVManager::setNewString("RESULT_VEHICLE_COUNT_FILE",
       resultPath + "vehicleCount.txt");
@@ -158,7 +158,7 @@ void GVInitializer::init(const string& dataPath)
   GVManager::setNewString("RESULT_ACCIDENT_FILE",
       resultPath + "_accident.txt");
 #else
-   string paramName = GVManager::getString("PARAM_NAME");
+   std::string paramName = GVManager::getString("PARAM_NAME");
    GVManager::setNewString("RESULT_ERROR_FILE",
       "./_error_" + paramName + ".txt");
    GVManager::setNewString("RESULT_ACCIDENT_FILE",

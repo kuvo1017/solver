@@ -100,7 +100,13 @@ void RoadMapBuilder::buildRoadMap()
     {
         cerr << "Error: internal structure of intersections not created.";
     }
-
+    cout << "kitemasu!!!!!!!!!!!" <<endl;
+    // 交差点が信号を持たない場合に設定設定する
+    if(!checkSignals())
+    {
+        cerr << "Error: internal structure of intersections not created.";
+    } 
+ 
     cout << endl;
     // 単路の内部構造を設定する
     _isSectionStructureCreated = createSectionStructure();
@@ -355,16 +361,17 @@ void RoadMapBuilder::buildGridRoadMap(double xmin, double xmax,
     {
         cerr << "Error: internal structure of intersections not created.";
     }
-
+ cout << "kitemasu!!!!!!!!!!!" <<endl;
     // 交差点が信号を持たない場合に設定設定する
-    if (!checkSignals())
+    if(!checkSignals())
     {
         cerr << "Error: internal structure of intersections not created.";
     } 
-    // 単路の内部構造を設定する
+ 
+   // 単路の内部構造を設定する
     _isSectionStructureCreated = createSectionStructure();
     if (!_isSectionStructureCreated)
-    {
+    {                  
         cerr << "Error: internal structure of intersections not created.";
     }
 
@@ -719,15 +726,13 @@ bool RoadMapBuilder::createIntersectionStructure()
 //======================================================================
 bool RoadMapBuilder::checkSignals()
 {                         
+  cout << "!!!!!!checkSignal!!!!!" <<endl; 
   string fNoSignal;
  
   GVManager::getVariable("NOSIGNAL_FILE", &fNoSignal);
 
+  cout << "fNoSignal:" << fNoSignal <<endl;
   ifstream inNoSignalFile(fNoSignal.c_str(), ios::in);
-  if (!inNoSignalFile.good())
-  {
-   return false;
-  }
    
   string str;
   while (inNoSignalFile.good())
@@ -736,21 +741,21 @@ bool RoadMapBuilder::checkSignals()
     AmuStringOperator::getAdjustString(&str);
     if (!str.empty())
     {
+      cout << "kiteruyo2" <<endl;
       vector<string> tokens;
       AmuStringOperator::getTokens(&tokens, str, ',');
       assert(tokens.size()==1);
       // 3番目のカラムは終点となる交差点の識別番号
       std::string id = tokens[0].c_str();
+      cout << "id:" << id <<endl;
       CITRMAPI iti = _currentRoadMap->intersections()->begin();
-        while (iti != _currentRoadMap->intersections()->end())
-        {
-            // 各Intersectionのcreate関数を呼び出す
+      while (iti != _currentRoadMap->intersections()->end())
+      {
             if((*iti).second->id() == id )
 	    {
 	      cout << "intersection " << (*iti).second->id()
 		<< " has no signal" << endl;
 	      (*iti).second-> noSignal();
-	      return false;
 	    }
 	    iti++;
 	}
@@ -1085,7 +1090,7 @@ bool RoadMapBuilder::buildSignals()
     while (iti!=_currentRoadMap->intersections()->end())
     {
         if ((*iti).second->numNext()!=1
-    || (*iti).second->hasSignal())
+	    && (*iti).second->hasSignal())
         {
             // 接続数1の交差点（ODノード）には信号を設置しない
             Signal* signal = new Signal();
