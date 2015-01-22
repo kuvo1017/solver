@@ -148,8 +148,13 @@ void GVInitializer::init(const string& dataPath)
 
   GVManager::setNewString("RESULT_VEHICLE_ATTRIBUTE_FILE",
       resultPath + "vehicleAttribute.txt");
+#ifdef ERROR_MODE
    GVManager::setNewString("RESULT_VEHICLE_TRIP_FILE",
+      dataPath + "../../solver/vehicleTrip.txt");
+#else
+    GVManager::setNewString("RESULT_VEHICLE_TRIP_FILE",
       resultPath + "vehicleTrip.txt");
+#endif
   GVManager::setNewString("RESULT_VEHICLE_COUNT_FILE",
       resultPath + "vehicleCount.txt");
 #ifndef OACIS

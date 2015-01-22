@@ -54,7 +54,6 @@ VehicleIO::VehicleIO()
 
   _attributeOutFileName = resultDir+attributeFile;
   _tripOutFileName  = tripFile;
-  cout << "????filename???????" << _tripOutFileName <<endl;
 
   // 以前の結果を消去する
   _attributeOut.open(_attributeOutFileName.c_str(), ios::trunc);
