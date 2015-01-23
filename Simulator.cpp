@@ -460,14 +460,17 @@ GenerateVehicleController* Simulator::generateVehicleController()
 void Simulator::deleteAccidentVehicle(){
   std::vector<Vehicle*>* vehicles = ObjManager::vehicles();
   std::vector<Vehicle*>::iterator it = vehicles->begin();
-  while(it != vehicles->end()){
+  for(int i=0;i<vehicles->size();i++)
+  {
     if(!((*it)->errorController()->accidentCheck()))
-    {
-     ObjManager::deleteVehicle(dynamic_cast<Vehicle*>(*it),true);
+    {      
+      ObjManager::deleteVehicle(vehicles->at(i),true);
     }
     else
-    {
-      (*it)->errorController()->errorCheck();
+    {      
+
+      vehicles->at(i)->errorController()->errorCheck();
+
     }
     it++;
   }

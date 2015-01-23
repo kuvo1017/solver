@@ -897,7 +897,6 @@ AccidentDrawer& AccidentDrawer::instance()
 //----------------------------------------------------------------------
 void AccidentDrawer::draw(double x0,double y0,int type) const
 {
-  cout << "x:" <<x0 << " y:" <<y0 << " type:"<< type <<endl;
   double r,g,b;
   switch(type)
   {
