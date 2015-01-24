@@ -153,6 +153,7 @@ add_definitions("-DBARRIER")
 add_definitions("-DVIS_ACCIDENT")
 #add_definitions("-DERROR_PARAM")
 add_definitions("-DTRAFIC_VOLUME_PARAM")
+#add_definitions("-DTRAFIC_VOLUME_PARAM")
 ##**********************************************************************
 if(NOT USE_AUTOGL_CONFIG AND BUILD_MATES_SIM)
 

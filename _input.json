@@ -5,9 +5,9 @@
 "nolook_shift":1.82e-3,
 "nolook_head":1.05e-6,
 "data_path":"../simulations/okayama-kubo/",
-"max_accident":500,
+"max_accident":1000,
 "max_time":259200,
 "small_traffic_volume":50,
-"no_input_signal":true,
+"no_input_signal":false,
 "param_name":"OKAYAMA2"
 }
