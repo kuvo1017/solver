@@ -20,7 +20,8 @@ int ErrorController::_stopNAccident = 100;
 int ErrorController::_maxTotal = 1000*1000*5/4.5;
 bool ErrorController::_stopRun = false;
 bool ErrorController::_initWrite = true;
-
+time_t ErrorController::_startTime = time(NULL);
+ 
 using namespace std;
 ErrorController::ErrorController(Vehicle* vehicle){
   _vehicle = vehicle;
@@ -550,7 +551,7 @@ void ErrorController::checkStatData(){
   {
     int totalP =0;
     int totalT =0;
-    time_t now = time(NULL);
+    time_t now = time(NULL) - _startTime;
     struct tm *pnow = localtime(&now);
     string time = to_string(pnow->tm_hour) + ":"+ to_string(pnow->tm_min) + ":"+ to_string(pnow->tm_sec);  
     
@@ -571,7 +572,8 @@ void ErrorController::checkStatData(){
       << "発生大型車両台数:" << totalT<< "\n" 
       << "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
       << "==============================="<<endl; 
-   if(totalP+totalT> _maxTotal || GVManager::getNumeric("MAX_ACCIDENT") < GVManager::getNumeric("ACCIDENT_COUNT"))
+   if(totalP+totalT> _maxTotal || GVManager::getNumeric("MAX_ACCIDENT") < GVManager::getNumeric("ACCIDENT_COUNT")
+   || TimeManager::time() >= GVManager::getNumeric("MAX_TIME"))
       {
 	_stopRun = true;
 	TimeManager::stopClock("ERROR_MODE");

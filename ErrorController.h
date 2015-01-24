@@ -154,7 +154,9 @@ class ErrorController{
     static int _maxTotal;
     /// シミュレーションを終わらせるか
     static bool _stopRun;
-
+     /// シミュレーションを終わらせるか
+    static time_t  _startTime;
+ 
 }; 
 #endif //__ERRORCONTROLLER_H_
 
