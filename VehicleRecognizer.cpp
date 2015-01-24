@@ -258,7 +258,7 @@ void Vehicle::recognize()
 #endif //_OPENMP
     }
 #ifdef BARRIER
-     //--------------------------------------------------------------
+    //--------------------------------------------------------------
     // 見通しが悪い場合
     if (isNextInterEnterable)
     {
@@ -735,9 +735,7 @@ bool Vehicle::_isStoppedByCollisionInIntersection(
 		clAgent->length())
 	    / clAgent->velocity();
 	}
-	//_errorController->LRError(thisTti,thatTtp);
-	// thisTti < thatTtpであれば交錯の可能性がある
-	if (thisTti < thatTtp /*|| _errorController->isLRError()*/)
+	if (thisTti < thatTtp )
 	{
 #ifndef VL_DEBUG
 	  VirtualLeader* leader =
@@ -766,23 +764,23 @@ bool Vehicle::_isStoppedByCollisionInSection(
     Intersection* nextInter,
     vector<Lane*>* clSection,
     RelativeDirection turning)
-/*
- * 交錯単路を走行する車両との判定は以下の手順で行っている．
- *
- * 0. 交差点内交錯レーンの上流にある単路内レーンは取得済みである
- * 1. 取得した単路内レーンについて、それぞれの先頭車両を取得する
- * 2. 「先頭車両を（目視などによって）認識できる場合に限り」、
- *    自車と交錯単路内レーンの先頭車両との位置関係、
- *    進行方向（ウィンカーで判別）から
- *    道を譲るべきかどうか判定(_isYielding)
- * 3. 道を譲ると判定され、実際に該当交差点に到達するまでの時間差が
- *    小さい場合に減速->停止
- *    （相手よりもかなり前に自分が交差点を通過できる場合は
- *      優先関係を無視する）
- *
- * 自車と同方向（同じ単路）から進入する車には注意が必要
- * _isYieldingの中で条件分岐して対応している．
- */
+  /*
+   * 交錯単路を走行する車両との判定は以下の手順で行っている．
+   *
+   * 0. 交差点内交錯レーンの上流にある単路内レーンは取得済みである
+   * 1. 取得した単路内レーンについて、それぞれの先頭車両を取得する
+   * 2. 「先頭車両を（目視などによって）認識できる場合に限り」、
+   *    自車と交錯単路内レーンの先頭車両との位置関係、
+   *    進行方向（ウィンカーで判別）から
+   *    道を譲るべきかどうか判定(_isYielding)
+   * 3. 道を譲ると判定され、実際に該当交差点に到達するまでの時間差が
+   *    小さい場合に減速->停止
+   *    （相手よりもかなり前に自分が交差点を通過できる場合は
+   *      優先関係を無視する）
+   *
+   * 自車と同方向（同じ単路）から進入する車には注意が必要
+   * _isYieldingの中で条件分岐して対応している．
+   */
 {
   bool isStopped   = false;
 
@@ -825,12 +823,12 @@ bool Vehicle::_isStoppedByCollisionInSection(
 #endif
     if (!headVehicle
 	|| headVehicle==this
- #ifdef BARRIER
+#ifdef BARRIER
 	|| itv!=invisibleVehicles->end()
 	//|| !(_isVisible(headVehicle)) 
- #endif
+#endif
        )
- 
+
       // この時点で見通しを考慮するならコメントを外す
     {
       continue;
@@ -893,14 +891,18 @@ bool Vehicle::_isStoppedByCollisionInSection(
       {
 	thatTti = 50.0*1000;
       }
-      #ifdef ERROR_MODE
+#ifdef ERROR_MODE
       _errorController->LRError(headVehicle,thisTti,thatTti);
-      #endif
+#endif
       /*
        * 自分が交差点に到達するまでの時間と
        * 相手が交差点に到達する時間の差がgap以下なら道を譲る
        */
-      if (thatTti-thisTti < gap && !(_errorController->isLRError()))
+      if (thatTti-thisTti < gap  
+#ifdef ERROR_MODE
+	  && !(_errorController->isLRError())
+#endif
+	 )
       {
 #ifndef VL_DEBUG
 	VirtualLeader* leader =
@@ -995,11 +997,11 @@ bool Vehicle::_isStoppedByMinHeadway(Intersection* nextInter,
 //======================================================================
 bool Vehicle::_isStoppedByBadView()
 {                          
-if(GVManager::getNumeric("ARROGANCE_PASSING") == 0)
-{
-return false;
-}
-//return false;
+  if(GVManager::getNumeric("ARROGANCE_PASSING") == 0)
+  {
+    return false;
+  }
+  //return false;
   // 直前に通過した，あるいは現在通過中の交差点
   if(!_errorController->isPassingError())
   {
@@ -1028,7 +1030,7 @@ return false;
   }
 }
 
- 
+
 //======================================================================
 void Vehicle::_determineTurningVelocity(RelativeDirection turning)
 {
@@ -1137,8 +1139,10 @@ void Vehicle::_searchPreferredAgentInIntersection(RelativeDirection turning)
 	continue;
 
       }
+#ifdef ERROR_MODE
       // 衝突しているかのチェック（事故用）
       CollisionJudge::isCollidInIntersection(this,clVehicle)&&!(_errorController->isAccident());
+#endif
       int thatDir = clVehicle->directionFrom();
 
       if (_isYielding(_intersection, thisDir, thatDir,

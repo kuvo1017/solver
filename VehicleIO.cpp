@@ -328,7 +328,10 @@ bool VehicleIO::writeVehicleDistanceData(Vehicle* vehicle)
   {
     _tripOut << vehicle->id() << ","
       << vehicle->tripLength() << ","
-      << (TimeManager::time() - vehicle->startTime())
+      << (TimeManager::time() - vehicle->startTime()) << "," 
+#ifdef OACIS
+      << vehicle->numIntersections() 
+#endif
       << endl;
 
     _tripOut.close();

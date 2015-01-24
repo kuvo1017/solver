@@ -1,12 +1,13 @@
-{ "nolook_rear":0	 ,
-"arrogance_passing":0,
-"arrogance_LR":0,
-"nolook_shift":0,
-"nolook_head":0.1,        	
-"data_path":"../simulations/head_error/",
-"max_accident":1000,
+{
+"nolook_rear":1.23e-3 ,
+"arrogance_passing":2.54e-2,
+"arrogance_LR":1.04e-1,
+"nolook_shift":1.82e-3,
+"nolook_head":1.05e-6,
+"data_path":"../simulations/okayama-kubo/",
+"max_accident":500,
 "max_time":259200,
 "small_traffic_volume":50,
-"no_input_signal":false,
-"param_name":"NOLOOK_HEAD"
+"no_input_signal":true,
+"param_name":"OKAYAMA2"
 }
