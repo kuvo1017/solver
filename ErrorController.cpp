@@ -551,9 +551,13 @@ void ErrorController::checkStatData(){
   {
     int totalP =0;
     int totalT =0;
-    time_t now = time(NULL) - _startTime;
+    TimeManager::stopClock("ERROR_MODE");
+    string  time = std::to_string(TimeManager::getTime("ERROR_MODE")); 
+    TimeManager::startClock("ERROR_MODE");
+/*     time_t now = time(NULL) - _startTime;
     struct tm *pnow = localtime(&now);
     string time = to_string(pnow->tm_hour) + ":"+ to_string(pnow->tm_min) + ":"+ to_string(pnow->tm_sec);  
+    */
     
     for(int i=0;i<detectors->size();i++)
     {
@@ -579,7 +583,7 @@ void ErrorController::checkStatData(){
 	TimeManager::stopClock("ERROR_MODE");
 	time = std::to_string(TimeManager::getTime("ERROR_MODE")); 
       }
-      cout << "error_mode"<<time <<endl;
+      cout << "calculated time:"<< time <<endl;
     writeStatData(totalP,totalT,time);
   }else
   {
