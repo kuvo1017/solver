@@ -330,7 +330,8 @@ bool VehicleIO::writeVehicleDistanceData(Vehicle* vehicle)
       << vehicle->tripLength() << ","
       << (TimeManager::time() - vehicle->startTime()) << "," 
 #ifdef OACIS
-      << vehicle->numIntersections() 
+      << vehicle->numIntersections() << ","  
+      << vehicle->numNSIntersections() 
 #endif
       << endl;
 
@@ -376,7 +377,7 @@ bool VehicleIO::writeVehicleErrorData(ulint time, Vehicle* vehicle) {
       vehicle->id() << ","<<
       vehicle->x() << ","<<
       vehicle->y() << ","<<
-      vehicle->type() << endl;
+      vehicle->errorController()->type() << endl;
   return result;
 }
 

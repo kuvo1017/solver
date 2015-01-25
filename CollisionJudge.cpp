@@ -10,7 +10,7 @@
 
 //======================================================================
 bool CollisionJudge::isCollidInIntersection(Vehicle* v1,Vehicle* v2){
-  if(v1->intersection() == NULL 
+ if(v1->intersection() == NULL 
       || v2->intersection() == NULL
       || (v1->errorController()->type() == "not_error"
       && v2->errorController()->type() == "not_error")
@@ -52,8 +52,10 @@ bool CollisionJudge::isCollidInIntersection(Vehicle* v1,Vehicle* v2){
       &&_checkCross(toEdge[1][0],toEdge[1][1],toEdge[0][1],dist[3])
     )
   {
-    v1 ->errorController()->accidentOccur("intersection");
-    v2 ->errorController()->accidentOccur("intersection");
+    string type1 = v1 ->errorController()->type();
+    string type2 = v2 ->errorController()->type();
+    v1->errorController()->accidentOccur("intersection_"+type1);
+    v2->errorController()->accidentOccur("intersection_"+type2);
     return true;
   }else
   {
@@ -87,7 +89,9 @@ bool CollisionJudge::_checkCross(AmuVector& ea1,AmuVector& ea2,AmuVector& eb1,do
 }
 
 //======================================================================
+/*
 bool CollisionJudge::isCollidStrict(Vehicle* v1,Vehicle* v2)
+
 {
   Vehicle* vehicle[] = {v1,v2};
   AmuPoint* vertice[2][4];
@@ -142,26 +146,33 @@ bool CollisionJudge::isCollidStrict(Vehicle* v1,Vehicle* v2)
     }
   }
 }
+*/
 //======================================================================
 bool CollisionJudge::isFrontCollid(Vehicle* v1,Vehicle* v2){
+  if(!(v1->errorController()->isRearError()) 
+  &&  !(v2->errorController()->isRearError()) ) 
+  {
+  return false;
+  }
   double x,y;
   double gap = 0.5;
   x = v1->x() - v2->x();  
   y = v1->y() - v2->y();
   double distance = sqrt(x*x + y*y);
   if(distance + 0.5< (v1->bodyLength() + v2->bodyLength())*0.5)
-  {
-   v1 ->errorController()->accidentOccur("front");
-    v2 ->errorController()->accidentOccur("front");
- 
-    return true;
+  {                 
+  string type1 = v1 ->errorController()->type();
+    string type2 = v2 ->errorController()->type();
+    v1->errorController()->accidentOccur("front_"+type1);
+    v2->errorController()->accidentOccur("front_"+type2);
+   return true;
   }else{
     return false;
   }
 }
 //======================================================================
 void CollisionJudge::isSideCollid(Vehicle* v1){
-  if(v1->errorController()->type() == "shift")
+  if(v1->errorController()->isShiftError())
   {
     double x1 = v1->x();
     double y1 = v1->y();
@@ -188,19 +199,20 @@ void CollisionJudge::isSideCollid(Vehicle* v1){
           if(v1->laneShifter().isActive())
           {
             v1->laneShifter().endShift();
-          }
-          v1->errorController()->accidentOccur("side");
-          v2->errorController()->accidentOccur("side");
-          v1->errorController()->endShiftError();
-          v2->errorController()->endShiftError();
-        }
+	  }                
+	  string type1 = v1 ->errorController()->type();
+	  string type2 = v2 ->errorController()->type();
+	  v1->errorController()->accidentOccur("side_"+type1);
+	  v2->errorController()->accidentOccur("side_"+type2);
+	}
       }
     }
   }
 } 
 //======================================================================
 bool CollisionJudge::isHeadCollid(Vehicle* v1,Vehicle* v2){
-  if(v1->errorController()->isHeadError())
+  if(v1->errorController()->isHeadError()
+  || v2->errorController()->isHeadError())
   {
     AmuVector direction = v1->directionVector();
     direction.normalize();
@@ -214,9 +226,11 @@ bool CollisionJudge::isHeadCollid(Vehicle* v1,Vehicle* v2){
     {
       double sideDistance = fabs(sideDirection.calcScalar(*aToB));
       if(sideDistance < (v1->bodyWidth() + v2->bodyWidth())*0.5)
-      {
-        v1->errorController()->accidentOccur("head");
-        v2->errorController()->accidentOccur("head");
+      {        
+	string type1 = v1 ->errorController()->type();
+	string type2 = v2 ->errorController()->type();
+	v1->errorController()->accidentOccur("head_"+type1);
+	v2->errorController()->accidentOccur("head_"+type2);
 	return true;
       }
     }

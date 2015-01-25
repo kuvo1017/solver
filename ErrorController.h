@@ -12,6 +12,7 @@ class Lane;
 
 class ErrorController{ 
   public:
+    ErrorController();
     ///
     ErrorController(Vehicle* vehicle);
     /// 追突エラー状態かどうか↲

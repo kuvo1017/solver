@@ -933,6 +933,6 @@ void AccidentDrawer::draw(double x0,double y0,int type) const
   {
   AutoGL_SetColor(r,g,b);
   AutoGL_DrawCircle3D(x0,y0,10,
-      0, 0, 1, 2, 3);
+      0, 0, 1, 12, 3);
       }
 }
