@@ -230,6 +230,10 @@ void Vehicle::_runIntersection2Section()
 #ifdef OACIS
   // 今まで通過した交差点の数をインクリメント
   _numIntersections++;
+  if(!(_prevIntersection->hasSignal()))
+  {
+    _numNSIntersections++; 
+  }
 #endif
 }
 

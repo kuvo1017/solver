@@ -330,7 +330,8 @@ bool VehicleIO::writeVehicleDistanceData(Vehicle* vehicle)
       << vehicle->tripLength() << ","
       << (TimeManager::time() - vehicle->startTime()) << "," 
 #ifdef OACIS
-      << vehicle->numIntersections() 
+      << vehicle->numIntersections() << ","  
+      << vehicle->numNSIntersections() 
 #endif
       << endl;
 

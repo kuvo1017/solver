@@ -51,7 +51,8 @@ Vehicle::Vehicle():_id()
   _totalLength = 0;
   _tripLength  = 0;
   _numIntersections = 0;
-  _error       = 0;
+  _numNSIntersections = 0;
+   _error       = 0;
   _velocity      = 0;
   _velocityHistory.clear();
   _errorVelocity = 0;
@@ -216,7 +217,11 @@ int Vehicle::numIntersections() const
 {
   return _numIntersections;
 }
- 
+//======================================================================
+int Vehicle::numNSIntersections() const
+{
+  return _numNSIntersections;
+}
 //======================================================================
 double Vehicle::x() const
 {
