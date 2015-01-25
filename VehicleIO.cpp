@@ -323,9 +323,7 @@ bool VehicleIO::writeVehicleDistanceData(Vehicle* vehicle)
 {
   bool result = false;
 
-  cout << "filename:" << _tripOutFileName <<endl;
   _tripOut.open(_tripOutFileName.c_str(), ios::app);
-  cout << "!!!!trip good is "<< _tripOut.good() <<  endl;
   if (_tripOut.good())
   {
     _tripOut << vehicle->id() << ","

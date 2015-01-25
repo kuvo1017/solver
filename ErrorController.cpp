@@ -221,7 +221,6 @@ bool ErrorController::headError(){
   if(_isHeadError)
   {   
     if(_checkHeadAccident()){
-      cout << "unko kusai" << endl;
       return false;
     }
     return true;
@@ -427,6 +426,7 @@ void ErrorController::accidentOccur(std::string collidType){
   cout << "=================================" <<endl;
   _isAccident = true;
   _isRearError=false;
+  _isHeadError=false;
   _isPassingError = false;
   _vehicle->setBodyColor(0,0,0); 
   VehicleIO::instance().writeVehicleAccidentData(TimeManager::time(),_vehicle,collidType);

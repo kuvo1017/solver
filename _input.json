@@ -6,8 +6,9 @@
 "nolook_head":0,
 "data_path":"../simulations/okayama-kubo/",
 "max_accident":100,
-"max_time":500,
+"max_time":7200,
 "small_traffic_volume":2000,
 "no_input_signal":false,
 "param_name":"NO_ACCIDENT" 
+
 }
