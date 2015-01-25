@@ -376,7 +376,7 @@ bool VehicleIO::writeVehicleErrorData(ulint time, Vehicle* vehicle) {
       vehicle->id() << ","<<
       vehicle->x() << ","<<
       vehicle->y() << ","<<
-      vehicle->type() << endl;
+      vehicle->errorController()->type() << endl;
   return result;
 }
 

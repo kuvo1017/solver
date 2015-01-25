@@ -218,7 +218,14 @@ void Vehicle::_runIntersection2Section()
   // 出合い頭における判断エラー
   //（見通しがわるくても次の交差点に進むか)
   // を計算
-  _errorController->passingError();
+  Intersection* next = _section->intersection(true);
+  if( next != NULL)
+  {
+    if( next->barriers().size() > 0)
+    {
+      _errorController->passingError();
+    }
+  }
 #endif
 #ifdef OACIS
   // 今まで通過した交差点の数をインクリメント
