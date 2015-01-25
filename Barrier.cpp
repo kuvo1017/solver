@@ -95,7 +95,7 @@ Barrier::Barrier(Intersection* i0,
   } 
 
   for(int i=0;i<4;i++){
-    std::cout <<"("<< rawVertices[i]->x() <<","<<rawVertices[i]->y()<<")" <<std::endl;
+//    std::cout <<"("<< rawVertices[i]->x() <<","<<rawVertices[i]->y()<<")" <<std::endl;
   }
 
   // 四角形の中心点を計算する

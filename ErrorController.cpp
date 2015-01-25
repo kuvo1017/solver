@@ -20,7 +20,8 @@ int ErrorController::_stopNAccident = 100;
 int ErrorController::_maxTotal = 1000*1000*5/4.5;
 bool ErrorController::_stopRun = false;
 bool ErrorController::_initWrite = true;
-
+time_t ErrorController::_startTime = time(NULL);
+ 
 using namespace std;
 ErrorController::ErrorController(Vehicle* vehicle){
   _vehicle = vehicle;
@@ -220,7 +221,6 @@ bool ErrorController::headError(){
   if(_isHeadError)
   {   
     if(_checkHeadAccident()){
-      cout << "unko kusai" << endl;
       return false;
     }
     return true;
@@ -344,6 +344,10 @@ double ErrorController::_objectPoint()
 //====================================================================== 
 bool ErrorController::shiftError()
 {
+  if(_vehicle->velocity() < 20.0/60.0/60.0)
+  {
+    return false;
+  }
   if(_objectPoint() < GVManager::getNumeric("NOLOOK_SHIFT"))
   {
     errorOccur("shift");
@@ -358,8 +362,8 @@ void ErrorController::endShiftError()
 {
   if(_isShiftError)
   {
-  _isShiftError = false;
-  _errorEnd();
+    _isShiftError = false;
+    _errorEnd();
   }
 }
 
@@ -417,11 +421,14 @@ string ErrorController::type() const{
 //======================================================================
 void ErrorController::accidentOccur(std::string collidType){
 
-  cout << "=================================" <<endl;
-  cout << "Accident occured: car id is " <<  _vehicle->id() << endl;
-  cout << "=================================" <<endl;
+  cout << "=================================\n" 
+  	 << "Accident occured\n"
+  << "car id:" <<  _vehicle->id() << endl;
+  cout << "Error type:" <<  _vehicle->errorController()->type() << endl;
+   cout << "=================================" <<endl;
   _isAccident = true;
   _isRearError=false;
+  _isHeadError=false;
   _isPassingError = false;
   _vehicle->setBodyColor(0,0,0); 
   VehicleIO::instance().writeVehicleAccidentData(TimeManager::time(),_vehicle,collidType);
@@ -546,9 +553,14 @@ void ErrorController::checkStatData(){
   {
     int totalP =0;
     int totalT =0;
-    time_t now = time(NULL);
+    TimeManager::stopClock("ERROR_MODE");
+    string  time = std::to_string(TimeManager::getTime("ERROR_MODE")); 
+    TimeManager::startClock("ERROR_MODE");
+/*     time_t now = time(NULL) - _startTime;
     struct tm *pnow = localtime(&now);
     string time = to_string(pnow->tm_hour) + ":"+ to_string(pnow->tm_min) + ":"+ to_string(pnow->tm_sec);  
+    */
+    
     for(int i=0;i<detectors->size();i++)
     {
       DetectorUnit* detector = detectors->at(i);
@@ -566,9 +578,15 @@ void ErrorController::checkStatData(){
       << "発生大型車両台数:" << totalT<< "\n" 
       << "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
       << "==============================="<<endl; 
+   if(totalP+totalT> _maxTotal || GVManager::getNumeric("MAX_ACCIDENT") < GVManager::getNumeric("ACCIDENT_COUNT")
+   || TimeManager::time() >= GVManager::getNumeric("MAX_TIME"))
+      {
+	_stopRun = true;
+	TimeManager::stopClock("ERROR_MODE");
+	time = std::to_string(TimeManager::getTime("ERROR_MODE")); 
+      }
+      cout << "calculated time:"<< time <<endl;
     writeStatData(totalP,totalT,time);
-   if(totalP+totalT> _maxTotal || GVManager::getNumeric("MAX_ACCIDENT") < GVManager::getNumeric("ACCIDENT_COUNT"))
-      _stopRun = true;
   }else
   {
     cerr << "no detector file" <<endl;

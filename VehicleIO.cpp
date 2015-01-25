@@ -54,7 +54,6 @@ VehicleIO::VehicleIO()
 
   _attributeOutFileName = resultDir+attributeFile;
   _tripOutFileName  = tripFile;
-  cout << "????filename???????" << _tripOutFileName <<endl;
 
   // 以前の結果を消去する
   _attributeOut.open(_attributeOutFileName.c_str(), ios::trunc);
@@ -324,14 +323,15 @@ bool VehicleIO::writeVehicleDistanceData(Vehicle* vehicle)
 {
   bool result = false;
 
-  cout << "filename:" << _tripOutFileName <<endl;
   _tripOut.open(_tripOutFileName.c_str(), ios::app);
-  cout << "!!!!trip good is "<< _tripOut.good() <<  endl;
   if (_tripOut.good())
   {
     _tripOut << vehicle->id() << ","
       << vehicle->tripLength() << ","
-      << (TimeManager::time() - vehicle->startTime())
+      << (TimeManager::time() - vehicle->startTime()) << "," 
+#ifdef OACIS
+      << vehicle->numIntersections() 
+#endif
       << endl;
 
     _tripOut.close();

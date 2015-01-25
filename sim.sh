@@ -1,16 +1,15 @@
 #!/bin/sh
 
-rm nohup.out
-for n in "res1" "res2" "res3"  
+for n in "res1" 
 do
-  mkdir $n
   rm   _stat* _accident* _error* 
-  for i in "300" 
+  for i in "1"  "2" "3"
   do
     ./advmates-calc -d $i -L
+    mv vehicleTrip.txt ./vehicleTrip_$i".txt"
   done
   cd $n
   rm *
-  cp ../_stat* ../_accident* ../_error* ./
+  cp ../_stat* ../_accident* ../_error* ../vehicleTrip* ./
   cd ../
 done

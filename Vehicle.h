@@ -292,7 +292,10 @@ class Vehicle : public RoadOccupant
   /// トリップ長を返す
   double tripLength() const;
 
-  /// x座標を返す
+  /// 通過した交差点の数を返す
+  int numIntersections() const;
+
+   /// x座標を返す
   double x() const;
 
   /// y座標を返す
@@ -525,7 +528,10 @@ class Vehicle : public RoadOccupant
    */
   double _tripLength;
 
-  /// レーン中心線からのずれ[m]
+  /// 通過した交差点の数
+  int _numIntersections;
+
+   /// レーン中心線からのずれ[m]
   double _error;
 
   /// 発生時刻

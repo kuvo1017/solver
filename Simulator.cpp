@@ -242,8 +242,13 @@ bool Simulator::run(ulint time)
   }
   if (time>TimeManager::time())
   {
+    TimeManager::startClock("ERROR_MODE");
     TimeManager::startClock("TOTALRUN");
-    while (time>TimeManager::time() && !ErrorController::stopRun())
+    while (time>TimeManager::time()  
+#ifdef OACIS
+    &&!ErrorController::stopRun()
+#endif
+    )
     //&& TimeManager::time() < 2*1000)
     {
       timeIncrement();
@@ -294,7 +299,7 @@ bool Simulator::timeIncrement()
     DetectorIO::writeTrafficData(detectorUnits);
   }
 
-#ifdef ERROR_MODE
+#ifdef OACIS
   // 事故の記録
   if(TimeManager::time() % 100000 == 0)
     ErrorController::checkStatData();
@@ -302,7 +307,9 @@ bool Simulator::timeIncrement()
 
   // エージェントの消去
   TimeManager::startClock("DELETE_AGENT");
-  deleteAccidentVehicle();
+#ifdef ERROR_MODE
+ deleteAccidentVehicle();
+#endif
   _roadMap->deleteArrivedAgents();
   TimeManager::stopClock("DELETE_AGENT");
 
@@ -459,14 +466,17 @@ GenerateVehicleController* Simulator::generateVehicleController()
 void Simulator::deleteAccidentVehicle(){
   std::vector<Vehicle*>* vehicles = ObjManager::vehicles();
   std::vector<Vehicle*>::iterator it = vehicles->begin();
-  while(it != vehicles->end()){
+  for(int i=0;i<vehicles->size();i++)
+  {
     if(!((*it)->errorController()->accidentCheck()))
-    {
-     ObjManager::deleteVehicle(dynamic_cast<Vehicle*>(*it),true);
+    {      
+      ObjManager::deleteVehicle(vehicles->at(i),true);
     }
     else
-    {
-      (*it)->errorController()->errorCheck();
+    {      
+
+      vehicles->at(i)->errorController()->errorCheck();
+
     }
     it++;
   }

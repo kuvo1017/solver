@@ -176,12 +176,13 @@ void AppMates::parseArgument(int argc, char** argv)
       case 'd': // データディレクトリを指定する
 #ifdef ERROR_PARAM
 	str = optarg;
-	GVManager::resetNumeric(paramName,(int) std::stoi(str));  
+	GVManager::resetNumeric(paramName,(double) std::stof(str));  
 	GVManager::resetString("PARAM_NAME", paramName + "_"+ str);
 #elif defined TRAFIC_VOLUME_PARAM
 	str = optarg;
 	small_volume = (int) std::stoi(str);
 	large_volume = small_volume * 0.3;
+	cout << "small!!!!!!" << small_volume <<endl;
 	GVManager::resetNumeric("SMALL_TRAFFIC_VOLUME",small_volume);  
 	GVManager::resetNumeric("LARGE_TRAFFIC_VOLUME",large_volume); 
 	GVManager::resetString("PARAM_NAME", paramName + "_"+ str);
