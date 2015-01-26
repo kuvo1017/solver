@@ -295,6 +295,9 @@ class Vehicle : public RoadOccupant
   /// 通過した交差点の数を返す
   int numIntersections() const;
 
+   /// 通過した信号のない交差点の数を返す
+  int numNSIntersections() const;
+ 
    /// x座標を返す
   double x() const;
 
@@ -531,6 +534,9 @@ class Vehicle : public RoadOccupant
   /// 通過した交差点の数
   int _numIntersections;
 
+  /// 通過した信号のない交差点の数
+  int _numNSIntersections;
+ 
    /// レーン中心線からのずれ[m]
   double _error;
 
