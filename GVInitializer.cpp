@@ -294,7 +294,9 @@ void GVInitializer::init(const string& dataPath)
 
   // 起きた事故の回数
   GVManager::setNewNumeric("ACCIDENT_COUNT",0);
-/*
+
+  // 各タイムステップで存在した車両の合計
+  GVManager::setNewNumeric("VEHICLE_EXIST_COUNT",0); /*
 #ifdef ERROR_MODE
 ErrorController::initErrorParams();
 #endif

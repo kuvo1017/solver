@@ -583,6 +583,7 @@ void ErrorController::checkStatData(){
 	TimeManager::stopClock("ERROR_MODE");
 	time = std::to_string(TimeManager::getTime("ERROR_MODE")); 
       }
+     cout << "vehicle exist" << GVManager::getNumeric("VEHICLE_EXIST_COUNT") <<endl;
       cout << "calculated time:"<< time <<endl;
     writeStatData(totalP,totalT,time);
   }else
@@ -605,7 +606,7 @@ void ErrorController::writeStatData(int totalP,int totalT,string time){
     <<  totalP<< ","
     <<  totalT<< ","
     << GVManager::getNumeric("ACCIDENT_COUNT") << ","
-    << endl;
+     << endl;
     }else
     {
    ofsGD1 << "#rear:" << GVManager::getNumeric("NOLOOK_REAR")
@@ -618,6 +619,7 @@ void ErrorController::writeStatData(int totalP,int totalT,string time){
      <<  totalP<< ","
     <<  totalT<< ","
     << GVManager::getNumeric("ACCIDENT_COUNT") << ","
+     << GVManager::getNumeric("VEHICLE_EXIST_COUNT") 
     << endl;
     _initWrite = false;
     }

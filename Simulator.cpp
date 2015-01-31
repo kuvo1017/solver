@@ -274,6 +274,7 @@ bool Simulator::timeIncrement()
       cout << "Time: "
 	<< TimeManager::time()/1000 << "[sec]" << endl;
 
+cout << GVManager::getNumeric("VEHICLE_EXIST_COUNT")<<endl;
     }
   }
 

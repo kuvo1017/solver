@@ -17,6 +17,10 @@ using namespace std;
 //======================================================================
 void Vehicle::recognize()
 {
+#ifdef OACIS
+  GVManager::resetNumeric("VEHICLE_EXIST_COUNT",GVManager::getNumeric("VEHICLE_EXIST_COUNT")+1);
+//  cout << GVManager::getNumeric("VEHICLE_EXIST_COUNT") <<endl;
+#endif
 #ifdef ERROR_MODE
   if (_errorController->isAccident())
   {
