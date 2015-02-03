@@ -606,7 +606,8 @@ void ErrorController::writeStatData(int totalP,int totalT,string time){
     <<  totalP<< ","
     <<  totalT<< ","
     << GVManager::getNumeric("ACCIDENT_COUNT") << ","
-     << endl;
+      << GVManager::getNumeric("VEHICLE_EXIST_COUNT") 
+      << endl;
     }else
     {
    ofsGD1 << "#rear:" << GVManager::getNumeric("NOLOOK_REAR")
