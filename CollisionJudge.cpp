@@ -10,10 +10,10 @@
 
 //======================================================================
 bool CollisionJudge::isCollidInIntersection(Vehicle* v1,Vehicle* v2){
-  if(v1->intersection() == NULL 
+ if(v1->intersection() == NULL 
       || v2->intersection() == NULL
-      || v1->errorController()->type() == "not_error"
-      || v2->errorController()->type() == "not_error"
+      || (v1->errorController()->type() == "not_error"
+      && v2->errorController()->type() == "not_error")
     )
   {
     return false;
@@ -22,7 +22,8 @@ bool CollisionJudge::isCollidInIntersection(Vehicle* v1,Vehicle* v2){
   /// http://marupeke296.com/COL_3D_No13_OBBvsOBB.html
   AmuPoint* center[] = {new AmuPoint(v1->x(),v1->y(),0),new AmuPoint(v2->x(),v2->y(),0)};
   AmuVector* aToB = new AmuVector(*center[0],*center[1]);
-  // toosugitara ridatsu
+  // 車両同士の距離が離れすぎていたら、ループ離脱
+  // お互いの距離 > 車体の対角線の合計値のとき
   if(aToB->size()*2 > v1->bodyDiagnoalXY() + v2->bodyDiagnoalXY())
   {
     return false;
@@ -51,9 +52,10 @@ bool CollisionJudge::isCollidInIntersection(Vehicle* v1,Vehicle* v2){
       &&_checkCross(toEdge[1][0],toEdge[1][1],toEdge[0][1],dist[3])
     )
   {
-    cout << "in Intersection Collid" <<endl;
-    v1 ->errorController()->accidentOccur("intersection");
-    v2 ->errorController()->accidentOccur("intersection");
+    string type1 = v1 ->errorController()->type();
+    string type2 = v2 ->errorController()->type();
+    v1->errorController()->accidentOccur("intersection_"+type1);
+    v2->errorController()->accidentOccur("intersection_"+type2);
     return true;
   }else
   {
@@ -69,7 +71,6 @@ bool CollisionJudge::_checkCross(AmuVector& ea1,AmuVector& ea2,AmuVector& eb1,do
   double ra = fabs(ea1.calcScalar(eb1)) + fabs(ea2.calcScalar(eb1));
   if(dist > ra + rb)
   {
-    //    cout << "false!!!!!" <<endl;
     return false;
   }else
   {
@@ -88,7 +89,9 @@ bool CollisionJudge::_checkCross(AmuVector& ea1,AmuVector& ea2,AmuVector& eb1,do
 }
 
 //======================================================================
+/*
 bool CollisionJudge::isCollidStrict(Vehicle* v1,Vehicle* v2)
+
 {
   Vehicle* vehicle[] = {v1,v2};
   AmuPoint* vertice[2][4];
@@ -127,7 +130,6 @@ bool CollisionJudge::isCollidStrict(Vehicle* v1,Vehicle* v2)
       if(i ==0)
       {
 	calcVector[0][j] = new AmuVector(*vertice[0][j],*vertice[1][j]);
-	cout << "自車["<<j<<"] ("<< vertice[0][j]->x()<<","<<vertice[0][j]->y()<<") "<<endl;
        if(edge[0][j]->calcCrossProduct(*calcVector[1][j]) > 0)
 	{
 	  return false;
@@ -144,26 +146,33 @@ bool CollisionJudge::isCollidStrict(Vehicle* v1,Vehicle* v2)
     }
   }
 }
+*/
 //======================================================================
 bool CollisionJudge::isFrontCollid(Vehicle* v1,Vehicle* v2){
+  if(!(v1->errorController()->isRearError()) 
+  &&  !(v2->errorController()->isRearError()) ) 
+  {
+  return false;
+  }
   double x,y;
   double gap = 0.5;
   x = v1->x() - v2->x();  
   y = v1->y() - v2->y();
   double distance = sqrt(x*x + y*y);
   if(distance + 0.5< (v1->bodyLength() + v2->bodyLength())*0.5)
-  {
-   v1 ->errorController()->accidentOccur("front");
-    v2 ->errorController()->accidentOccur("front");
- 
-    return true;
+  {                 
+  string type1 = v1 ->errorController()->type();
+    string type2 = v2 ->errorController()->type();
+    v1->errorController()->accidentOccur("front_"+type1);
+    v2->errorController()->accidentOccur("front_"+type2);
+   return true;
   }else{
     return false;
   }
 }
 //======================================================================
 void CollisionJudge::isSideCollid(Vehicle* v1){
-  if(v1->errorController()->type() == "shift")
+  if(v1->errorController()->isShiftError())
   {
     double x1 = v1->x();
     double y1 = v1->y();
@@ -190,20 +199,20 @@ void CollisionJudge::isSideCollid(Vehicle* v1){
           if(v1->laneShifter().isActive())
           {
             v1->laneShifter().endShift();
-          }
-    cout <<"id:" << v1->id() << "  type:" << v1->errorController()->type() <<endl;
-          v1->errorController()->accidentOccur("side");
-          v2->errorController()->accidentOccur("side");
-          v1->errorController()->endShiftError();
-          v2->errorController()->endShiftError();
-        }
+	  }                
+	  string type1 = v1 ->errorController()->type();
+	  string type2 = v2 ->errorController()->type();
+	  v1->errorController()->accidentOccur("side_"+type1);
+	  v2->errorController()->accidentOccur("side_"+type2);
+	}
       }
     }
   }
 } 
 //======================================================================
 bool CollisionJudge::isHeadCollid(Vehicle* v1,Vehicle* v2){
-  if(v1->errorController()->isHeadError())
+  if(v1->errorController()->isHeadError()
+  || v2->errorController()->isHeadError())
   {
     AmuVector direction = v1->directionVector();
     direction.normalize();
@@ -216,12 +225,15 @@ bool CollisionJudge::isHeadCollid(Vehicle* v1,Vehicle* v2){
     if(rearDistance < (v1->bodyLength() + v2 ->bodyLength())*0.5)
     {
       double sideDistance = fabs(sideDirection.calcScalar(*aToB));
-      if(sideDistance < (v2->bodyWidth() + v2->bodyWidth())*0.5)
-      {
-        cout <<"id:" << v1->id() << "  type:" << v1->errorController()->type() <<endl;
-        v1->errorController()->accidentOccur("head");
-        v2->errorController()->accidentOccur("head");
+      if(sideDistance < (v1->bodyWidth() + v2->bodyWidth())*0.5)
+      {        
+	string type1 = v1 ->errorController()->type();
+	string type2 = v2 ->errorController()->type();
+	v1->errorController()->accidentOccur("head_"+type1);
+	v2->errorController()->accidentOccur("head_"+type2);
+	return true;
       }
     }
   }
+  return false;
 }

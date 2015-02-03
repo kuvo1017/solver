@@ -19,7 +19,9 @@
 int ErrorController::_stopNAccident = 100;
 int ErrorController::_maxTotal = 1000*1000*5/4.5;
 bool ErrorController::_stopRun = false;
-
+bool ErrorController::_initWrite = true;
+time_t ErrorController::_startTime = time(NULL);
+ 
 using namespace std;
 ErrorController::ErrorController(Vehicle* vehicle){
   _vehicle = vehicle;
@@ -118,6 +120,7 @@ void ErrorController::passingError()
 //======================================================================
 void ErrorController::setInvisibleVehicle(Vehicle* vehicle)
 {
+//  cout << "set" <<endl;
   _invisibleVehicles.push_back(vehicle);
 }
 
@@ -215,8 +218,15 @@ void ErrorController::LRError(Vehicle* thatV,double thisTti,double thatTti) {
 //======================================================================
 bool ErrorController::headError(){
   //多くの対称を認知したときに先行者の速度等を認知するかわりに予測する処理
-  if(_checkHeadAccident() 
-      ||  GVManager::getNumeric("NOLOOK_HEAD") == 0
+  if(_isHeadError)
+  {   
+    if(_checkHeadAccident()){
+      return false;
+    }
+    return true;
+  }
+  if(
+       GVManager::getNumeric("NOLOOK_HEAD") == 0
       || (_onComingLane()==nullptr)
       || _isAccident
       || _vehicle->velocity() < 30.0/3600.0 )
@@ -238,7 +248,7 @@ double ErrorController::errorVelocity()
   }
   double error = _vehicle->error();
   if(_isHeadError ){
-    if(error < -3.0 )
+    if(error < -5.0 )
     {
        _errorVelocity =  5.0/60.0/60.0;
     _headErrorTime+=TimeManager::unit();
@@ -250,13 +260,12 @@ double ErrorController::errorVelocity()
       _headErrorTime = 0;
       _isHeadError = false;
       _errorEnd();
-   cout << "errorend" <<endl;
- 
+
     }
     else if(_headErrorTime ==0)
     {
       _errorVelocity = -5.0/60.0/60.0;
-    _headErrorTime+=TimeManager::unit();
+      _headErrorTime+=TimeManager::unit();
     }
   }
   return _errorVelocity;
@@ -335,6 +344,10 @@ double ErrorController::_objectPoint()
 //====================================================================== 
 bool ErrorController::shiftError()
 {
+  if(_vehicle->velocity() < 20.0/60.0/60.0)
+  {
+    return false;
+  }
   if(_objectPoint() < GVManager::getNumeric("NOLOOK_SHIFT"))
   {
     errorOccur("shift");
@@ -349,8 +362,8 @@ void ErrorController::endShiftError()
 {
   if(_isShiftError)
   {
-  _isShiftError = false;
-  _errorEnd();
+    _isShiftError = false;
+    _errorEnd();
   }
 }
 
@@ -413,6 +426,7 @@ void ErrorController::accidentOccur(std::string collidType){
   cout << "=================================" <<endl;
   _isAccident = true;
   _isRearError=false;
+  _isHeadError=false;
   _isPassingError = false;
   _vehicle->setBodyColor(0,0,0); 
   VehicleIO::instance().writeVehicleAccidentData(TimeManager::time(),_vehicle,collidType);
@@ -420,11 +434,13 @@ void ErrorController::accidentOccur(std::string collidType){
 //======================================================================
 void ErrorController::errorOccur(string type){
   _type = type;
+/*
   cout << "=================================" <<endl;
   cout << "Error occured: car id is " <<  _vehicle->id() << endl;
   cout << "error type:"<<type <<endl; 
   cout << "=================================" <<endl;
-  _vehicle->setBodyColor(0.8,0.8,0);
+  */
+  _vehicle->setBodyColor(1.0,0.0,0);
   VehicleIO::instance().writeVehicleErrorData(TimeManager::time(),_vehicle);
 }
 //======================================================================
@@ -535,9 +551,14 @@ void ErrorController::checkStatData(){
   {
     int totalP =0;
     int totalT =0;
-    time_t now = time(NULL);
+    TimeManager::stopClock("ERROR_MODE");
+    string  time = std::to_string(TimeManager::getTime("ERROR_MODE")); 
+    TimeManager::startClock("ERROR_MODE");
+/*     time_t now = time(NULL) - _startTime;
     struct tm *pnow = localtime(&now);
     string time = to_string(pnow->tm_hour) + ":"+ to_string(pnow->tm_min) + ":"+ to_string(pnow->tm_sec);  
+    */
+    
     for(int i=0;i<detectors->size();i++)
     {
       DetectorUnit* detector = detectors->at(i);
@@ -551,13 +572,20 @@ void ErrorController::checkStatData(){
       << "statitic accident data\n" 
       << "エラー率：" << GVManager::getNumeric("ARROGANCE_LR") << "\n"  
       << "計算時間:" <<time <<"\n"
-      << "発生小型車両台数:" << totalP<< "\n"
+    << "発生小型車両台数:" << totalP<< "\n"
       << "発生大型車両台数:" << totalT<< "\n" 
       << "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
       << "==============================="<<endl; 
+   if(totalP+totalT> _maxTotal || GVManager::getNumeric("MAX_ACCIDENT") < GVManager::getNumeric("ACCIDENT_COUNT")
+   || TimeManager::time() >= GVManager::getNumeric("MAX_TIME"))
+      {
+	_stopRun = true;
+	TimeManager::stopClock("ERROR_MODE");
+	time = std::to_string(TimeManager::getTime("ERROR_MODE")); 
+      }
+     cout << "vehicle exist" << GVManager::getNumeric("VEHICLE_EXIST_COUNT") <<endl;
+      cout << "calculated time:"<< time <<endl;
     writeStatData(totalP,totalT,time);
-   if(totalP+totalT> _maxTotal || GVManager::getNumeric("MAX_ACCIDENT") < GVManager::getNumeric("ACCIDENT_COUNT"))
-      _stopRun = true;
   }else
   {
     cerr << "no detector file" <<endl;
@@ -571,12 +599,31 @@ void ErrorController::writeStatData(int totalP,int totalT,string time){
   ofstream& ofsGD1 = FileManager::getOFStream(file);
   // オープンに失敗した場合は関数内で落ちるはず。
   // 車両台数等の動的グローバル情報の書き出し
+  if(!_initWrite)
+  {
   ofsGD1 << time<<"," 
     << TimeManager::time()/1000 << ","
     <<  totalP<< ","
     <<  totalT<< ","
     << GVManager::getNumeric("ACCIDENT_COUNT") << ","
+      << GVManager::getNumeric("VEHICLE_EXIST_COUNT") 
+      << endl;
+    }else
+    {
+   ofsGD1 << "#rear:" << GVManager::getNumeric("NOLOOK_REAR")
+     << " passing:" << GVManager::getNumeric("ARROGANCE_PASSING")
+     << " lr:" << GVManager::getNumeric("ARROGANCE_LR") 
+     << " shift:" << GVManager::getNumeric("NOLOOK_SHIFT") 
+     << " head:" << GVManager::getNumeric("NOLOOK_HEAD") << "\n"
+     << time<<"," 
+     << TimeManager::time()/1000 << ","
+     <<  totalP<< ","
+    <<  totalT<< ","
+    << GVManager::getNumeric("ACCIDENT_COUNT") << ","
+     << GVManager::getNumeric("VEHICLE_EXIST_COUNT") 
     << endl;
+    _initWrite = false;
+    }
 }
 //====================================================================== 
 bool ErrorController::stopRun(){

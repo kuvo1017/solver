@@ -12,6 +12,7 @@ class Lane;
 
 class ErrorController{ 
   public:
+    ErrorController();
     ///
     ErrorController(Vehicle* vehicle);
     /// 追突エラー状態かどうか↲
@@ -83,7 +84,7 @@ class ErrorController{
     /// 
     static void checkStatData(); 
     /// 
-   static void writeStatData(int totalP,int totalT,string time);
+  static void writeStatData(int totalP,int totalT,string time);
     ///
     static void endRun();
    protected: 
@@ -146,12 +147,17 @@ class ErrorController{
     double _objectPoint();
     /// エラーの種類
     string _type;
+    /// statファイルへの書き込みが初回か
+    static bool _initWrite;
     ///
     static int _stopNAccident;
     ///
     static int _maxTotal;
     /// シミュレーションを終わらせるか
     static bool _stopRun;
+     /// シミュレーションを終わらせるか
+    static time_t  _startTime;
+ 
 }; 
 #endif //__ERRORCONTROLLER_H_
 

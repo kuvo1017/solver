@@ -555,6 +555,8 @@ void BarrierDrawer::draw(const Intersection& inter) const
       }
     }
   }
+  GLColor::setBarrier();
+
 }
 
 //######################################################################
@@ -884,4 +886,53 @@ void VehicleDrawer::drawSimple(const Vehicle& vehicle,
     GLColor::setVehicleId();
     AutoGL_DrawString(x, y, z+5, vehicle.id().c_str());
   }
+} 
+
+//######################################################################
+AccidentDrawer& AccidentDrawer::instance()
+{
+  static AccidentDrawer instance;
+  return instance;
+}
+//----------------------------------------------------------------------
+void AccidentDrawer::draw(double x0,double y0,int type) const
+{
+  double r,g,b;
+  switch(type)
+  {
+    case 1:
+    r = 0;
+    g = 153;
+    b = 0;
+    break;
+    case 2:
+    r = 255;
+    g = 0;
+    b = 102;
+    break;
+    case 3:
+    r = 253;
+    g = 153;
+    b = 0;
+    break;
+    case 4:
+    r = 0;
+    g = 0;
+    b = 255;
+    break;
+     case 5:
+    r = 153;
+    g = 0;
+    b = 0;
+    break;
+    default:
+    break;
+  }
+ 
+  if(type != 0)
+  {
+  AutoGL_SetColor(r,g,b);
+  AutoGL_DrawCircle3D(x0,y0,10,
+      0, 0, 1, 12, 3);
+      }
 }

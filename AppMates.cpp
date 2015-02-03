@@ -151,8 +151,11 @@ struct option AppMates::longOptions[] =
 //======================================================================
 void AppMates::parseArgument(int argc, char** argv)
 {
- std::string str;
+  std::string str;
   int opt;
+  std::string paramName =  GVManager::getString("PARAM_NAME"); 
+  int small_volume;
+  int large_volume; 
 #ifdef USE_MINGW
   while ((opt = getopt(argc, argv,
 	  AppMates::shortOptions.c_str())) != -1)
@@ -162,7 +165,7 @@ void AppMates::parseArgument(int argc, char** argv)
 	    AppMates::longOptions,
 	    &AppMates::optionIndex)) != -1)
 #endif //USE_MINGW
-    {
+    {    
       switch (opt)
       {
       case 'H':
@@ -171,13 +174,22 @@ void AppMates::parseArgument(int argc, char** argv)
 	break;
       case 'D':
       case 'd': // データディレクトリを指定する
-	_initDataPath(optarg);
-        //double rate = (double) *optarg;
-	/*
+#ifdef ERROR_PARAM
 	str = optarg;
-	cout << "optarg is " << std::stof(str) <<endl;
-	GVManager::setNewNumeric("ARROGANCE_LR",(double) std::stof(str));  
-	*/
+	GVManager::resetNumeric(paramName,(double) std::stof(str));  
+	GVManager::resetString("PARAM_NAME", paramName + "_"+ str);
+#elif defined TRAFIC_VOLUME_PARAM
+	str = optarg;
+	small_volume = (int) std::stoi(str);
+	large_volume = small_volume * 0.3;
+	cout << "small!!!!!!" << small_volume <<endl;
+	GVManager::resetNumeric("SMALL_TRAFFIC_VOLUME",small_volume);  
+	GVManager::resetNumeric("LARGE_TRAFFIC_VOLUME",large_volume); 
+	GVManager::resetString("PARAM_NAME", paramName + "_"+ str);
+ #else
+ 	str = optarg;
+	cout << "damedesu" << endl;
+#endif
 	break;
       case 'R':
       case 'r': // 乱数の種を指定する
@@ -190,10 +202,10 @@ void AppMates::parseArgument(int argc, char** argv)
 	GVManager::resetFlag("FLAG_VERBOSE", false);
 	break;
       case 'a': // 情報表示をoffに
- 	cout << "optarg is " << optarg <<endl;
+	cout << "optarg is " << optarg <<endl;
 	GVManager::setNewNumeric("ARROGANCE_LR",(double) *optarg); 
 	break;
- 
+
 #ifndef USE_MINGW
       case 30:  // 入力をoffに
 	GVManager::resetFlag("FLAG_INPUT_MAP", false);
@@ -214,7 +226,7 @@ void AppMates::parseArgument(int argc, char** argv)
 	break;
       case 50:
 	GVManager::setNewFlag("FLAG_AUTO_START", true);
-       break; 
+	break; 
 #endif //USE_MINGW
       default:
 	break;

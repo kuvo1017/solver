@@ -134,22 +134,28 @@ bool RoadMap::checkIntersectionLane()
 //====================================================================== 
 void RoadMap::setBarriers(){
   ITRMAPI iti = _intersections.begin();
+    int count = 0;
   while(iti!=_intersections.end())
   {
     Intersection* is = dynamic_cast<Intersection*>((*iti).second);
-    is->setBarrier();
-    std::vector<Barrier*> barriers = is->barriers();
-    for(int i=0;i<barriers.size();i++)
+    if(!is->hasSignal())
     {
-      Barrier* barrier = barriers[i];
-      string id = barrier->id();
-      //cout << "barrier id is "<< id <<endl;
-      ITRMAPB itb = _barriers.find(id);
-      if (itb == _barriers.end())
+      count++;
+      cout << "!!count:" << count<<endl; 
+      is->setBarrier();
+      std::vector<Barrier*> barriers = is->barriers();
+      for(int i=0;i<barriers.size();i++)
       {
-      //cout << "kokohadonai2" <<endl; 
-	_barriers[id] = barrier;
-      } 
+	Barrier* barrier = barriers[i];
+	string id = barrier->id();
+	//cout << "barrier id is "<< id <<endl;
+	ITRMAPB itb = _barriers.find(id);
+	if (itb == _barriers.end())
+	{
+	  //cout << "kokohadonai2" <<endl; 
+	  _barriers[id] = barrier;
+	} 
+      }
     }
     iti++;
   }

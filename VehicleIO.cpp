@@ -53,7 +53,7 @@ VehicleIO::VehicleIO()
 	GVManager::getNumeric("OUTPUT_VEHICLE_EXTENSION"));
 
   _attributeOutFileName = resultDir+attributeFile;
-  _tripOutFileName  = resultDir+tripFile;
+  _tripOutFileName  = tripFile;
 
   // 以前の結果を消去する
   _attributeOut.open(_attributeOutFileName.c_str(), ios::trunc);
@@ -328,7 +328,11 @@ bool VehicleIO::writeVehicleDistanceData(Vehicle* vehicle)
   {
     _tripOut << vehicle->id() << ","
       << vehicle->tripLength() << ","
-      << (TimeManager::time() - vehicle->startTime())
+      << (TimeManager::time() - vehicle->startTime()) << "," 
+#ifdef OACIS
+      << vehicle->numIntersections() << ","  
+      << vehicle->numNSIntersections() 
+#endif
       << endl;
 
     _tripOut.close();
@@ -373,7 +377,7 @@ bool VehicleIO::writeVehicleErrorData(ulint time, Vehicle* vehicle) {
       vehicle->id() << ","<<
       vehicle->x() << ","<<
       vehicle->y() << ","<<
-      vehicle->type() << endl;
+      vehicle->errorController()->type() << endl;
   return result;
 }
 

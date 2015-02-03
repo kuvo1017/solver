@@ -34,9 +34,9 @@ Vehicle::Vehicle():_id()
   _bodyWidth  = 1.830;
   _bodyDiagnoalXY = sqrt(_bodyLength * _bodyLength + _bodyWidth * _bodyWidth);
   _bodyHeight = 1.315;
-  _bodyColorR = 1.0;
+  _bodyColorR = 0.0;
   _bodyColorG = 0.0;
-  _bodyColorB = 0.0;
+  _bodyColorB = 1.0;
 
   _roadMap      = NULL;
   _intersection = NULL;
@@ -50,7 +50,9 @@ Vehicle::Vehicle():_id()
   _oldLength   = -10;
   _totalLength = 0;
   _tripLength  = 0;
-  _error       = 0;
+  _numIntersections = 0;
+  _numNSIntersections = 0;
+   _error       = 0;
   _velocity      = 0;
   _velocityHistory.clear();
   _errorVelocity = 0;
@@ -210,6 +212,16 @@ double Vehicle::tripLength() const
   return _tripLength;
 }
 
+//======================================================================
+int Vehicle::numIntersections() const
+{
+  return _numIntersections;
+}
+//======================================================================
+int Vehicle::numNSIntersections() const
+{
+  return _numNSIntersections;
+}
 //======================================================================
 double Vehicle::x() const
 {

@@ -230,5 +230,32 @@ void AutoGL_DrawBackground2D()
                           RightBottomX, LeftTopY, -10);
 }
 
-
+/*======================================================================*/
+void AutoGL_DrawCircle2D
+(double x0, double y0, double radius)
+{
+  int nDivide = 8;
+  double point[nDivide][2]; 
+  int i;
+  for(i=0;i<nDivide;i++)
+  {
+    point[i][0] = radius * cos(2*M_PI/nDivide * (double) i);
+    point[i][1] = radius * sin(2*M_PI/nDivide * (double) i);
+  }
+  
+  for(i=0;i<nDivide;i++)
+  {
+    if(i != nDivide-1)
+    {
+      AutoGL_DrawTriangle(x0,y0,0,
+          point[i][0],point[i][1],0,
+          point[i+1][0],point[i+1][1],0);
+    }else
+    {
+      AutoGL_DrawTriangle(x0,y0,0,
+          point[i][0],point[i][1],0,
+          point[0][0],point[0][1],0);
+    }
+  }
+}
 

@@ -63,6 +63,7 @@ Intersection::Intersection(const std::string& id,
 
   _signal = NULL;
   _hasStructInfo = false;
+  _hasSignal = true;
 }
 
 //======================================================================
@@ -241,7 +242,7 @@ void Intersection::setNext(Intersection* ptInter)
 void Intersection::setBarrier()
 {
   int numNext = _next.size();
-  if(numNext < 2)
+  if(numNext < 3)
   {
     return;
   }
@@ -252,18 +253,21 @@ void Intersection::setBarrier()
     AmuPoint centers[2];
     for(int j=0;j<2;j++){
       if(i+j<numNext)
-	{
-	nexts[j] = nextSection(_next[i+j]);
-	}
+      {
+        nexts[j] = nextSection(_next[i+j]);
+      }
       else
       {
-	nexts[j] = nextSection(_next[0]);
-	}
+        nexts[j] = nextSection(_next[0]);
+      }
       centers[j] = nexts[j]->center();
     }
     AmuVector* vectors[2] = {new AmuVector(_center,centers[0]), new AmuVector(_center,centers[1])}; 
     double angle = vectors[0]->calcAngle(*vectors[1]);
-    if(nexts[0]->id()!=nexts[1]->id() && (angle < 0))
+    if(angle > 0)
+    {
+    }
+    if(nexts[0]->id()!=nexts[1]->id() && (angle < 0)&& (angle > - M_PI *5.0/6.0))
     {
       std::string id = _id+std::to_string(i);
       _barriers.push_back(new Barrier(this,nexts[0],nexts[1],id));
@@ -1169,6 +1173,16 @@ Signal::SignalPermission Intersection::permission(int from,
 }
 
 //======================================================================
+bool Intersection::hasSignal() const
+{
+  return _hasSignal;
+}
+ //======================================================================
+void Intersection::noSignal() 
+{
+  _hasSignal = false;
+}
+ //======================================================================
 std::vector<Barrier*> Intersection::barriers() const
 {
   return _barriers;
@@ -1331,3 +1345,4 @@ void Intersection::printDetail(bool odNode) const
 
   cout << endl;
 }
+

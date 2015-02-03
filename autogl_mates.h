@@ -41,7 +41,10 @@ extern "C"
 
     // 地面を描画する
     void AutoGL_DrawBackground2D();
-
+     
+    // 
+    void AutoGL_DrawCircle2D(double x0,double y0,double radius);
+ 
 #ifdef __cplusplus
 }
 #endif

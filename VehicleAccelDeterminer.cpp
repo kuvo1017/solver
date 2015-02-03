@@ -39,10 +39,10 @@ void Vehicle::determineAcceleration()
     else
     {
       _errorVelocity = 0.0;
+    }
 #else
       _errorVelocity = 0.0;
 #endif
-    }
 
     if (_sleepTime>0)
     {
@@ -128,9 +128,10 @@ void Vehicle::determineAcceleration()
     {
       _velocity = 0.0;
     }
-
+#ifndef ERROR_MODE
     if (_errorController->isAccident())
       _velocity = 0.0;
+#endif
     // _vehicleの保存
     if (GVManager::getFlag("VEHICLE_VELOCITY_HISTORY_RECORD")
 	&& (TimeManager::step() - startStep())
