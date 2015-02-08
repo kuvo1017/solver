@@ -344,40 +344,36 @@ bool VehicleIO::writeVehicleDistanceData(Vehicle* vehicle)
 //======================================================================
 bool VehicleIO::writeVehicleAccidentData(ulint time,Vehicle* vehicle,std::string collidType) {
   bool result = false;
-  // error.txtのオープン
   string file;
   GVManager::getVariable("RESULT_ACCIDENT_FILE", &file);
   int newCount = GVManager::getNumeric("ACCIDENT_COUNT") + 1;
   GVManager::resetNumeric("ACCIDENT_COUNT",newCount);
 
-    ofstream& ofsGD1 = FileManager::getOFStream(file); // オープンに失敗した場合は関数内で落ちるはず。
-    // 車両台数等の動的グローバル情報の書き出し
-    ofsGD1 << time/1000 << ","
-      << newCount << "," <<
-      vehicle->id() << ","<<
-      vehicle->x() << ","<<
-      vehicle->y() << ","<< 
-      vehicle->errorController()->type() << ","<<
-      vehicle->type() <<  ","<<
-      collidType <<endl;
+  ofstream& ofsGD1 = FileManager::getOFStream(file); 
+  ofsGD1 << time/1000 << ","
+    << newCount << "," <<
+    vehicle->id() << ","<<
+    vehicle->x() << ","<<
+    vehicle->y() << ","<< 
+    vehicle->errorController()->errorType() << ","<<
+    vehicle->type() <<  ","<<
+    collidType <<endl;
   return result;
 }
 //======================================================================
 bool VehicleIO::writeVehicleErrorData(ulint time, Vehicle* vehicle) {
   bool result = false;
-  // error.txtのオープン
   string file;
   GVManager::getVariable("RESULT_ERROR_FILE", &file);
   int newCount = GVManager::getNumeric("ERROR_COUNT") + 1; 
   GVManager::resetNumeric("ERROR_COUNT",newCount); 
-    ofstream& ofsGD1 = FileManager::getOFStream(file); // オープンに失敗した場合は関数内で落ちるはず。
-    // 車両台数等の動的グローバル情報の書き出し
-    ofsGD1 <<time/1000 << ","
-      <<newCount << "," << 
-      vehicle->id() << ","<<
-      vehicle->x() << ","<<
-      vehicle->y() << ","<<
-      vehicle->errorController()->type() << endl;
+  ofstream& ofsGD1 = FileManager::getOFStream(file);
+  ofsGD1 <<time/1000 << ","
+    <<newCount << "," << 
+    vehicle->id() << ","<<
+    vehicle->x() << ","<<
+    vehicle->y() << ","<<
+    vehicle->errorController()->errorType() << endl;
   return result;
 }
 

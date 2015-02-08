@@ -12,8 +12,8 @@
 bool CollisionJudge::isCollidInIntersection(Vehicle* v1,Vehicle* v2){
  if(v1->intersection() == NULL 
       || v2->intersection() == NULL
-      || (v1->errorController()->type() == "not_error"
-      && v2->errorController()->type() == "not_error")
+      || (v1->errorController()->errorType() == "NOT_ERROR"
+      && v2->errorController()->errorType() == "NOT_ERROR")
     )
   {
     return false;
@@ -52,8 +52,8 @@ bool CollisionJudge::isCollidInIntersection(Vehicle* v1,Vehicle* v2){
       &&_checkCross(toEdge[1][0],toEdge[1][1],toEdge[0][1],dist[3])
     )
   {
-    string type1 = v1 ->errorController()->type();
-    string type2 = v2 ->errorController()->type();
+    string type1 = v1 ->errorController()->errorType();
+    string type2 = v2 ->errorController()->errorType();
     v1->errorController()->accidentOccur("intersection_"+type1);
     v2->errorController()->accidentOccur("intersection_"+type2);
     return true;
@@ -161,8 +161,8 @@ bool CollisionJudge::isFrontCollid(Vehicle* v1,Vehicle* v2){
   double distance = sqrt(x*x + y*y);
   if(distance + 0.5< (v1->bodyLength() + v2->bodyLength())*0.5)
   {                 
-  string type1 = v1 ->errorController()->type();
-    string type2 = v2 ->errorController()->type();
+  string type1 = v1 ->errorController()->errorType();
+    string type2 = v2 ->errorController()->errorType();
     v1->errorController()->accidentOccur("front_"+type1);
     v2->errorController()->accidentOccur("front_"+type2);
    return true;
@@ -200,8 +200,8 @@ void CollisionJudge::isSideCollid(Vehicle* v1){
           {
             v1->laneShifter().endShift();
 	  }                
-	  string type1 = v1 ->errorController()->type();
-	  string type2 = v2 ->errorController()->type();
+	  string type1 = v1 ->errorController()->errorType();
+	  string type2 = v2 ->errorController()->errorType();
 	  v1->errorController()->accidentOccur("side_"+type1);
 	  v2->errorController()->accidentOccur("side_"+type2);
 	}
@@ -227,8 +227,8 @@ bool CollisionJudge::isHeadCollid(Vehicle* v1,Vehicle* v2){
       double sideDistance = fabs(sideDirection.calcScalar(*aToB));
       if(sideDistance < (v1->bodyWidth() + v2->bodyWidth())*0.5)
       {        
-	string type1 = v1 ->errorController()->type();
-	string type2 = v2 ->errorController()->type();
+	string type1 = v1 ->errorController()->errorType();
+	string type2 = v2 ->errorController()->errorType();
 	v1->errorController()->accidentOccur("head_"+type1);
 	v2->errorController()->accidentOccur("head_"+type2);
 	return true;

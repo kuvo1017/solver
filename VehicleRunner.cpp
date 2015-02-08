@@ -207,7 +207,7 @@ void Vehicle::_runIntersection2Section()
       reroute(_section, _intersection);
     }
   }
-
+                                                                                     
   _prevIntersection = _intersection;
   _intersection=NULL;
   _lane = _nextLane;
@@ -215,17 +215,9 @@ void Vehicle::_runIntersection2Section()
   _localRouter.localReroute(_section, _lane, _length);
   _decideNextLane(_section, _lane);
 #ifdef ERROR_MODE
-  // 出合い頭における判断エラー
-  //（見通しがわるくても次の交差点に進むか)
-  // を計算
+  // 出合い頭と右左折のエラー計算
   Intersection* next = _section->intersection(true);
-  if( next != NULL)
-  {
-    if( next->barriers().size() > 0)
-    {
-      _errorController->passingError();
-    }
-  }
+  _errorController->errorInIntersection(next);
 #endif
 #ifdef OACIS
   // 今まで通過した交差点の数をインクリメント

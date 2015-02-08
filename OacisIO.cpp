@@ -34,11 +34,11 @@ std::string OacisIO::inputParams(){
   picojson::value v; 
   picojson::parse(v, sstream);
   picojson::object& all = v.get<picojson::object>();
-  GVManager::setNewNumeric("NOLOOK_REAR",all["nolook_rear"].get<double>());
-  GVManager::setNewNumeric("ARROGANCE_PASSING",all["arrogance_passing"].get<double>());
-  GVManager::setNewNumeric("ARROGANCE_LR",all["arrogance_LR"].get<double>());
-  GVManager::setNewNumeric("NOLOOK_SHIFT",all["nolook_shift"].get<double>());
-  GVManager::setNewNumeric("NOLOOK_HEAD",all["nolook_head"].get<double>());
+  GVManager::setNewNumeric("REAR_ERROR_RATE",all["rear_error_rate"].get<double>());
+  GVManager::setNewNumeric("PASSING_ERROR_RATE",all["passing_error_rate"].get<double>());
+  GVManager::setNewNumeric("LR_ERROR_RATE",all["lr_error_rate"].get<double>());
+  GVManager::setNewNumeric("SHIFT_ERROR_RATE",all["shift_error_rate"].get<double>());
+  GVManager::setNewNumeric("HEAD_ERROR_RATE",all["head_error_rate"].get<double>());
   double volume = all["small_traffic_volume"].get<double>();
   GVManager::setNewNumeric("SMALL_TRAFFIC_VOLUME",volume);
   GVManager::setNewNumeric("LARGE_TRAFFIC_VOLUME",volume * 0.3);

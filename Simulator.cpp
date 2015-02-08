@@ -472,11 +472,6 @@ void Simulator::deleteAccidentVehicle(){
       ObjManager::deleteVehicle(vehicles->at(i),true);
     }
     else
-    {      
-
-      vehicles->at(i)->errorController()->errorCheck();
-
-    }
     it++;
   }
 }

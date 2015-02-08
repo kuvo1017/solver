@@ -23,9 +23,9 @@ bool ErrorController::_initWrite = true;
 time_t ErrorController::_startTime = time(NULL);
  
 using namespace std;
+
 ErrorController::ErrorController(Vehicle* vehicle){
   _vehicle = vehicle;
-  _isWall = false;
   _rearErrorVelocity = 0;
   _rearErrorTime = 0;
   _isRearError = false;
@@ -34,11 +34,11 @@ ErrorController::ErrorController(Vehicle* vehicle){
   _rearErrorTime = 0;
   _headErrorTime=0;
   _isPassingError = false;
+  _isArroganceLR = false;
   _isLRError = false;
   _isInIntersection = false;
   _isShiftError = false;
   _isHeadError = false;
-  _isShiftEnd = false;
   _velocityDifference = 0;
   _rearId = "";
   _accidentOccur = false;
@@ -47,24 +47,61 @@ ErrorController::ErrorController(Vehicle* vehicle){
   _isSlow=false;
   _shiftTime=0;
   _accidentTime = 0;
-  _type = "not_error";
+  _errorType = "NOT_ERROR";
   _errorVelocity = 0.0;
   std::vector<Vehicle*> _invisibleVehicles;
-  double r = Random::uniform();
-  if(GVManager::getNumeric("ARROGANCE_LR") != 0)
+
+}
+//======================================================================
+void ErrorController::checkError()
+{
+  int nCand = _candidates.size();
+  if(nCand>1)
   {
-    if(r < GVManager::getNumeric("ARROGANCE_LR"))
-      _isArrogance =true;
-    else
-      _isArrogance = false;
-  } 
+    double rand = Random::uniform()*nCand;
+    for(int i=0;i<nCand;i++)
+    {
+      if(i <= rand && i+1 > rand)
+      {
+	if(_candidates[i] == "REAR")
+	{
+	  _isRearError = true;
+	  _errorType = "REAR";
+	}else if(_candidates[i] == "SHIFT")
+	{
+	  _isShiftError = true;
+	  _errorType = "SHIFT";
+	}else if(_candidates[i] == "HEAD")
+	{
+	  _isHeadError = true;
+	  _errorType = "HEAD";
+	}
+      }
+    }
+    _errorOccur();
+  }else if(nCand == 1)
+  {
+    if(_candidates[0] == "REAR"){
+      _isRearError = true;
+      _errorType = "REAR";
+    }else if(_candidates[0] == "SHIFT")
+    {
+      _isShiftError = true;
+      _errorType = "SHIFT";
+    }else if(_candidates[0] == "HEAD")
+    {
+      _isHeadError = true;
+      _errorType = "HEAD";
+    }
+    _errorOccur();
+  }
 }
 //======================================================================
 VirtualLeader* ErrorController::rearError(VirtualLeader* resultLeader){
  RoadOccupant* front = _vehicle->lane()->frontAgent(dynamic_cast<RoadOccupant*>(_vehicle));
   if (front){
     Vehicle* frontVehicle = dynamic_cast<Vehicle *>(front);
-    if(GVManager::getNumeric("NOLOOK_REAR") == 0 || _isAccident)
+    if(GVManager::getNumeric("REAR_ERROR_RATE") == 0 || _isAccident)
       return resultLeader;
     // 事故が起きているかを判断
     if(_isRearError)
@@ -75,9 +112,8 @@ VirtualLeader* ErrorController::rearError(VirtualLeader* resultLeader){
     //追突事故の再現用
     //rearErrorをonにする
     if(!_isRearError&&(_vehicle->velocity() > 5.0/60.0/60.0)){
-      if(_objectPoint() < GVManager::getNumeric("NOLOOK_REAR")){
-        errorOccur("rear");
-        _isRearError=true;
+      if(_objectPoint() < GVManager::getNumeric("REAR_ERROR_RATE")){
+        _candidates.push_back("REAR");
       }
     }
     if(_isRearError){
@@ -106,14 +142,51 @@ VirtualLeader* ErrorController::rearError(VirtualLeader* resultLeader){
 }
 
 //======================================================================
-void ErrorController::passingError()
+void ErrorController::errorInIntersection(Intersection* next)
 {
+  /**
+  * 最初に2つのエラーが発生するかどうかを別々に計算する
+  * （エラー率による影響を正確に反映させるため）
+  * 仮に両方のエラーが同時に発生したときにはどちらか片方を選ぶ
+  */
   _isPassingError = false;
-  double x = Random::uniform();
-  if(x < GVManager::getNumeric("ARROGANCE_PASSING"))
+  _isLRError = false;
+  /**
+   * 出会い頭のエラーが発生するか計算
+   * 次に進入する交差点に障害物がない場合は計算しない。
+   * より計算負荷を減らすには
+   * 交差点に遮蔽物があるかを問い合わせるのではなく、
+   * 自車が見通しの悪い単ろにいるかを問い合わせるべき
+   */
+  if(next->barriers().size() != 0)
   {
-    _isPassingError = true;
-    errorOccur("passing");
+    if(GVManager::getNumeric("LR_ERROR_RATE") != 0)
+    {
+      if( Random::uniform() < GVManager::getNumeric("PASSING_ERROR_RATE"))
+      { 
+	_isPassingError = true; 
+      }                  
+    }
+  }
+  // 右左折エラーにおける傲慢なエージェントかどうかを確率的に計算
+  if(GVManager::getNumeric("LR_ERROR_RATE") != 0)
+  {
+    if(Random::uniform() < GVManager::getNumeric("LR_ERROR_RATE"))
+    {
+      _isArroganceLR = true;
+    }
+  }       
+  // 出会い頭と右左折の両方が発生している時にどちらか一方のみを選択
+  if(_isPassingError ||_isArroganceLR )
+  {
+    if(Random::uniform() > 0.5)
+    {
+      _isPassingError = false;
+    }else
+    {
+      _isArroganceLR = false;
+      _errorOccur();  
+    }
   }
 }
 
@@ -125,61 +198,12 @@ void ErrorController::setInvisibleVehicle(Vehicle* vehicle)
 }
 
 //======================================================================
-/*
-void ErrorController::LRError(double thisTti,double thatTtp) {
-  if(!_isArrogance)
-  {
-    return;
-  }else if(_isLRError)
-  {
-    return;
-  }
-  // 現在位置から交差点を通過仕切るまでの時間[秒]
-  double thisTtp;
-  // [msec]->[sec]
-  thatTtp = thatTtp/1000;
-  // 現在いるレーンの次のレーン、つまり交差点内のレーン
-  Lane* thisNextLane = _vehicle->localRoute().next(_vehicle->lane());
-  if(thisNextLane!=NULL)
-    thisTtp = thisTti + thisNextLane->length()/GVManager::getNumeric("VELOCITY_AT_TURNING_LEFT")*3.6;
-  // 誤差時間
-  double mistakeTime = 4.0;
-  if(thisTtp<thatTtp+mistakeTime)
-  {
-
-    RelativeDirection turning = _vehicle->localRoute().turning(); 
-    //    std::cout << "thisTtp: "<< thisTtp << "[s] thatTtp: "<< thatTtp <<"[s]"<< " Turning is "<<turning <<endl;
-    switch(turning){
-    case 2:
-      errorOccur("RightError");
-      break;
-    case 4:
-      errorOccur("StraightError");
-      break;
-    case 8:
-      errorOccur("LeftError");
-      break;
-    default:
-      break;
-    }
-    _isLRError = true;
-  }
-  else
-  {
-    _isLRError = false;
-  }
-}
-*/
-
-//======================================================================
 void ErrorController::LRError(Vehicle* thatV,double thisTti,double thatTti) {
-  if(!_isArrogance)
+  if(!_isArroganceLR)
   {
     return;
   }
-  /*  if(!_isArrogance||_isLRError)
-      return;        */ 
-  // 現在位置から交差点を通過仕切るまでの時間[秒]
+ // 現在位置から交差点を通過仕切るまでの時間[秒]
   double thisTtp,thatTtp;
   // 現在いるレーンの次のレーン、つまり交差点内のレーン
   Lane* thisNextLane = _vehicle->localRoute().next(_vehicle->lane());
@@ -192,9 +216,8 @@ void ErrorController::LRError(Vehicle* thatV,double thisTti,double thatTti) {
   double mistakeTime = 3.0;
   if(thisTtp<thatTtp+mistakeTime)
   {
-
+    /*
     RelativeDirection turning = _vehicle->localRoute().turning(); 
-    //    std::cout << "thisTtp: "<< thisTtp << "[s] thatTtp: "<< thatTtp <<"[s]"<< " Turning is "<<turning <<endl;
     switch(turning){
     case 2:
       errorOccur("RightError");
@@ -208,13 +231,16 @@ void ErrorController::LRError(Vehicle* thatV,double thisTti,double thatTti) {
     default:
       break;
     }
+    */
     _isLRError = true;
+    _errorOccur();
   }
   else
   {
     _isLRError = false;
   }
 }
+//======================================================================
 //======================================================================
 bool ErrorController::headError(){
   //多くの対称を認知したときに先行者の速度等を認知するかわりに予測する処理
@@ -226,18 +252,16 @@ bool ErrorController::headError(){
     return true;
   }
   if(
-       GVManager::getNumeric("NOLOOK_HEAD") == 0
+       GVManager::getNumeric("HEAD_ERROR_RATE") == 0
       || (_onComingLane()==nullptr)
       || _isAccident
       || _vehicle->velocity() < 30.0/3600.0 )
   {
     return false;
   }
-  if(_objectPoint()<GVManager::getNumeric("NOLOOK_HEAD")){
-    errorOccur("head");
-    _isHeadError=true;
+  if(_objectPoint()<GVManager::getNumeric("HEAD_ERROR_RATE")){
+    _candidates.push_back("HEAD");
   }
-  return _isHeadError;
 }
 //======================================================================
 double ErrorController::errorVelocity() 
@@ -348,10 +372,9 @@ bool ErrorController::shiftError()
   {
     return false;
   }
-  if(_objectPoint() < GVManager::getNumeric("NOLOOK_SHIFT"))
+  if(_objectPoint() < GVManager::getNumeric("SHIFT_ERROR_RATE"))
   {
-    errorOccur("shift");
-    _isShiftError = true;
+    _candidates.push_back("SHIFT");
     return true;
   }else{
     return false;
@@ -383,18 +406,7 @@ bool ErrorController::isShiftError() const{
 bool ErrorController::isHeadError() const{
   return _isHeadError;
 }
-//======================================================================
-bool ErrorController::isShiftEnd() const{
-  return _isShiftEnd;
-}
-/*
-//======================================================================
-void ErrorController::shifEnd() const{
 
-_isShiftEnd=true;
-}
- */
-//======================================================================
 bool ErrorController::isPassingError() const{
   return _isPassingError;
 }
@@ -415,8 +427,20 @@ int ErrorController::accidentTime() const{
   return _accidentTime;
 }
 //======================================================================
-string ErrorController::type() const{
-  return _type;
+string ErrorController::errorType() const{
+  if(_vehicle->section() == NULL)
+  {
+    return _errorType;
+  }else{
+    if(_isPassingError)
+    {
+      return "PASSING";
+    }else if(_isLRError)
+    {
+      return "LR";
+    }
+  }
+  return "NOT_ERROR";
 }
 //======================================================================
 void ErrorController::accidentOccur(std::string collidType){
@@ -425,25 +449,15 @@ void ErrorController::accidentOccur(std::string collidType){
   cout << "Accident occured: car id is " <<  _vehicle->id() << endl;
   cout << "=================================" <<endl;
   _isAccident = true;
-  _isRearError=false;
-  _isHeadError=false;
-  _isPassingError = false;
   _vehicle->setBodyColor(0,0,0); 
   VehicleIO::instance().writeVehicleAccidentData(TimeManager::time(),_vehicle,collidType);
 }
 //======================================================================
-void ErrorController::errorOccur(string type){
-  _type = type;
-/*
-  cout << "=================================" <<endl;
-  cout << "Error occured: car id is " <<  _vehicle->id() << endl;
-  cout << "error type:"<<type <<endl; 
-  cout << "=================================" <<endl;
-  */
+void ErrorController::_errorOccur(){
   _vehicle->setBodyColor(1.0,0.0,0);
   VehicleIO::instance().writeVehicleErrorData(TimeManager::time(),_vehicle);
 }
-//======================================================================
+ //======================================================================
 void ErrorController::resetInvisibleVehicles(){
   _invisibleVehicles.clear();
 }
@@ -467,31 +481,9 @@ void ErrorController::_errorEnd(){
   double r,g,b;
   vfa->getBodyColor(&r, &g, &b);
   _vehicle->setBodyColor(r,g,b);
-  _type = "not_error";
+  _errorType = "NOT_ERROR";
 }
 
-//======================================================================
-void ErrorController::recogWall(){
-  _isWall = true;
-}
-//====================================================================== 
-void ErrorController::errorCheck(){
-  if(_isLRError)
-  {
-   
-    if(_vehicle->intersection() != NULL && !_isInIntersection)
-    {
-      _isInIntersection = true;
-    }
-
-    if(_vehicle->section() != NULL && _isInIntersection)
-    {
-      _isLRError = false;
-      _errorEnd();
-      _isInIntersection = false;
-    }
-  }
-}
 
 //====================================================================== 
 bool ErrorController::accidentCheck(){
@@ -570,7 +562,7 @@ void ErrorController::checkStatData(){
 
     cout << "===============================\n"
       << "statitic accident data\n" 
-      << "エラー率：" << GVManager::getNumeric("ARROGANCE_LR") << "\n"  
+      << "エラー率：" << GVManager::getNumeric("LR_ERROR_RATE") << "\n"  
       << "計算時間:" <<time <<"\n"
     << "発生小型車両台数:" << totalP<< "\n"
       << "発生大型車両台数:" << totalT<< "\n" 
@@ -610,11 +602,11 @@ void ErrorController::writeStatData(int totalP,int totalT,string time){
       << endl;
     }else
     {
-   ofsGD1 << "#rear:" << GVManager::getNumeric("NOLOOK_REAR")
-     << " passing:" << GVManager::getNumeric("ARROGANCE_PASSING")
-     << " lr:" << GVManager::getNumeric("ARROGANCE_LR") 
-     << " shift:" << GVManager::getNumeric("NOLOOK_SHIFT") 
-     << " head:" << GVManager::getNumeric("NOLOOK_HEAD") << "\n"
+   ofsGD1 << "#rear:" << GVManager::getNumeric("REAR_ERROR_RATE")
+     << " passing:" << GVManager::getNumeric("PASSING_ERROR_RATE")
+     << " lr:" << GVManager::getNumeric("LR_ERROR_RATE") 
+     << " shift:" << GVManager::getNumeric("SHIFT_ERROR_RATE") 
+     << " head:" << GVManager::getNumeric("HEAD_ERROR_RATE") << "\n"
      << time<<"," 
      << TimeManager::time()/1000 << ","
      <<  totalP<< ","

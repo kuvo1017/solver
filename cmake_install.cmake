@@ -1,4 +1,4 @@
-# Install script for directory: /calc/medusa06/kubo/advmates/trunk/solver
+# Install script for directory: /home/kubo/advmates/trunk/solver
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -38,7 +38,7 @@ ELSE(CMAKE_INSTALL_COMPONENT)
   SET(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
 ENDIF(CMAKE_INSTALL_COMPONENT)
 
-FILE(WRITE "/calc/medusa06/kubo/advmates/trunk/solver/${CMAKE_INSTALL_MANIFEST}" "")
+FILE(WRITE "/home/kubo/advmates/trunk/solver/${CMAKE_INSTALL_MANIFEST}" "")
 FOREACH(file ${CMAKE_INSTALL_MANIFEST_FILES})
-  FILE(APPEND "/calc/medusa06/kubo/advmates/trunk/solver/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
+  FILE(APPEND "/home/kubo/advmates/trunk/solver/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
 ENDFOREACH(file)

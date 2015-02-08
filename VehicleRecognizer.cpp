@@ -26,6 +26,9 @@ void Vehicle::recognize()
   {
     return;
   }
+  // 前のタイムステップでエラーが
+  // 発生していたらエラー発生時の運転行動を始める
+  _errorController->checkError();
 #endif
 
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1001,7 +1004,7 @@ bool Vehicle::_isStoppedByMinHeadway(Intersection* nextInter,
 //======================================================================
 bool Vehicle::_isStoppedByBadView()
 {                          
-  if(GVManager::getNumeric("ARROGANCE_PASSING") == 0)
+  if(GVManager::getNumeric("PASSING_ERROR_RATE") == 0)
   {
     return false;
   }
