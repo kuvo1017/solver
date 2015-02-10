@@ -17,7 +17,6 @@
 #include "VehicleFamilyManager.h"
 
 int ErrorController::_stopNAccident = 100;
-int ErrorController::_maxTotal = 1000*1000*5/4.5;
 bool ErrorController::_stopRun = false;
 bool ErrorController::_initWrite = true;
 time_t ErrorController::_startTime = time(NULL);
@@ -36,15 +35,12 @@ ErrorController::ErrorController(Vehicle* vehicle){
   _isPassingError = false;
   _isArroganceLR = false;
   _isLRError = false;
-  _isInIntersection = false;
   _isShiftError = false;
   _isHeadError = false;
-  _velocityDifference = 0;
   _rearId = "";
   _accidentOccur = false;
   _isAccident = false;
   _accidentTime = 0;
-  _isSlow=false;
   _shiftTime=0;
   _accidentTime = 0;
   _errorType = "NOT_ERROR";
@@ -53,7 +49,7 @@ ErrorController::ErrorController(Vehicle* vehicle){
 
 }
 //======================================================================
-void ErrorController::checkError()
+void ErrorController::chooseError()
 {
   int nCand = _candidates.size();
   if(nCand>1)
@@ -106,10 +102,9 @@ VirtualLeader* ErrorController::rearError(VirtualLeader* resultLeader){
     // 事故が起きているかを判断
     if(_isRearError)
     {
-    CollisionJudge::isFrontCollid(_vehicle,frontVehicle);
+      CollisionJudge::isFrontCollid(_vehicle,frontVehicle);
     }
     //多くの対称を認知したときに先行者の速度等を認知するかわりに予測する処理
-    //追突事故の再現用
     //rearErrorをonにする
     if(!_isRearError&&(_vehicle->velocity() > 5.0/60.0/60.0)){
       if(_objectPoint() < GVManager::getNumeric("REAR_ERROR_RATE")){
@@ -140,55 +135,23 @@ VirtualLeader* ErrorController::rearError(VirtualLeader* resultLeader){
   }
   return resultLeader;
 }
-
 //======================================================================
-void ErrorController::errorInIntersection(Intersection* next)
+double ErrorController::_objectPoint() 
 {
-  /**
-  * 最初に2つのエラーが発生するかどうかを別々に計算する
-  * （エラー率による影響を正確に反映させるため）
-  * 仮に両方のエラーが同時に発生したときにはどちらか片方を選ぶ
-  */
-  _isPassingError = false;
-  _isLRError = false;
-  /**
-   * 出会い頭のエラーが発生するか計算
-   * 次に進入する交差点に障害物がない場合は計算しない。
-   * より計算負荷を減らすには
-   * 交差点に遮蔽物があるかを問い合わせるのではなく、
-   * 自車が見通しの悪い単ろにいるかを問い合わせるべき
-   */
-  if(next->barriers().size() != 0)
-  {
-    if(GVManager::getNumeric("LR_ERROR_RATE") != 0)
-    {
-      if( Random::uniform() < GVManager::getNumeric("PASSING_ERROR_RATE"))
-      { 
-	_isPassingError = true; 
-      }                  
-    }
+  double point = 1;
+  double x = Random::uniform();
+  const std::vector<VirtualLeader *>* leaders = _vehicle->virtualLeaders(); 
+  for(int i=0;i<leaders->size();i++){
+    string type = leaders->at(i)->getType();
+    if(type=="SHIFTFRONT_CAR")
+      point+=5.0;
+    else if(type=="MERGE_CAR")
+      point+=10.0;
+    else if(type=="RED_SIGNAL")
+      point+=1.0;
   }
-  // 右左折エラーにおける傲慢なエージェントかどうかを確率的に計算
-  if(GVManager::getNumeric("LR_ERROR_RATE") != 0)
-  {
-    if(Random::uniform() < GVManager::getNumeric("LR_ERROR_RATE"))
-    {
-      _isArroganceLR = true;
-    }
-  }       
-  // 出会い頭と右左折の両方が発生している時にどちらか一方のみを選択
-  if(_isPassingError ||_isArroganceLR )
-  {
-    if(Random::uniform() > 0.5)
-    {
-      _isPassingError = false;
-    }else
-    {
-      _isArroganceLR = false;
-      _errorOccur();  
-    }
-  }
-}
+  return point*x;
+} 
 
 //======================================================================
 void ErrorController::setInvisibleVehicle(Vehicle* vehicle)
@@ -241,25 +204,25 @@ void ErrorController::LRError(Vehicle* thatV,double thisTti,double thatTti) {
   }
 }
 //======================================================================
-//======================================================================
 bool ErrorController::headError(){
-  //多くの対称を認知したときに先行者の速度等を認知するかわりに予測する処理
-  if(_isHeadError)
+ if(_isHeadError)
   {   
     if(_checkHeadAccident()){
       return false;
     }
     return true;
   }
-  if(
-       GVManager::getNumeric("HEAD_ERROR_RATE") == 0
+ // 速度があまりに小さい時にはハンドルを
+ // 切り間違えても対向車線に進入することはないので
+ if(
+      GVManager::getNumeric("HEAD_ERROR_RATE") == 0
       || (_onComingLane()==nullptr)
       || _isAccident
-      || _vehicle->velocity() < 30.0/3600.0 )
+      || _vehicle->velocity() < 20.0/3600.0 )
   {
     return false;
   }
-  if(_objectPoint()<GVManager::getNumeric("HEAD_ERROR_RATE")){
+  if(_objectPoint() < GVManager::getNumeric("HEAD_ERROR_RATE")){
     _candidates.push_back("HEAD");
   }
 }
@@ -348,23 +311,7 @@ Lane* ErrorController::_onComingLane()
   } 
   return onComingLane;
 }
-//======================================================================
-double ErrorController::_objectPoint() 
-{
-  double point = 1;
-  double x = Random::uniform();
-  const std::vector<VirtualLeader *>* leaders = _vehicle->virtualLeaders(); 
-  for(int i=0;i<leaders->size();i++){
-    string type = leaders->at(i)->getType();
-    if(type=="SHIFTFRONT_CAR")
-      point+=5.0;
-    else if(type=="MERGE_CAR")
-      point+=10.0;
-    else if(type=="RED_SIGNAL")
-      point+=1.0;
-  }
-  return point*x;
-}
+
 //====================================================================== 
 bool ErrorController::shiftError()
 {
@@ -426,6 +373,55 @@ const std::vector<Vehicle*>* ErrorController::invisibleVehicles() const{
 int ErrorController::accidentTime() const{
   return _accidentTime;
 }
+//======================================================================
+void ErrorController::errorInIntersection(Intersection* next)
+{
+  /**
+  * 最初に2つのエラーが発生するかどうかを別々に計算する
+  * （エラー率による影響を正確に反映させるため）
+  * 仮に両方のエラーが同時に発生したときにはどちらか片方を選ぶ
+  */
+  _isPassingError = false;
+  _isLRError = false;
+  /**
+   * 出会い頭のエラーが発生するか計算
+   * 次に進入する交差点に障害物がない場合は計算しない。
+   * より計算負荷を減らすには
+   * 交差点に遮蔽物があるかを問い合わせるのではなく、
+   * 自車が見通しの悪い単ろにいるかを問い合わせるべき
+   */
+  if(next->barriers().size() != 0)
+  {
+    if(GVManager::getNumeric("LR_ERROR_RATE") != 0)
+    {
+      if( Random::uniform() < GVManager::getNumeric("PASSING_ERROR_RATE"))
+      { 
+	_isPassingError = true; 
+      }                  
+    }
+  }
+  // 右左折エラーにおける傲慢なエージェントかどうかを確率的に計算
+  if(GVManager::getNumeric("LR_ERROR_RATE") != 0)
+  {
+    if(Random::uniform() < GVManager::getNumeric("LR_ERROR_RATE"))
+    {
+      _isArroganceLR = true;
+    }
+  }       
+  // 出会い頭と右左折の両方が発生している時にどちらか一方のみを選択
+  if(_isPassingError ||_isArroganceLR )
+  {
+    if(Random::uniform() > 0.5)
+    {
+      _isPassingError = false;
+    }else
+    {
+      _isArroganceLR = false;
+      _errorOccur();  
+    }
+  }
+}
+
 //======================================================================
 string ErrorController::errorType() const{
   if(_vehicle->section() == NULL)
@@ -498,43 +494,6 @@ bool ErrorController::accidentCheck(){
     return true;
   }
 }
-//======================================================================   
-std::string ErrorController::setDataPath(){
-  // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
-  //ファイルパスの取得
-   return "../examples/Data1/"; 
-  return "../simulations/LRError/";
-  //return "../simulations/headError/";
-  const char* path = "./_input.json";
-
-  // ファイルオープン
-  ifstream inputStream;
-  string thisLine;
-  inputStream.open(path);
-  if (!inputStream.is_open())
-  {
-    cerr << "cannot open file!" << endl;
-    exit(1);
-  }
-
-  stringstream sstream;
-  while (getline(inputStream, thisLine))
-  {
-    sstream << thisLine;
-  }
-  inputStream.close();
-  cout << "finish opening file!" << endl;
-
-  // CCLOG("sstream:%s", sstream.str().c_str());
-
-  // JSONのパース
-  picojson::value v; 
-  picojson::parse(v, sstream);
-  picojson::object& all = v.get<picojson::object>(); 
-  std::string dataPath = (std::string) all["data_path"].get<std::string>().c_str(); 
-  cout << dataPath <<endl;
-  return dataPath;
-}
 
 //======================================================================    
 void ErrorController::checkStatData(){
@@ -546,10 +505,7 @@ void ErrorController::checkStatData(){
     TimeManager::stopClock("ERROR_MODE");
     string  time = std::to_string(TimeManager::getTime("ERROR_MODE")); 
     TimeManager::startClock("ERROR_MODE");
-/*     time_t now = time(NULL) - _startTime;
-    struct tm *pnow = localtime(&now);
-    string time = to_string(pnow->tm_hour) + ":"+ to_string(pnow->tm_min) + ":"+ to_string(pnow->tm_sec);  
-    */
+
     
     for(int i=0;i<detectors->size();i++)
     {
@@ -562,21 +518,18 @@ void ErrorController::checkStatData(){
 
     cout << "===============================\n"
       << "statitic accident data\n" 
-      << "エラー率：" << GVManager::getNumeric("LR_ERROR_RATE") << "\n"  
       << "計算時間:" <<time <<"\n"
-    << "発生小型車両台数:" << totalP<< "\n"
+      << "発生小型車両台数:" << totalP<< "\n"
       << "発生大型車両台数:" << totalT<< "\n" 
       << "発生事故数:" << GVManager::getNumeric("ACCIDENT_COUNT") << "\n" 
       << "==============================="<<endl; 
-   if(totalP+totalT> _maxTotal || GVManager::getNumeric("MAX_ACCIDENT") < GVManager::getNumeric("ACCIDENT_COUNT")
-   || TimeManager::time() >= GVManager::getNumeric("MAX_TIME"))
-      {
-	_stopRun = true;
-	TimeManager::stopClock("ERROR_MODE");
-	time = std::to_string(TimeManager::getTime("ERROR_MODE")); 
-      }
-     cout << "vehicle exist" << GVManager::getNumeric("VEHICLE_EXIST_COUNT") <<endl;
-      cout << "calculated time:"<< time <<endl;
+    if( GVManager::getNumeric("MAX_ACCIDENT") < GVManager::getNumeric("ACCIDENT_COUNT")
+	|| TimeManager::time() >= GVManager::getNumeric("MAX_TIME"))
+    {
+      _stopRun = true;
+      TimeManager::stopClock("ERROR_MODE");
+      time = std::to_string(TimeManager::getTime("ERROR_MODE")); 
+    }
     writeStatData(totalP,totalT,time);
   }else
   {

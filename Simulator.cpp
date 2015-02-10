@@ -245,7 +245,7 @@ bool Simulator::run(ulint time)
     TimeManager::startClock("ERROR_MODE");
     TimeManager::startClock("TOTALRUN");
     while (time>TimeManager::time()  
-#ifdef OACIS
+#ifdef JSON
     &&!ErrorController::stopRun()
 #endif
     )
@@ -298,7 +298,7 @@ bool Simulator::timeIncrement()
     DetectorIO::writeTrafficData(detectorUnits);
   }
 
-#ifdef OACIS
+#ifdef JSON
   // 事故の記録
   if(TimeManager::time() % 100000 == 0)
     ErrorController::checkStatData();

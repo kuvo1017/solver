@@ -33,7 +33,7 @@ void GVInitializer::init(const string& dataPath)
   GVManager::setNewFlag("FLAG_GEN_RAND_VEHICLE", true);
 
 
-#ifdef OACIS
+#ifdef JSON
   // 時系列データを出力するか
    GVManager::setNewFlag("FLAG_OUTPUT_TIMELINE", false);
 #else
@@ -115,7 +115,7 @@ void GVInitializer::init(const string& dataPath)
   // accidentに関するファイル
   GVManager::setNewString("ACCIDENT_INPUT_FILE",
       dataPath + "accident.txt");
-#ifdef OACIS
+#ifdef JSON
   // エラー率を定義しているファイル
   GVManager::setNewString("ERROR_PARAMS_FILE",
       "./_input.json");
@@ -148,7 +148,7 @@ void GVInitializer::init(const string& dataPath)
 
   GVManager::setNewString("RESULT_VEHICLE_ATTRIBUTE_FILE",
       resultPath + "vehicleAttribute.txt");
-#ifdef OACIS
+#ifdef JSON
    GVManager::setNewString("RESULT_VEHICLE_TRIP_FILE",
       dataPath + "../../solver/vehicleTrip.txt");
 #else
@@ -157,7 +157,7 @@ void GVInitializer::init(const string& dataPath)
 #endif
   GVManager::setNewString("RESULT_VEHICLE_COUNT_FILE",
       resultPath + "vehicleCount.txt");
-#ifndef OACIS
+#ifndef JSON
   GVManager::setNewString("RESULT_ERROR_FILE",
       resultPath + "_error.txt");
   GVManager::setNewString("RESULT_ACCIDENT_FILE",

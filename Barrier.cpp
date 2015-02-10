@@ -16,25 +16,24 @@ Barrier::Barrier(Intersection* i0,
     std::string id)
 {
   _id = id;
-  /*
-     cout << "enter into Barrier.cpp!!!!!"<<endl;
-     cout << "Intersection id: " <<i0->id()<<endl;
-     cout << "Section1 id: " <<s1->id()<<endl; 
-     cout << "Section2 id: " <<s2->id()<<endl; 
-   */
-  // IntersectionとSectionの4つの交点
+
+ // IntersectionとSectionの4つの交点
   AmuPoint* rawVertices[4];
-  // Barrierの4つの交点
+
+  //
+  /**
+   * まず2つの単路と一つの交差点から、
+   * 4つの頂点を取得して、遮蔽物の4つの
+   * 頂点を求める。求め方はけっこう強引に求めている。
+   */
   _intersection=i0;
   _section[0]=s1;
   _section[1]=s2;
-  //cout << "AmuPoint呼び出し" << endl;
   std::vector<AmuPoint> iAmuPoints = _intersection->vertices();
   std::vector<AmuPoint> sAmuPoints1 = _section[0]->vertices(); 
   std::vector<AmuPoint> sAmuPoints2 = _section[1]->vertices(); 
   bool once1=false;
   bool once2=true; 
-  // cout << "共通するAmuPoint探し" << endl; 
   for(int i=0;i<iAmuPoints.size();i++)
   {
     AmuPoint iAmuPoint = iAmuPoints[i];
@@ -67,7 +66,6 @@ Barrier::Barrier(Intersection* i0,
       }
     } 
   }
-  // cout << "共通しないAmuPoint探し" << endl;  
 
   for(int i=0;i<sAmuPoints1.size();i++)
   {
@@ -94,15 +92,20 @@ Barrier::Barrier(Intersection* i0,
     }
   } 
 
-  for(int i=0;i<4;i++){
-//    std::cout <<"("<< rawVertices[i]->x() <<","<<rawVertices[i]->y()<<")" <<std::endl;
-  }
+  /* 
+   * この時点で遮蔽物の4つの頂点がほぼ決まったが、
+   * 遮蔽物が道路に完全にくっついていては
+   * おかしいので道路から少しだけ離すようにする。
+   * ここからそのための処理。
+   */
 
-  // 四角形の中心点を計算する
+  // 遮蔽物の中心点を計算する
   AmuPoint* center = new AmuPoint;
-  // 対角線の傾き
+
+  // 遮蔽物内の2つの対角線の傾き
   double grad1 = (rawVertices[0]->y()-rawVertices[2]->y())/(rawVertices[0]->x()-rawVertices[2]->x());
   double grad2 = (rawVertices[1]->y()-rawVertices[3]->y())/(rawVertices[1]->x()-rawVertices[3]->x());
+
   // 対角線の切片
   double intercept1 = rawVertices[0]->y()-grad1*rawVertices[0]->x();
   double intercept2 = rawVertices[1]->y()-grad2*rawVertices[1]->x();
@@ -110,23 +113,21 @@ Barrier::Barrier(Intersection* i0,
   center->setY(-grad1*(intercept1-intercept2)/(grad1-grad2)+intercept1); 
   for(int i=0;i<4;i++)
   {
-    //std::cout << "ループ処理開始" << endl; 
     AmuPoint* v = new AmuPoint;
-    // 四角形の中心点から各点に向けて、縮尺をつける
+ 
     // 道路の端からどれくらい離すか
     double separate = 1.0; //[m]
     double length = sqrt(pow(rawVertices[i]->x()-center->x(),2)+pow(rawVertices[i]->y()-center->y(),2));
     double t = 1-separate/length;
-    //std::cout <<i<< "kokoha?" <<center->x()<< endl;  
     v->setX((1-t)*center->x() + t*(rawVertices[i]->x()));
     v->setY((1-t)*center->y() + t*(rawVertices[i]->y()));  
     v->setZ(0.0);
     _vertices.push_back(v);
   }
-  //std::cout << "ループ処理終了" << endl;  
 
   _diagnoal[0] = new AmuVector(*_vertices[0] ,*_vertices[2]);
   _diagnoal[1] = new AmuVector(*_vertices[1],*_vertices[3]);
+
   // 見通しが悪い情報を単路に登録
   s1->setBadView();
   s2->setBadView();
@@ -205,8 +206,7 @@ bool Barrier::_isVisible(Vehicle* v1,Vehicle* v2)
       new AmuVector(*points[0],*points[1]),
       new AmuVector(*points[0],*_vertices[i]), 
       new AmuVector(*points[0],*_vertices[i+2])};
-    //２つの外積の積が正であれば交差せず
-    //負であれば交差する
+    //2つの外積の積が正であれば交差せず,負であれば交差する
     if(calcVectors[0]->calcCrossProduct(*calcVectors[1])*calcVectors[0]->calcCrossProduct(*calcVectors[2]) < 0 && (calcVectors[3]->calcCrossProduct(*calcVectors[4])*calcVectors[3]->calcCrossProduct(*calcVectors[5]) < 0))
     {
       return false;

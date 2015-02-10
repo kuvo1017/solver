@@ -402,7 +402,7 @@ void GenerateVehicleController::_createRandomTable()
       /**
        * @todo シミュレーションの最大時間をGVManagerで管理すべき
        */
-#ifdef OACIS
+#ifdef JSON
       _randomTable.createGTCell(0, GVManager::getNumeric("MAX_TIME"), volume,
 	  odNodes[i]->id(), "******");
 #else
@@ -437,7 +437,7 @@ void GenerateVehicleController::_createRandomTable()
 	_randomTable.createGTCell(0, minStart, volume,
 	    odNodes[i]->id(), "******");
       }
-#ifdef OACIS
+#ifdef JSON
       if (maxEnd < GVManager::getNumeric("MAX_TIME"))
       {
 	_randomTable.createGTCell(maxEnd, GVManager::getNumeric("MAX_TIME"), volume,

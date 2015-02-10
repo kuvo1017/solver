@@ -318,7 +318,7 @@ bool GeneratingTable::init(const std::string& fileName)
 
       // 発生開始、終了時刻
       begin = atoi(tokens[0].c_str());
-#ifdef OACIS
+#ifdef JSON
       end = GVManager::getNumeric("MAX_TIME");
 #else
       end = atoi(tokens[1].c_str());
@@ -338,7 +338,7 @@ bool GeneratingTable::init(const std::string& fileName)
 
       // 車種ID
       vehicleType = atoi(tokens[5].c_str());
-#ifdef OACIS
+#ifdef JSON
       if(volume > 0)
       {
       if(vehicleType >=20 && vehicleType < 30)

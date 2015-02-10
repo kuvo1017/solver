@@ -245,7 +245,7 @@ SignalControlDataSet SignalIO::signalControlDataSet(const string& id) const
             AmuStringOperator::getTokens(&tokens, str, " ");
 
             begin = (ulint)atol(tokens[0].c_str());
-	    #ifdef OACIS
+	    #ifdef JSON
 	    end = GVManager::getNumeric("MAX_TIME");
 	    #else
             end   = (ulint)atol(tokens[1].c_str());

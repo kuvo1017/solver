@@ -148,7 +148,7 @@ if(ZLIB_FOUND)
 endif(ZLIB_FOUND)
 
 add_definitions("-DERROR_MODE") 
-add_definitions("-DOACIS")
+add_definitions("-DJSON")
 add_definitions("-DBARRIER")
 #add_definitions("-DVIS_ACCIDENT")
 #add_definitions("-DERROR_PARAM")
@@ -388,7 +388,6 @@ set(MATES_COMMON_SRCS
   DetectorIO.cpp
   DetectorUnit.cpp
   ErrorController.cpp
-  OacisIO.cpp
   OD.cpp
   GeneratingTable.cpp
   GenerateVehicleController.cpp
@@ -398,6 +397,7 @@ set(MATES_COMMON_SRCS
   FileManager.cpp
   Intersection.cpp
   IntersectionBuilder.cpp
+  JSONIO.cpp
   Lane.cpp
   LaneBundle.cpp
   LaneInSection.cpp

@@ -219,7 +219,7 @@ void Vehicle::_runIntersection2Section()
   Intersection* next = _section->intersection(true);
   _errorController->errorInIntersection(next);
 #endif
-#ifdef OACIS
+#ifdef JSON
   // 今まで通過した交差点の数をインクリメント
   _numIntersections++;
   if(!(_prevIntersection->hasSignal()))

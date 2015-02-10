@@ -1,13 +1,13 @@
 #include <vector>                               
 #include <sstream>
-#include "OacisIO.h"
+#include "JSONIO.h"
 #include "GVManager.h"
 #include "picojson.h"
 #include "FileManager.h"
 
 using namespace std;
 //======================================================================  
-std::string OacisIO::inputParams(){
+std::string JSONIO::inputParams(){
   // 参考：http://tsuyushiga.hatenablog.jp/entry/2014/06/04/232104
   //ファイルパスの取得
   string path = "./_input.json";
@@ -49,7 +49,7 @@ std::string OacisIO::inputParams(){
   GVManager::setNewString("PARAM_NAME",all["param_name"].get<std::string>()); 
   if(all["no_input_signal"].get<bool>())
   {
-  GVManager::resetFlag("FLAG_INPUT_SIGNAL",false);
+    GVManager::resetFlag("FLAG_INPUT_SIGNAL",false);
   }
    std::cout << dataPath<<endl;
   return dataPath;

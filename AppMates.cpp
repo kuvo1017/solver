@@ -5,7 +5,7 @@
 #include "Random.h"
 #include "Simulator.h"
 #include "ErrorController.h"
-#include "OacisIO.h"
+#include "JSONIO.h"
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -26,8 +26,8 @@ using namespace std;
 //======================================================================
 AppMates::AppMates() :  _simulator(), _dataPath(), _key()
 {
-#ifdef OACIS
-  _dataPath = OacisIO::inputParams();
+#ifdef JSON
+  _dataPath = JSONIO::inputParams();
 #else
  //_dataPathと_keyのデフォルト値を設定
   _dataPath = "./";
@@ -186,9 +186,8 @@ void AppMates::parseArgument(int argc, char** argv)
 	GVManager::resetNumeric("SMALL_TRAFFIC_VOLUME",small_volume);  
 	GVManager::resetNumeric("LARGE_TRAFFIC_VOLUME",large_volume); 
 	GVManager::resetString("PARAM_NAME", paramName + "_"+ str);
- #else
+#else
  	str = optarg;
-	cout << "damedesu" << endl;
 #endif
 	break;
       case 'R':

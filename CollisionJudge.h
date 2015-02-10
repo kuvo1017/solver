@@ -8,25 +8,28 @@
 
 //事故が起きた時の判定をするクラス
 using namespace std;
-
+ /// 事故シミュレーション用に衝突判定をするクラス
+/**
+ * 簡単な判定には計算不可の低いアルゴリズムを実装
+ * しているため、各事故に対して各衝突判定が存在する
+ */
+ 
 class CollisionJudge{
  public:
-  //二つの車が衝突しているかどうかを判定
-  //x軸、y軸に水平な事故しか判定できない
-  static bool isCollid(Vehicle* v1,Vehicle* v2);
 
-  //二つの車が衝突しているかどうかを判定
-  static bool isCollidStrict(Vehicle* v1,Vehicle* v2);
-
-  //対向車線にある車と正面衝突したかどうかの判定
+  // 追突事故の衝突を判定
   static bool isFrontCollid(Vehicle* v1,Vehicle* v2);
-  //二つの車が衝突しているかどうかを判定
+
+  // 2つの車が側面から衝突しているかどうかを判定、進路変更事故用
   static void isSideCollid(Vehicle* v1);
-  //二つの車が衝突しているかどうかを判定
-  static bool isCollidInIntersection(Vehicle* v1,Vehicle* v2);
-  //二つの車が衝突しているかどうかを判定
+
+  // 正面衝突しているかどうかを判定
   static bool isHeadCollid(Vehicle* v1,Vehicle* v2);
-  
+
+   // 交差点内における衝突判定、出会い頭、右左折事故用
+  static bool isCollidInIntersection(Vehicle* v1,Vehicle* v2);
+
+  // 
   static bool _checkCross(AmuVector& ea1, AmuVector& ea2, AmuVector& eb1,double dist);
  private:
   

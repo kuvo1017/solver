@@ -329,7 +329,7 @@ bool VehicleIO::writeVehicleDistanceData(Vehicle* vehicle)
     _tripOut << vehicle->id() << ","
       << vehicle->tripLength() << ","
       << (TimeManager::time() - vehicle->startTime()) << "," 
-#ifdef OACIS
+#ifdef JSON
       << vehicle->numIntersections() << ","  
       << vehicle->numNSIntersections() 
 #endif

@@ -17,7 +17,7 @@ using namespace std;
 //======================================================================
 void Vehicle::recognize()
 {
-#ifdef OACIS
+#ifdef JSON
   GVManager::resetNumeric("VEHICLE_EXIST_COUNT",GVManager::getNumeric("VEHICLE_EXIST_COUNT")+1);
 //  cout << GVManager::getNumeric("VEHICLE_EXIST_COUNT") <<endl;
 #endif
@@ -28,7 +28,7 @@ void Vehicle::recognize()
   }
   // 前のタイムステップでエラーが
   // 発生していたらエラー発生時の運転行動を始める
-  _errorController->checkError();
+  _errorController->chooseError();
 #endif
 
   //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
