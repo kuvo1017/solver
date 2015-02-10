@@ -52,8 +52,16 @@ public:
     /// 交差点の詳細構造を作成する
     bool createIntersectionStructure();
 
+#ifdef BARRIER
     /// 信号がない交差点を指定
+    /**
+     * 事故発生シミュレーション用
+     * ここで信号がないと判断されると、
+     * 遮蔽物を置かれることになる
+     */
+
     bool checkSignals();
+#endif
      
     /// @}
 

@@ -726,12 +726,10 @@ bool RoadMapBuilder::createIntersectionStructure()
 //======================================================================
 bool RoadMapBuilder::checkSignals()
 {                         
-  cout << "!!!!!!checkSignal!!!!!" <<endl; 
   string fNoSignal;
  
   GVManager::getVariable("NOSIGNAL_FILE", &fNoSignal);
 
-  cout << "fNoSignal:" << fNoSignal <<endl;
   ifstream inNoSignalFile(fNoSignal.c_str(), ios::in);
    
   string str;
@@ -741,20 +739,15 @@ bool RoadMapBuilder::checkSignals()
     AmuStringOperator::getAdjustString(&str);
     if (!str.empty())
     {
-      cout << "kiteruyo2" <<endl;
       vector<string> tokens;
       AmuStringOperator::getTokens(&tokens, str, ',');
       assert(tokens.size()==1);
-      // 3番目のカラムは終点となる交差点の識別番号
       std::string id = tokens[0].c_str();
-      cout << "id:" << id <<endl;
       CITRMAPI iti = _currentRoadMap->intersections()->begin();
       while (iti != _currentRoadMap->intersections()->end())
       {
             if((*iti).second->id() == id )
 	    {
-	      cout << "intersection " << (*iti).second->id()
-		<< " has no signal" << endl;
 	      (*iti).second-> noSignal();
 	    }
 	    iti++;
